@@ -58,6 +58,21 @@ TraceDiag.Tests/
   *Tests.cs                   юнит-тесты
 ```
 
+## Установка на чистый ПК
+
+Готовый дистрибутив с установщиком рантайма:
+
+```powershell
+cd installer
+.\Publish-TraceDiag.ps1
+```
+
+На целевом ПК распакуйте `installer\TraceDiag-install.zip` и запустите
+`Install-TraceDiag.cmd`. Установщик сам определит архитектуру, при необходимости
+скачает и поставит .NET 10 Desktop Runtime в профиль пользователя (без прав
+администратора), скопирует приложение и создаст ярлык. Подробности — в
+[installer/README-Installer.md](installer/README-Installer.md).
+
 ## Данные приложения
 
 - Настройки: `%LOCALAPPDATA%\TraceDiag\settings.json`
