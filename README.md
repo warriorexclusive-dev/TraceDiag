@@ -11,8 +11,8 @@ WinForms-утилита для диагностики маршрута до уд
   достижении цели или по достижении лимита хопов.
 - Поиск хостов вынесен в отдельную модель `HostDiscovery`: TTL опрашиваются последовательно,
   до `3` проходов с интервалом `1` с, пакет `64` байт, флаг `DontFragment` и таймаут `5` с.
-  TTL без ответа получают статус `не отвечает` и пропускаются при проверке; алгоритм проверки
-  узлов остался прежним.
+  TTL без ответа получают статус `не отвечает` и пропускаются при проверке. Поведение проверки
+  узлов не изменялось — подробности в [ReleaseNotes.md](ReleaseNotes.md).
 - Reverse DNS для каждого обнаруженного узла с защитой от медленного ответа.
 - Режим размера пакета:
   - галочка **«Динамический размер пакета»** включена — `64 → 128 → … → максимум`;
@@ -59,6 +59,8 @@ dotnet test TraceDiag.slnx -c Release
 
 - [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.1.2/TraceDiag.exe)
 - [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.1.2/TraceDiag-install.zip)
+
+История изменений: [ReleaseNotes.md](ReleaseNotes.md).
 
 ## Установка на чистый ПК
 
