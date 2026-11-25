@@ -55,7 +55,7 @@ public sealed class HostDiscoveryTests
     }
 
     [Fact]
-    public async Task DiscoverAsync_UsesWinMtrDiscoveryDefaults()
+    public async Task DiscoverAsync_UsesDiscoveryDefaults()
     {
         var probe = new FakeProbeClient(call => TestFactories.Success(call));
         await DiscoverAsync(probe, DiscoverySettings.CreateDefault());
