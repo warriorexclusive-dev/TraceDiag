@@ -30,6 +30,14 @@ internal static class TestFactories
     internal static DiagnosticContext Context(FakeProbeClient probe, FakeDiagnosticLogger? logger = null) =>
         new(probe, new FakeDnsResolver(address => address.ToString()), logger);
 
+    internal static DiscoverySettings Discovery(
+        int roundLimit = 1,
+        int intervalMs = 0,
+        int packetSize = 64,
+        int timeoutMs = 100,
+        bool dontFragment = true) =>
+        new(packetSize, timeoutMs, intervalMs, roundLimit, dontFragment);
+
     internal static CollectingProgress<string> TextProgress() => new();
 
     internal static CollectingProgress<IReadOnlyList<HopStatSnapshot>> StatsProgress() => new();

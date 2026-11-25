@@ -13,7 +13,7 @@ internal static class ProbeExecutor
 
     private static async Task<ProbeResult> ExecuteAsync(DiagnosticContext context, ProbeRequest request, IProgress<string> progress, CancellationToken cancellationToken)
     {
-        var probeTask = context.ProbeClient.SendAsync(request.Address, request.Ttl, request.BufferSize, request.TimeoutMs, cancellationToken);
+        var probeTask = context.ProbeClient.SendAsync(request.Address, request.Ttl, request.BufferSize, request.TimeoutMs, cancellationToken, request.DontFragment);
         var watchdog = Task.Delay(request.TimeoutMs + DiagnosticConstants.WatchdogExtraDelayMs, cancellationToken);
         var completed = await Task.WhenAny(probeTask, watchdog).ConfigureAwait(false);
         return completed == probeTask

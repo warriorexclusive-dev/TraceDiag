@@ -7,14 +7,14 @@ namespace TraceDiag.Services;
 
 public sealed class IcmpProbeClient : IIcmpProbeClient
 {
-    public async Task<ProbeResult> SendAsync(IPAddress address, int ttl, int bufferSize, int timeoutMs, CancellationToken cancellationToken)
+    public async Task<ProbeResult> SendAsync(IPAddress address, int ttl, int bufferSize, int timeoutMs, CancellationToken cancellationToken, bool dontFragment = false)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var buffer = IcmpPacketFactory.CreatePayload(bufferSize);
         using var ping = new Ping();
         try
         {
-            var reply = await ping.SendPingAsync(address, timeoutMs, buffer, IcmpPacketFactory.CreateOptions(ttl));
+            var reply = await ping.SendPingAsync(address, timeoutMs, buffer, IcmpPacketFactory.CreateOptions(ttl, dontFragment));
             return IcmpReplyMapper.Map(reply, buffer.Length, ttl);
         }
         catch (PingException) { return IcmpReplyMapper.Failed(buffer.Length, ttl); }

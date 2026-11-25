@@ -32,6 +32,13 @@ public sealed class IcmpHelperTests
     }
 
     [Fact]
+    public void CreateOptions_SetsDontFragmentWhenRequested()
+    {
+        Assert.True(IcmpPacketFactory.CreateOptions(7, dontFragment: true).DontFragment);
+        Assert.False(IcmpPacketFactory.CreateOptions(7).DontFragment);
+    }
+
+    [Fact]
     public void Map_SuccessReply_ProducesSuccessResult()
     {
         var result = IcmpReplyMapper.Map(CreateReply(IPStatus.Success, 12), 64, 5);

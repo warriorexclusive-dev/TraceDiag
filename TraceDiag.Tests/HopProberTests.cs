@@ -28,10 +28,9 @@ public sealed class HopProberTests
         var hop = TestFactories.Hop(1, 1);
         var probe = new FakeProbeClient(TestFactories.Timeout);
         var logger = new FakeDiagnosticLogger();
-        var progress = TestFactories.TextProgress();
         var stopped = await HopProber.ProbeAsync(
             TestFactories.Context(probe, logger), hop, [hop], new ProbeSettings(128, 20),
-            progress, TestFactories.StatsProgress(), CancellationToken.None);
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
         Assert.True(stopped);
         Assert.Equal(DiagnosticConstants.MaxLostPingsBeforeSkip, probe.Calls.Count);
         Assert.Equal(0, hop.Received);

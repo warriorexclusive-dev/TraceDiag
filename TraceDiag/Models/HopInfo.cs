@@ -20,6 +20,7 @@ public sealed class HopInfo
     public int Received { get; private set; }
     public long TotalRttMs { get; private set; }
     public string Status { get; set; } = Strings.Status.Pending;
+    public bool IsSkipped { get; set; }
 
     /// <summary>Every successful RTT measurement, in milliseconds.</summary>
     public IReadOnlyList<long> RttSamples => _rttSamples;

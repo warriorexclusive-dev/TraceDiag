@@ -30,13 +30,16 @@ public sealed class TraceDiagnosticsServiceTests
     }
 
     [Fact]
-    public async Task RunAsync_WithoutRouteHops_DoesNotProbeNodes()
+    public async Task RunAsync_WithNoDiscoveryReplies_MarksAllHopsSkipped()
     {
         var probe = new FakeProbeClient(TestFactories.Timeout);
         var progress = TestFactories.TextProgress();
-        await CreateService(probe).RunAsync(CreateInput(true), progress, TestFactories.StatsProgress(), CancellationToken.None);
-        Assert.Equal(DiagnosticConstants.MaxHops * 2, probe.Calls.Count);
-        Assert.Contains(progress.Values, value => value.Contains("no route hops discovered"));
+        var stats = TestFactories.StatsProgress();
+        await CreateService(probe).RunAsync(CreateInput(true), progress, stats, CancellationToken.None);
+        Assert.Equal(DiagnosticConstants.MaxHops * DiagnosticConstants.DiscoveryRoundLimit, probe.Calls.Count);
+        Assert.Contains(progress.Values, value => value.Contains("no response"));
+        Assert.Contains(progress.Values, value => value.Contains("round limit"));
+        Assert.All(stats.Values.Last(), hop => Assert.Equal(Strings.Status.NoAnswer, hop.Status));
     }
 
     [Fact]

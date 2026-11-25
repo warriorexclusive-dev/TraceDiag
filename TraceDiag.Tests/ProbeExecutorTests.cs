@@ -53,7 +53,7 @@ public sealed class ProbeExecutorTests
 
     private sealed class HangingProbeClient : IIcmpProbeClient
     {
-        public Task<ProbeResult> SendAsync(IPAddress address, int ttl, int bufferSize, int timeoutMs, CancellationToken cancellationToken) =>
+        public Task<ProbeResult> SendAsync(IPAddress address, int ttl, int bufferSize, int timeoutMs, CancellationToken cancellationToken, bool dontFragment = false) =>
             new TaskCompletionSource<ProbeResult>().Task;
     }
 }

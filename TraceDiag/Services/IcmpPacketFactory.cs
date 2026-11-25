@@ -12,5 +12,5 @@ internal static class IcmpPacketFactory
         return buffer;
     }
 
-    internal static PingOptions CreateOptions(int ttl) => new(ttl, dontFragment: false);
+    internal static PingOptions CreateOptions(int ttl, bool dontFragment = false) => new(ttl, dontFragment);
 }

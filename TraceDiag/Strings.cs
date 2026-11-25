@@ -135,11 +135,14 @@ internal static class Strings
         public const string FatalErrorFormat = "Fatal error: {0}: {1}";
 
         public const string TracingRoute = "Tracing route (TTL increment)...";
+        public const string DiscoveryRoundFormat = "Discovery round {0}";
         public const string TraceContextFormat = "trace ttl={0} attempt={1}/{2}";
+        public const string TraceRoundContextFormat = "trace ttl={0} round={1}";
         public const string NoResponseHopFormat = "  {0,2}: * (no response)";
         public const string TargetMarker = " (target)";
         public const string HopDiscoveredFormat = "  {0,2}: {1}{2}";
         public const string TraceHopLimit = "Trace did not reach target within hop limit.";
+        public const string TraceRoundLimit = "Trace did not reach target within discovery round limit.";
 
         public const string ResolvingDns = "Resolving DNS names for hops...";
         public const string DnsResolveFailedFormat = "DNS resolve failed for {0}";

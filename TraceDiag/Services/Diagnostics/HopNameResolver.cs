@@ -1,16 +1,18 @@
 using System.Diagnostics;
+using System.Net;
 using TraceDiag.Models;
 
 namespace TraceDiag.Services.Diagnostics;
 
 internal static class HopNameResolver
 {
-    internal static async Task ResolveAsync(DiagnosticContext context, List<HopInfo> hops, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    internal static async Task ResolveAsync(DiagnosticContext context, IReadOnlyList<HopInfo> hops, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         DiagnosticReporter.Report(context, progress, Strings.Diag.ResolvingDns);
         foreach (var hop in hops)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            if (hop.Address.Equals(IPAddress.Any)) continue;
             var sw = Stopwatch.StartNew();
             await ResolveOneAsync(context, hop, hops, sw, progress, stats, cancellationToken);
         }

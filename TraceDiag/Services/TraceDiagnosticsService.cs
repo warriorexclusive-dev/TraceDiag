@@ -43,28 +43,28 @@ public sealed class TraceDiagnosticsService : ITraceDiagnosticsService
     {
         var sizes = PacketSizePlanner.Build(input.MaxPacketSize, input.DynamicPacketSize);
         DiagnosticReporter.ReportHeader(_context, progress, input, sizes);
-        var hops = await DiscoverAndResolveAsync(input, sizes[0], progress, statsProgress, cancellationToken);
-        if (hops.Count == 0) return;
-        await DiagnosticBatch.ProbeAllAsync(_context, sizes, hops, input.Attempts, progress, statsProgress, cancellationToken);
+        var discovery = await DiscoverAndResolveAsync(input, progress, statsProgress, cancellationToken);
+        if (discovery.Hops.Count == 0) return;
+        await DiagnosticBatch.ProbeAllAsync(_context, sizes, discovery.Hops, discovery.SkippedTtls, input.Attempts, progress, statsProgress, cancellationToken);
         DiagnosticReporter.Separator(_context, progress);
-        await LossAnalyzer.AnalyzeAsync(_context, input.RemoteAddress, hops, sizes[^1], input.Attempts, progress, statsProgress, cancellationToken);
-        DiagnosticReporter.ReportStats(statsProgress, hops);
+        await LossAnalyzer.AnalyzeAsync(_context, input.RemoteAddress, discovery.Hops, sizes[^1], input.Attempts, progress, statsProgress, cancellationToken);
+        DiagnosticReporter.ReportStats(statsProgress, discovery.Hops);
         DiagnosticReporter.Report(_context, progress, Strings.Diag.RunFinished);
     }
 
-    private async Task<List<HopInfo>> DiscoverAndResolveAsync(DiagnosticInput input, int discoveryPacketSize, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> statsProgress, CancellationToken cancellationToken)
+    private async Task<HostDiscoveryResult> DiscoverAndResolveAsync(DiagnosticInput input, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> statsProgress, CancellationToken cancellationToken)
     {
-        var hops = await RouteDiscovery.DiscoverAsync(_context, input.RemoteAddress, discoveryPacketSize, progress, statsProgress, cancellationToken);
-        if (hops.Count == 0) { DiagnosticReporter.Report(_context, progress, Strings.Diag.NoRouteHops, isWarn: true); return hops; }
-        await HopNameResolver.ResolveAsync(_context, hops, progress, statsProgress, cancellationToken);
-        DiagnosticReporter.ReportStats(statsProgress, hops);
+        var result = await HostDiscovery.DiscoverAsync(_context, input.RemoteAddress, DiscoverySettings.CreateDefault(), progress, statsProgress, cancellationToken);
+        if (result.Hops.Count == 0) { DiagnosticReporter.Report(_context, progress, Strings.Diag.NoRouteHops, isWarn: true); return result; }
+        await HopNameResolver.ResolveAsync(_context, result.Hops, progress, statsProgress, cancellationToken);
+        DiagnosticReporter.ReportStats(statsProgress, result.Hops);
         DiagnosticReporter.Separator(_context, progress);
-        return hops;
+        return result;
     }
 
     private void ReportFailure(IProgress<string> progress, Exception ex)
     {
         _context.Logger?.Error(Strings.Diag.RunFailed, ex);
-        DiagnosticReporter.Report(_context, progress, TextFormatter.Fmt(Strings.Diag.FatalErrorFormat, ex.GetType().Name, ex.Message), isError: true, ex: ex);
+        DiagnosticReporter.Report(_context, progress, TextFormatter.Fmt(Strings.Diag.FatalErrorFormat, ex.GetType().Name, ex.Message));
     }
 }
