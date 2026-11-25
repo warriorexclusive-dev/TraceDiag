@@ -47,6 +47,18 @@ public sealed class TraceDiagnosticsServiceTests
             service.RunAsync(null!, TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None));
     }
 
+    [Fact]
+    public async Task RunAsync_VerificationDoesNotInflateTableCounters()
+    {
+        var stats = TestFactories.StatsProgress();
+        await CreateService(CreateLossOnceProbe()).RunAsync(
+            new DiagnosticInput(TestFactories.Address(2), "target", 256, 4, false),
+            TestFactories.TextProgress(), stats, CancellationToken.None);
+        var target = stats.Values.Last().Single(s => s.Address.Equals(TestFactories.Address(2)));
+        Assert.Equal(4, target.Sent);
+        Assert.Equal(3, target.Received);
+    }
+
     private static TraceDiagnosticsService CreateService(FakeProbeClient probe) =>
         new(probe, new FakeDnsResolver(address => "host-" + address), new FakeDiagnosticLogger());
 
@@ -54,6 +66,19 @@ public sealed class TraceDiagnosticsServiceTests
         new(TestFactories.Address(2), "target", 256, 1, dynamic);
 
     private static bool IsProbing(ProbeCall call) => call.Ttl == 64;
+
+    private static FakeProbeClient CreateLossOnceProbe()
+    {
+        var lost = false;
+        return new FakeProbeClient(call =>
+        {
+            if (call.Ttl != DiagnosticConstants.DirectProbeTtl || lost ||
+                !call.Address.Equals(TestFactories.Address(2)))
+                return TestFactories.Success(call, 9);
+            lost = true;
+            return TestFactories.Timeout(call);
+        });
+    }
 
     private static ProbeResult Reply(ProbeCall call) => call.Ttl == 1
         ? TestFactories.ExpiredFrom(call, TestFactories.Address(1))

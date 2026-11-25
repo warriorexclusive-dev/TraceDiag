@@ -23,15 +23,16 @@ internal static class LossMeasurement
     internal static async Task<LossSample> MeasureAsync(DiagnosticContext context, HopInfo hop, IReadOnlyList<HopInfo> allHops, int packetSize, int attempts, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         var count = Math.Max(1, attempts);
-        var before = PingCounters.Capture(hop);
+        var probe = VerificationHop.Create(hop);
+        var before = PingCounters.Capture(probe);
         for (var i = 0; i < count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var result = await SendVerifyAsync(context, hop, packetSize, i, count, progress, cancellationToken);
-            hop.ApplyPing(result.Success, result.RttMs);
+            var result = await SendVerifyAsync(context, probe, packetSize, i, count, progress, cancellationToken);
+            probe.ApplyPing(result.Success, result.RttMs);
             DiagnosticReporter.ReportStats(stats, allHops);
         }
-        return before.Measure(hop);
+        return before.Measure(probe);
     }
 
     private static async Task<(bool Success, long RttMs)> SendVerifyAsync(DiagnosticContext context, HopInfo hop, int packetSize, int index, int count, IProgress<string> progress, CancellationToken cancellationToken)

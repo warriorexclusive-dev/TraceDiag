@@ -32,4 +32,18 @@ public sealed class LossMeasurementTests
         Assert.Equal(0, sample.Lost);
         Assert.Equal(0, sample.Percent);
     }
+
+    [Fact]
+    public async Task MeasureAsync_DoesNotChangeMainHopCounters()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        for (var i = 0; i < 100; i++) hop.ApplyPing(true, 5);
+        var probe = new FakeProbeClient(call => TestFactories.Success(call));
+        var sample = await LossMeasurement.MeasureAsync(
+            TestFactories.Context(probe), hop, [hop], 64, 10,
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Equal(100, hop.Sent);
+        Assert.Equal(100, hop.Received);
+        Assert.Equal(10, sample.Sent);
+    }
 }
