@@ -6,6 +6,12 @@ namespace TraceDiag.Tests;
 public sealed class RouteDiscoveryTests
 {
     [Fact]
+    public void MaxHops_EqualsIpTtlLimit()
+    {
+        Assert.Equal(255, DiagnosticConstants.MaxHops);
+    }
+
+    [Fact]
     public async Task DiscoverAsync_StopsWhenTargetReached()
     {
         var probe = new FakeProbeClient(call => call.Ttl == 1

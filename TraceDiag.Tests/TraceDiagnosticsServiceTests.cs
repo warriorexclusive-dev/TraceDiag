@@ -1,5 +1,6 @@
 using TraceDiag.Models;
 using TraceDiag.Services;
+using TraceDiag.Services.Diagnostics;
 using TraceDiag.Tests.TestData;
 
 namespace TraceDiag.Tests;
@@ -34,7 +35,7 @@ public sealed class TraceDiagnosticsServiceTests
         var probe = new FakeProbeClient(TestFactories.Timeout);
         var progress = TestFactories.TextProgress();
         await CreateService(probe).RunAsync(CreateInput(true), progress, TestFactories.StatsProgress(), CancellationToken.None);
-        Assert.DoesNotContain(probe.Calls, IsProbing);
+        Assert.Equal(DiagnosticConstants.MaxHops * 2, probe.Calls.Count);
         Assert.Contains(progress.Values, value => value.Contains("no route hops discovered"));
     }
 
