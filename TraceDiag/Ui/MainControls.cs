@@ -7,6 +7,7 @@ internal sealed record MainControls(
     NumericUpDown Attempts,
     NumericUpDown FontSize,
     CheckBox DynamicPacketSize,
+    CheckBox DarkTheme,
     DataGridView Stats,
     TextBox Output,
     Button Run,

@@ -2,11 +2,11 @@ namespace TraceDiag.Ui;
 
 internal static class InputPanelFactory
 {
-    internal static TableLayoutPanel Create(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown font, CheckBox dynamicPacketSize, Button run)
+    internal static TableLayoutPanel Create(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run)
     {
         var layout = CreateLayout();
         layout.Controls.Add(CreateLeftFrame(host, packet, attempts), 0, 0);
-        layout.Controls.Add(CreateRightFrame(font, dynamicPacketSize, run), 1, 0);
+        layout.Controls.Add(CreateRightFrame(font, dynamicPacketSize, darkTheme, run), 1, 0);
         return layout;
     }
 
@@ -55,13 +55,14 @@ internal static class InputPanelFactory
         frame.Controls.Add(attempts, 1, 2);
     }
 
-    private static TableLayoutPanel CreateRightFrame(NumericUpDown font, CheckBox dynamicPacketSize, Button run)
+    private static TableLayoutPanel CreateRightFrame(NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run)
     {
         var frame = CreateFramePanel();
         ConfigureRightFrame(frame);
         frame.Controls.Add(CreateFontPanel(font), 0, 0);
         frame.Controls.Add(dynamicPacketSize, 0, 1);
-        frame.Controls.Add(run, 0, 2);
+        frame.Controls.Add(darkTheme, 0, 2);
+        frame.Controls.Add(run, 0, 3);
         return frame;
     }
 
@@ -70,13 +71,14 @@ internal static class InputPanelFactory
         Dock = DockStyle.Fill,
         AutoSize = true,
         ColumnCount = 1,
-        RowCount = 3,
+        RowCount = 4,
         Padding = new Padding(8, 0, 0, 0)
     };
 
     private static void ConfigureRightFrame(TableLayoutPanel frame)
     {
         frame.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        frame.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         frame.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         frame.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         frame.RowStyles.Add(new RowStyle(SizeType.AutoSize));

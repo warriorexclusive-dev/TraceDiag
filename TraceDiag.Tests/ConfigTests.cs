@@ -12,15 +12,18 @@ public sealed class ConfigTests
         using var temp = new TempDirectory();
         var config = ConfigFileIO.Load(temp.File("missing.json"));
         Assert.Equal(9.5f, config.OutputFontSize);
+        Assert.Equal(AppTheme.Dark, config.Theme);
     }
 
     [Fact]
-    public void SaveThenLoad_PreservesFontSize()
+    public void SaveThenLoad_PreservesSettings()
     {
         using var temp = new TempDirectory();
         var path = temp.File("settings.json");
-        ConfigFileIO.Save(path, new AppConfig { OutputFontSize = 13.5f });
-        Assert.Equal(13.5f, ConfigFileIO.Load(path).OutputFontSize);
+        ConfigFileIO.Save(path, new AppConfig { OutputFontSize = 13.5f, Theme = AppTheme.Light });
+        var loaded = ConfigFileIO.Load(path);
+        Assert.Equal(13.5f, loaded.OutputFontSize);
+        Assert.Equal(AppTheme.Light, loaded.Theme);
     }
 
     [Fact]
@@ -39,7 +42,9 @@ public sealed class ConfigTests
         var path = temp.File("settings.json");
         File.WriteAllText(path, "{not json");
         var store = new AppConfigStore(path);
-        Assert.Equal(9.5f, store.Load().OutputFontSize);
+        var config = store.Load();
+        Assert.Equal(9.5f, config.OutputFontSize);
+        Assert.Equal(AppTheme.Dark, config.Theme);
     }
 
     [Fact]

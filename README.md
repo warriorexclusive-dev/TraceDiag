@@ -27,7 +27,8 @@ WinForms-утилита для диагностики маршрута до уд
 - Таблица статистики над логом на всю ширину окна; проблемные строки подсвечиваются.
 - Выбор размера шрифта лога справа, крупная кнопка `Run` в правой панели.
 - Полноэкранный режим: `F11` — включить/выключить, `Esc` — выйти.
-- Системная иконка сети, файловое логирование и сохранение настроек в JSON.
+- Тёмная тема по умолчанию с переключателем в правой панели; выбор сохраняется в настройках.
+- Собственная иконка `cable_24dp.ico`, файловое логирование и сохранение настроек в JSON.
 
 ## Требования
 
@@ -48,16 +49,16 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**75 юнит-тестов** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
+**78 юнит-тестов** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
 маппинг ICMP-ответов, конфигурацию и логирование, диагностические модули и полный цикл
 `TraceDiagnosticsService` с тестовыми фейками ICMP, DNS и логера.
 
 ## Готовые сборки
 
-Последний выпуск: [Release 1.1.2 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.1.2)
+Последний выпуск: [Release 1.2.0 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.2.0)
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.1.2/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.1.2/TraceDiag-install.zip)
+- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.2.0/TraceDiag.exe)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.2.0/TraceDiag-install.zip)
 
 История изменений: [ReleaseNotes.md](ReleaseNotes.md).
 

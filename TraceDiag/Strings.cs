@@ -19,6 +19,7 @@ internal static class Strings
         public const string NetworkIconFile1 = "ncpa.cpl";
         public const string NetworkIconFile2 = "netshell.dll";
         public const string NetworkIconFile3 = "netcenter.dll";
+        public const string IconResourceName = "TraceDiag.Resources.cable_24dp.ico";
     }
 
     public static class Ui
@@ -28,6 +29,7 @@ internal static class Strings
         public const string AttemptsLabel = "Количество попыток (1-1000):";
         public const string FontSizeLabel = "Размер шрифта:";
         public const string DynamicPacketSizeLabel = "Динамический размер пакета";
+        public const string DarkThemeLabel = "Тёмная тема";
         public const string RunButton = "Run";
         public const string Ready = "Ready";
         public const string ResolvingHost = "Resolving host...";
@@ -92,6 +94,7 @@ internal static class Strings
     {
         public const string ApplicationStarted = "Application started.";
         public const string SettingsSavedFormat = "Settings saved: OutputFontSize={0:0.0}";
+        public const string ThemeChangedFormat = "Settings saved: Theme={0}";
         public const string RunRequestedFormat = "Run requested: host='{0}', maxPacketSize={1}, attempts={2}, dynamic={3}";
         public const string RunCompleted = "Run completed.";
         public const string RunCancelled = "Run cancelled by user.";

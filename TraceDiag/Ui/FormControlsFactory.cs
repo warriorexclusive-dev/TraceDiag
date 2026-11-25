@@ -2,19 +2,20 @@ namespace TraceDiag.Ui;
 
 internal static class FormControlsFactory
 {
-    internal static MainControls Create(float fontSize)
+    internal static MainControls Create(float fontSize, bool darkTheme = true)
     {
         var host = CreateHostTextBox();
         var packet = CreatePacketInput();
         var attempts = CreateAttemptsInput();
         var font = CreateFontInput(fontSize);
         var dynamicPacketSize = CreateDynamicPacketSizeCheckBox();
+        var darkThemeCheckBox = CreateDarkThemeCheckBox(darkTheme);
         var run = CreateRunButton();
         var stats = StatsGridFactory.Create();
         var output = CreateOutputTextBox(fontSize);
         var status = CreateStatusLabel();
-        var input = InputPanelFactory.Create(host, packet, attempts, font, dynamicPacketSize, run);
-        return new MainControls(LayoutFactory.Create(input, stats, output, status), host, packet, attempts, font, dynamicPacketSize, stats, output, run, status);
+        var input = InputPanelFactory.Create(host, packet, attempts, font, dynamicPacketSize, darkThemeCheckBox, run);
+        return new MainControls(LayoutFactory.Create(input, stats, output, status), host, packet, attempts, font, dynamicPacketSize, darkThemeCheckBox, stats, output, run, status);
     }
 
     private static TextBox CreateHostTextBox() => new()
@@ -56,6 +57,16 @@ internal static class FormControlsFactory
         Text = Strings.Ui.DynamicPacketSizeLabel,
         AutoSize = true,
         Checked = true,
+        Anchor = AnchorStyles.Top | AnchorStyles.Right,
+        Dock = DockStyle.None,
+        Margin = new Padding(8, 6, 0, 0)
+    };
+
+    private static CheckBox CreateDarkThemeCheckBox(bool darkTheme) => new()
+    {
+        Text = Strings.Ui.DarkThemeLabel,
+        AutoSize = true,
+        Checked = darkTheme,
         Anchor = AnchorStyles.Top | AnchorStyles.Right,
         Dock = DockStyle.None,
         Margin = new Padding(8, 6, 0, 0)

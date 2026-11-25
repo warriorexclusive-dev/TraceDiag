@@ -19,6 +19,7 @@ public sealed class MainForm : Form
     private NumericUpDown _attemptsInput = null!;
     private NumericUpDown _fontSizeInput = null!;
     private CheckBox _dynamicPacketSizeInput = null!;
+    private CheckBox _darkThemeInput = null!;
     private DataGridView _statsGridView = null!;
     private TextBox _outputTextBox = null!;
     private Button _runButton = null!;
@@ -29,17 +30,22 @@ public sealed class MainForm : Form
 
     public MainForm()
     {
-        var appDataDir = AppFiles.GetAppDataDirectory();
-        _configStore = AppFiles.CreateConfigStore(appDataDir);
-        _appConfig = _configStore.Load();
+        (_configStore, _appConfig, _logger) = CreateServices();
         _outputFontSize = _appConfig.OutputFontSize;
-        _logger = AppFiles.CreateLogger(appDataDir);
-        var controls = FormControlsFactory.Create(_outputFontSize);
+        var controls = FormControlsFactory.Create(_outputFontSize, _appConfig.Theme == AppTheme.Dark);
         AssignControls(controls);
         ConfigureWindow();
         SubscribeEvents();
         Controls.Add(controls.Root);
+        ApplyTheme();
         LogStartup();
+    }
+
+    private static (AppConfigStore Store, AppConfig Config, FileDiagnosticLogger Logger) CreateServices()
+    {
+        var appDataDir = AppFiles.GetAppDataDirectory();
+        var store = AppFiles.CreateConfigStore(appDataDir);
+        return (store, store.Load(), AppFiles.CreateLogger(appDataDir));
     }
 
     private void AssignControls(MainControls controls)
@@ -49,6 +55,7 @@ public sealed class MainForm : Form
         _attemptsInput = controls.Attempts;
         _fontSizeInput = controls.FontSize;
         _dynamicPacketSizeInput = controls.DynamicPacketSize;
+        _darkThemeInput = controls.DarkTheme;
         _statsGridView = controls.Stats;
         _outputTextBox = controls.Output;
         _runButton = controls.Run;
@@ -65,12 +72,13 @@ public sealed class MainForm : Form
         ClientSize = new Size(800, 600);
         MinimumSize = new Size(800, 600);
         KeyPreview = true;
-        Icon = SystemIconLoader.TryLoadNetworkIcon() ?? SystemIcons.Application;
+        Icon = AppIconLoader.Load();
     }
 
     private void SubscribeEvents()
     {
         _fontSizeInput.ValueChanged += FontSizeInputOnValueChanged;
+        _darkThemeInput.CheckedChanged += DarkThemeInputOnCheckedChanged;
         _runButton.Click += RunButtonOnClick;
         KeyDown += MainFormOnKeyDown;
     }
@@ -96,6 +104,16 @@ public sealed class MainForm : Form
         var previous = _outputTextBox.Font;
         _outputTextBox.Font = new Font(previous.FontFamily, _outputFontSize, previous.Style);
         previous.Dispose();
+    }
+
+    private void ApplyTheme() => ThemeApplier.Apply(this, _appConfig.Theme);
+
+    private void DarkThemeInputOnCheckedChanged(object? sender, EventArgs e)
+    {
+        _appConfig.Theme = _darkThemeInput.Checked ? AppTheme.Dark : AppTheme.Light;
+        _configStore.Save(_appConfig);
+        ApplyTheme();
+        _logger.Info(TextFormatter.Fmt(Strings.Log.ThemeChangedFormat, _appConfig.Theme));
     }
 
     private void MainFormOnKeyDown(object? sender, KeyEventArgs e)

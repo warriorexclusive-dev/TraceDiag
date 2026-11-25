@@ -8,13 +8,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>TraceDiag</AssemblyName>
     <RootNamespace>TraceDiag</RootNamespace>
-    <Version>1.1.2</Version>
+    <Version>1.2.0</Version>
+    <ApplicationIcon>Resources\cable_24dp.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>TraceDiag.Tests</_Parameter1>
     </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\cable_24dp.ico" LogicalName="TraceDiag.Resources.cable_24dp.ico" />
   </ItemGroup>
 
 </Project>
