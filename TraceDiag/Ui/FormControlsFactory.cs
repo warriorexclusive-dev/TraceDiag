@@ -37,7 +37,7 @@ internal static class FormControlsFactory
         Width = 140,
         Minimum = 1,
         Maximum = 1000,
-        Value = 4
+        Value = UiDefaults.DefaultAttempts
     };
 
     private static NumericUpDown CreateFontInput(float fontSize) => new()

@@ -16,7 +16,8 @@ WinForms-утилита для диагностики маршрута до уд
 - Режим размера пакета:
   - галочка **«Динамический размер пакета»** включена — `64 → 128 → … → максимум`;
   - галочка выключена — только максимальный размер из поля ввода (`64–65534` байт).
-- Настраиваемое количество попыток на узел: `1–1000`.
+- Настраиваемое количество попыток на узел: `1–1000`, по умолчанию `100` — удобно для отчёта
+  провайдеру и замера процента потерь.
 - Точная статистика по каждому узлу: средний, минимальный, максимальный и последний пинг,
   количество отправленных/полученных пакетов, процент потерь. Среднее значение считается
   из всех сохранённых замеров RTT, а не из приблизительных величин.
@@ -47,16 +48,16 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**74 юнит-теста** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
+**75 юнит-тестов** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
 маппинг ICMP-ответов, конфигурацию и логирование, диагностические модули и полный цикл
 `TraceDiagnosticsService` с тестовыми фейками ICMP, DNS и логера.
 
 ## Готовые сборки
 
-Последний выпуск: [Release 1.1.1 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.1.1)
+Последний выпуск: [Release 1.1.2 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.1.2)
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.1.1/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.1.1/TraceDiag-install.zip)
+- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.1.2/TraceDiag.exe)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.1.2/TraceDiag-install.zip)
 
 ## Установка на чистый ПК
 
