@@ -51,6 +51,13 @@ dotnet test TraceDiag.slnx -c Release
 маппинг ICMP-ответов, конфигурацию и логирование, диагностические модули и полный цикл
 `TraceDiagnosticsService` с тестовыми фейками ICMP, DNS и логера.
 
+## Готовые сборки
+
+Последний выпуск: [Release 1.1.1 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.1.1)
+
+- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.1.1/TraceDiag.exe)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.1.1/TraceDiag-install.zip)
+
 ## Установка на чистый ПК
 
 ```powershell
