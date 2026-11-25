@@ -1,0 +1,55 @@
+using TraceDiag.Models;
+using TraceDiag.Services.Diagnostics;
+using TraceDiag.Tests.TestData;
+
+namespace TraceDiag.Tests;
+
+public sealed class HopProberTests
+{
+    [Fact]
+    public async Task ProbeAsync_WithReplies_UpdatesExactStats()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var probe = new FakeProbeClient(call => TestFactories.Success(call, 10));
+        var progress = TestFactories.TextProgress();
+        var stopped = await HopProber.ProbeAsync(
+            TestFactories.Context(probe), hop, [hop], new ProbeSettings(64, 3),
+            progress, TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.False(stopped);
+        Assert.Equal(3, probe.Calls.Count);
+        Assert.Equal(3, hop.Received);
+        Assert.Equal(10, hop.AvgPingMs);
+        Assert.Equal(Strings.Status.Normal, hop.Status);
+    }
+
+    [Fact]
+    public async Task ProbeAsync_WithAllLoss_StopsAfterTenAttempts()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var probe = new FakeProbeClient(TestFactories.Timeout);
+        var logger = new FakeDiagnosticLogger();
+        var progress = TestFactories.TextProgress();
+        var stopped = await HopProber.ProbeAsync(
+            TestFactories.Context(probe, logger), hop, [hop], new ProbeSettings(128, 20),
+            progress, TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.True(stopped);
+        Assert.Equal(DiagnosticConstants.MaxLostPingsBeforeSkip, probe.Calls.Count);
+        Assert.Equal(0, hop.Received);
+        Assert.Equal(Strings.Status.NoAnswer, hop.Status);
+        Assert.NotEmpty(logger.Warnings);
+    }
+
+    [Fact]
+    public async Task ProbeAsync_WithPartialLoss_SetsLossStatus()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var index = 0;
+        var probe = new FakeProbeClient(call => ++index % 2 == 0 ? TestFactories.Timeout(call) : TestFactories.Success(call, 5));
+        await HopProber.ProbeAsync(
+            TestFactories.Context(probe), hop, [hop], new ProbeSettings(64, 4),
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Equal(4, hop.Sent);
+        Assert.Equal(2, hop.Received);
+        Assert.Contains("потеря пакетов", hop.Status);
+    }
+}
