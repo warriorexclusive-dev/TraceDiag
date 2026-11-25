@@ -86,13 +86,8 @@ installer/
 - Настройки: `%LOCALAPPDATA%\TraceDiag\settings.json`
 - Логи: `%LOCALAPPDATA%\TraceDiag\logs\tracediag-yyyyMMdd.log`
 
-## Организация кода
-
-- Каждый модуль меньше `300` строк.
-- Каждая функция меньше `15` строк (вместе с сигнатурой и скобками).
-- Повторяющиеся операции вынесены в статические хелперы (`TextFormatter`, `AppFiles`,
-  `IcmpPacketFactory`, `LogLineBuilder`, `HopStatusCalculator` и другие).
-
 ## Лицензия
 
 Apache License 2.0 — см. [LICENSE](LICENSE).
+
+Created by Enaleven 2026 with using Big Pickle
