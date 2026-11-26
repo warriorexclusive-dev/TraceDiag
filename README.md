@@ -24,6 +24,8 @@ WinForms-утилита для диагностики маршрута до уд
   - при смене размера счётчики узла и выборки RTT сохраняются и продолжают накапливаться.
 - Настраиваемое количество попыток на узел: `1–1000`, по умолчанию `100` — для отчёта
   провайдеру и замера процента потерь.
+- Чекбоксы размещены в левой части панели ввода одной строкой; правая колонка уже,
+  а сама панель занимает меньше высоты.
 - Чекбокс **«Режим постоянного мониторинга»**: размер пакета берётся один раз из поля,
   число попыток не используется. После обнаружения маршрута каждый узел опрашивается
   отдельным таймером раз в секунду. Узлы с диагнозом `ICMP отключён` не опрашиваются,
@@ -75,17 +77,17 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**132 юнит-теста** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
+**134 юнит-теста** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
 маппинг ICMP-ответов, конфигурацию, логирование, сохранение состояния интерфейса,
 диагностические модули и полный цикл `TraceDiagnosticsService` с тестовыми фейками
 ICMP, DNS и логера.
 
 ## Готовые сборки
 
-Последний выпуск: [Release 1.8.0 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.8.0)
+Последний выпуск: [Release 1.8.1 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.8.1)
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.0/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.0/TraceDiag-install.zip)
+- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.1/TraceDiag.exe)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.1/TraceDiag-install.zip)
 
 История изменений: [ReleaseNotes.md](ReleaseNotes.md).
 

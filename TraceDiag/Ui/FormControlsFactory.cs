@@ -75,7 +75,7 @@ internal static class FormControlsFactory
         Text = Strings.Ui.DynamicPacketSizeLabel,
         AutoSize = true,
         Checked = true,
-        Anchor = AnchorStyles.Top | AnchorStyles.Right,
+        Anchor = AnchorStyles.Top | AnchorStyles.Left,
         Dock = DockStyle.None,
         Margin = new Padding(8, 6, 0, 0)
     };
@@ -86,7 +86,7 @@ internal static class FormControlsFactory
         AutoSize = true,
         Checked = false,
         Dock = DockStyle.None,
-        Anchor = AnchorStyles.Top | AnchorStyles.Right
+        Anchor = AnchorStyles.Top | AnchorStyles.Left
     };
 
     private static CheckBox CreateDarkThemeCheckBox(bool darkTheme) => new()
@@ -94,7 +94,7 @@ internal static class FormControlsFactory
         Text = Strings.Ui.DarkThemeLabel,
         AutoSize = true,
         Checked = darkTheme,
-        Anchor = AnchorStyles.Top | AnchorStyles.Right,
+        Anchor = AnchorStyles.Top | AnchorStyles.Left,
         Dock = DockStyle.None,
         Margin = new Padding(8, 6, 0, 0)
     };

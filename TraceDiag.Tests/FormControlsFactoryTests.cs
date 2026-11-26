@@ -42,6 +42,26 @@ public sealed class FormControlsFactoryTests
         Assert.InRange(Math.Abs(label!.PointToScreen(Point.Empty).Y - controls.Attempts.PointToScreen(Point.Empty).Y), 0, 8);
     }
 
+    [Theory]
+    [InlineData(800, 600)]
+    [InlineData(2400, 900)]
+    public void Checkboxes_AreLeftOfRunButton(int width, int height)
+    {
+        using var form = new Form { ClientSize = new Size(width, height) };
+        var controls = FormControlsFactory.Create(12f);
+        using var root = controls.Root;
+        form.Controls.Add(root);
+        form.Show();
+        form.Hide();
+        var runX = controls.Run.PointToScreen(Point.Empty).X;
+        AssertLeftOfRun(controls.DynamicPacketSize, runX);
+        AssertLeftOfRun(controls.MonitoringMode, runX);
+        AssertLeftOfRun(controls.DarkTheme, runX);
+    }
+
+    private static void AssertLeftOfRun(Control control, int runX) =>
+        Assert.True(control.PointToScreen(Point.Empty).X < runX, $"{control.Text}: x={control.PointToScreen(Point.Empty).X}, runX={runX}");
+
     private static Label? FindLabel(Control parent, string text)
     {
         foreach (Control child in parent.Controls)
