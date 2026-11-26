@@ -81,6 +81,7 @@ internal static class Strings
         public const string DamagedLoss = "поврежден: потеря между узлами";
         public const string PreviousAlsoLoss = "потеря также на предыдущем узле";
         public const string LossNotConfirmed = "потеря не подтверждена";
+        public const string NoPreviousHop = "нет предыдущего узла для сравнения";
     }
 
     public static class LogLevel
@@ -175,6 +176,7 @@ internal static class Strings
         public const string DamagedStatusFormat = "  Status: хост поврежден, имеется потеря пакетов между {0} и {1}.";
         public const string PreviousLossStatus = "  Status: previous hop also shows loss; cannot isolate damage to the segment between previous and current hop.";
         public const string TransientLossStatus = "  Status: loss not reproduced on recheck; possible transient packet loss.";
+        public const string NoPreviousHopStatus = "  Status: no responding previous hop available for comparison.";
         public const string NoLossDetected = "Status: no packet loss detected on discovered hops.";
         public const string Summary = "Summary:";
         public const string SummaryRowFormat = "  hop {0,2} {1} - sent={2}, recv={3}, lost={4} ({5:F1}%)";

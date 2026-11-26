@@ -49,16 +49,16 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**78 юнит-тестов** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
+**84 юнит-теста** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
 маппинг ICMP-ответов, конфигурацию и логирование, диагностические модули и полный цикл
 `TraceDiagnosticsService` с тестовыми фейками ICMP, DNS и логера.
 
 ## Готовые сборки
 
-Последний выпуск: [Release 1.2.0 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.2.0)
+Последний выпуск: [Release 1.2.1 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.2.1)
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.2.0/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.2.0/TraceDiag-install.zip)
+- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.2.1/TraceDiag.exe)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.2.1/TraceDiag-install.zip)
 
 История изменений: [ReleaseNotes.md](ReleaseNotes.md).
 

@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Net;
 using TraceDiag.Models;
 
 namespace TraceDiag.Services.Diagnostics;
@@ -12,7 +11,7 @@ internal static class HopNameResolver
         foreach (var hop in hops)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (hop.Address.Equals(IPAddress.Any)) continue;
+            if (!NetworkAddressPolicy.IsProbeTarget(hop.Address)) continue;
             var sw = Stopwatch.StartNew();
             await ResolveOneAsync(context, hop, hops, sw, progress, stats, cancellationToken);
         }

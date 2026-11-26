@@ -68,8 +68,9 @@ internal static class LossAnalyzer
 
     private static async Task CompareWithPreviousAsync(DiagnosticContext context, IReadOnlyList<HopInfo> hops, int index, int verifyPacketSize, int attempts, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
-        var previous = hops[index - 1];
+        var previous = FindPreviousHop(hops, index);
         var hop = hops[index];
+        if (previous is null) { MarkNoPrevious(context, hops, hop, progress, stats); return; }
         DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.VerifyingPreviousFormat, previous.Ttl, DiagnosticText.Hop(previous)));
         var limit = Math.Min(attempts, DiagnosticConstants.VerifyAttemptLimit);
         var previousLoss = await LossMeasurement.MeasureAsync(context, previous, hops, verifyPacketSize, limit, progress, stats, cancellationToken);
@@ -77,6 +78,22 @@ internal static class LossAnalyzer
         DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.PreviousCheckFormat, previousLoss.Lost, previousLoss.Sent, previousLoss.Percent));
         DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.CurrentCheckFormat, currentLoss.Lost, currentLoss.Sent, currentLoss.Percent));
         ApplyComparison(context, hops, hop, previous, previousLoss, currentLoss, progress, stats);
+    }
+
+    private static HopInfo? FindPreviousHop(IReadOnlyList<HopInfo> hops, int index)
+    {
+        for (var i = index - 1; i >= 0; i--)
+        {
+            var candidate = hops[i];
+            if (candidate.Responded && NetworkAddressPolicy.IsProbeTarget(candidate.Address)) return candidate;
+        }
+        return null;
+    }
+
+    private static void MarkNoPrevious(DiagnosticContext context, IReadOnlyList<HopInfo> hops, HopInfo hop, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats)
+    {
+        SetStatus(hop, Strings.Status.NoPreviousHop, hops, stats);
+        DiagnosticReporter.Report(context, progress, Strings.Diag.NoPreviousHopStatus, isWarn: true);
     }
 
     private static void ApplyComparison(DiagnosticContext context, IReadOnlyList<HopInfo> hops, HopInfo hop, HopInfo previous, LossSample previousLoss, LossSample currentLoss, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats)

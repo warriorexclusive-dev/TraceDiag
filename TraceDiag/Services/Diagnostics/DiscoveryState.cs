@@ -31,7 +31,8 @@ internal sealed class DiscoveryState
 
     internal void MarkReached() => Reached = true;
 
-    private static bool IsSkipped(HopInfo hop) => hop.Address.Equals(IPAddress.Any);
+    private static bool IsSkipped(HopInfo hop) =>
+        hop.IsSkipped || !NetworkAddressPolicy.IsProbeTarget(hop.Address);
 
     private static bool IsResolved(HopInfo hop) => !IsSkipped(hop);
 

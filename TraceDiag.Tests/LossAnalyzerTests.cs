@@ -1,3 +1,4 @@
+using System.Net;
 using TraceDiag.Models;
 using TraceDiag.Services.Diagnostics;
 using TraceDiag.Tests.TestData;
@@ -65,6 +66,43 @@ public sealed class LossAnalyzerTests
         target.ApplyPing(true, 7);
         await AnalyzeAsync([previous, current, target], 3, TestFactories.TextProgress(), AlwaysSuccess());
         Assert.Equal(Strings.Status.LossNotConfirmed, current.Status);
+    }
+
+    [Fact]
+    public async Task AnalyzeAsync_WithSkippedPrevious_UsesLastRespondingHop()
+    {
+        var previous = TestFactories.Hop(1, 1);
+        previous.ApplyPing(true, 5);
+        var skipped = new HopInfo
+        {
+            Ttl = 2,
+            Address = IPAddress.Any,
+            Status = Strings.Status.NoAnswer,
+            IsSkipped = true
+        };
+        var current = HopWithLoss(3);
+        var target = TestFactories.Hop(4, 4);
+        target.ApplyPing(true, 7);
+        var probe = AlwaysSuccess();
+        await AnalyzeAsync([previous, skipped, current, target], 4, TestFactories.TextProgress(), probe);
+        Assert.DoesNotContain(IPAddress.Any, probe.Calls.Select(call => call.Address));
+    }
+
+    [Fact]
+    public async Task AnalyzeAsync_WithoutRespondingPrevious_MarksNoPreviousHop()
+    {
+        var skipped = new HopInfo
+        {
+            Ttl = 1,
+            Address = IPAddress.Any,
+            Status = Strings.Status.NoAnswer,
+            IsSkipped = true
+        };
+        var current = HopWithLoss(2);
+        var target = TestFactories.Hop(3, 3);
+        target.ApplyPing(true, 7);
+        await AnalyzeAsync([skipped, current, target], 3, TestFactories.TextProgress(), AlwaysSuccess());
+        Assert.Equal(Strings.Status.NoPreviousHop, current.Status);
     }
 
     private static HopInfo HopWithLoss(int address)

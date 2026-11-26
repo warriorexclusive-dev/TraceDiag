@@ -7,8 +7,12 @@ internal static class RunFlow
 {
     internal static async Task StartAsync(RunFlowContext context)
     {
-        if (!TryBegin(context, out var input)) return;
-        await RunWithCancellationAsync(context, input!);
+        try
+        {
+            if (!TryBegin(context, out var input)) return;
+            await RunWithCancellationAsync(context, input!);
+        }
+        finally { context.EndRun(); }
     }
 
     private static bool TryBegin(RunFlowContext context, out RunInput? input)
@@ -22,7 +26,6 @@ internal static class RunFlow
     {
         try { await ExecuteAsync(context, input, context.Token); }
         catch (Exception ex) { RunErrorPresenter.Present(ex, context.Status, context.AppendLine, context.Logger); }
-        finally { context.EndRun(); }
     }
 
     private static async Task ExecuteAsync(RunFlowContext context, RunInput input, CancellationToken token)

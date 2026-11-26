@@ -9,6 +9,7 @@ internal static class VerificationHop
         Ttl = source.Ttl,
         Address = source.Address,
         HostName = source.HostName,
-        Status = source.Status
+        Status = source.Status,
+        IsSkipped = source.IsSkipped
     };
 }

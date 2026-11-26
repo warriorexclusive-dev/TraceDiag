@@ -22,6 +22,7 @@ internal static class LossMeasurement
 {
     internal static async Task<LossSample> MeasureAsync(DiagnosticContext context, HopInfo hop, IReadOnlyList<HopInfo> allHops, int packetSize, int attempts, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
+        if (hop.IsSkipped || !NetworkAddressPolicy.IsProbeTarget(hop.Address)) return new LossSample(0, 0, 0);
         var count = Math.Max(1, attempts);
         var probe = VerificationHop.Create(hop);
         var before = PingCounters.Capture(probe);
