@@ -13,7 +13,8 @@ public sealed record HopStatSnapshot(
     long? MinPingMs,
     long? MaxPingMs,
     long? LastPingMs,
-    string Status)
+    string Status,
+    string Diagnosis)
 {
     public int Lost => Math.Max(0, Sent - Received);
 }

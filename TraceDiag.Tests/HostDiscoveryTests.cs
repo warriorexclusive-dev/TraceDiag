@@ -35,6 +35,7 @@ public sealed class HostDiscoveryTests
         Assert.Equal(DiagnosticConstants.MaxHops, result.SkippedTtls.Count);
         Assert.All(result.Hops, hop => Assert.Equal(Strings.Status.NoAnswer, hop.Status));
         Assert.All(result.Hops, hop => Assert.True(hop.IsSkipped));
+        Assert.All(result.Hops, hop => Assert.Equal(Strings.Diagnosis.IcmpDisabled, hop.Diagnosis));
         Assert.All(probe.Calls, call => Assert.True(call.DontFragment));
     }
 

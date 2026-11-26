@@ -21,6 +21,7 @@ public sealed class HopInfo
     public long TotalRttMs { get; private set; }
     public string Status { get; set; } = Strings.Status.Pending;
     public bool IsSkipped { get; set; }
+    public string Diagnosis { get; set; } = Strings.Diagnosis.None;
 
     /// <summary>Set after a lost ping; all later probes for this host are paced.</summary>
     public bool LossDelayEnabled { get; internal set; }

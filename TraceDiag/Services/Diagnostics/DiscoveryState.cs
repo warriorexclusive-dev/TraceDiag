@@ -42,6 +42,7 @@ internal sealed class DiscoveryState
         Address = IPAddress.Any,
         HostName = Strings.Ui.NoAnswer,
         Status = Strings.Status.NoAnswer,
-        IsSkipped = true
+        IsSkipped = true,
+        Diagnosis = Strings.Diagnosis.IcmpDisabled
     };
 }

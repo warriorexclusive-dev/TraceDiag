@@ -31,6 +31,8 @@ WinForms-утилита для диагностики маршрута до уд
   неудач проверка узла прекращается, а на следующих размерах пакета он пропускается.
 - Анализ потерь: сравнение соседних узлов, отделение разовых потерь от повреждённого сегмента.
 - Таблица статистики над логом на всю ширину окна; проблемные строки подсвечиваются.
+  Отдельный столбец «Диагноз» показывает: `ICMP отключён`, `Обрезка размера ICMP`,
+  `Антифлуд ICMP` или `—`, если признаков нет. Диагноз также пишется в лог.
 - Выбор размера шрифта лога, задержки при потере и крупная кнопка `Run`/`Stop`
   в правой панели: во время проверки кнопка останавливает запуск.
 - Полноэкранный режим: `F11` — включить/выключить, `Esc` — выйти.
@@ -56,16 +58,16 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**105 юнит-тестов** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
+**115 юнит-тестов** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
 маппинг ICMP-ответов, конфигурацию и логирование, диагностические модули и полный цикл
 `TraceDiagnosticsService` с тестовыми фейками ICMP, DNS и логера.
 
 ## Готовые сборки
 
-Последний выпуск: [Release 1.4.1 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.4.1)
+Последний выпуск: [Release 1.5.0 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.5.0)
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.4.1/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.4.1/TraceDiag-install.zip)
+- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.5.0/TraceDiag.exe)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.5.0/TraceDiag-install.zip)
 
 История изменений: [ReleaseNotes.md](ReleaseNotes.md).
 

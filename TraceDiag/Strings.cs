@@ -60,6 +60,7 @@ internal static class Strings
         public const string ColumnKeySent = "Sent";
         public const string ColumnKeyReceived = "Received";
         public const string ColumnKeyStatus = "Status";
+        public const string ColumnKeyDiagnosis = "Diagnosis";
 
         public const string ColumnHostName = "Имя узла";
         public const string ColumnIp = "IP";
@@ -70,6 +71,15 @@ internal static class Strings
         public const string ColumnSent = "Отправлено";
         public const string ColumnReceived = "Получено";
         public const string ColumnStatus = "Состояние";
+        public const string ColumnDiagnosis = "Диагноз";
+    }
+
+    public static class Diagnosis
+    {
+        public const string None = "—";
+        public const string IcmpDisabled = "ICMP отключён";
+        public const string PacketSizeLimit = "Обрезка размера ICMP";
+        public const string AntiFlood = "Антифлуд ICMP";
     }
 
     public static class Status
@@ -168,6 +178,7 @@ internal static class Strings
         public const string StopWarningAllFormat = "hop {0} ({1}) size={2}: 100% loss ({3}/{3}). Possible ICMP echo ban or packet size restriction; further checks for this node are skipped.";
         public const string ConsoleWarningFormat = "  ! {0}";
         public const string HopSummaryFormat = "  hop {0,2} {1}{2}: size={3}, sent={4}, recv={5}, lost={6} ({7:F0}%), avg={8}";
+        public const string DiagnosisFormat = "  hop {0,2} {1}: диагноз — {2}";
 
         public const string RemoteNotResponse = "Status: remote host not response";
         public const string RemoteResponds = "Status: remote host responds";

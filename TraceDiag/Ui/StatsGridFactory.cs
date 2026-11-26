@@ -35,6 +35,7 @@ internal static class StatsGridFactory
         grid.Columns.Add(Strings.Ui.ColumnKeySent, Strings.Ui.ColumnSent);
         grid.Columns.Add(Strings.Ui.ColumnKeyReceived, Strings.Ui.ColumnReceived);
         grid.Columns.Add(Strings.Ui.ColumnKeyStatus, Strings.Ui.ColumnStatus);
+        grid.Columns.Add(Strings.Ui.ColumnKeyDiagnosis, Strings.Ui.ColumnDiagnosis);
     }
 
     private static void SetWeights(DataGridView grid)
@@ -48,5 +49,6 @@ internal static class StatsGridFactory
         grid.Columns[Strings.Ui.ColumnKeySent]!.FillWeight = 70;
         grid.Columns[Strings.Ui.ColumnKeyReceived]!.FillWeight = 70;
         grid.Columns[Strings.Ui.ColumnKeyStatus]!.FillWeight = 140;
+        grid.Columns[Strings.Ui.ColumnKeyDiagnosis]!.FillWeight = 150;
     }
 }

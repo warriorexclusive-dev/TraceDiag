@@ -65,10 +65,12 @@ public sealed class DiagnosticTextAndReporterTests
         var progress = TestFactories.StatsProgress();
         var hop = TestFactories.Hop(1, 1);
         hop.ApplyPing(true, 10);
+        hop.Diagnosis = Strings.Diagnosis.AntiFlood;
         DiagnosticReporter.ReportStats(progress, [hop]);
         var snapshot = Assert.Single(progress.Values[0]);
         Assert.Equal(10, snapshot.AvgPingMs);
         Assert.Equal(1, snapshot.Received);
+        Assert.Equal(Strings.Diagnosis.AntiFlood, snapshot.Diagnosis);
     }
 
     private static DiagnosticContext CreateContext(FakeDiagnosticLogger? logger) =>

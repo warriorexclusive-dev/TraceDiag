@@ -15,6 +15,7 @@ public sealed class DiagnosticBatchTests
             TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
         Assert.Equal([64, 128, 256], probe.Calls.Select(c => c.BufferSize).Distinct());
         Assert.Equal(3, hop.Sent);
+        Assert.Equal(Strings.Diagnosis.None, hop.Diagnosis);
     }
 
     [Fact]
@@ -61,7 +62,20 @@ public sealed class DiagnosticBatchTests
             progress, TestFactories.StatsProgress(), CancellationToken.None);
         Assert.DoesNotContain(probe.Calls, call => call.BufferSize == 256);
         Assert.Equal(Strings.Status.NoAnswer, hop.Status);
+        Assert.Equal(Strings.Diagnosis.PacketSizeLimit, hop.Diagnosis);
         Assert.Contains(progress.Values, value => value.Contains("пропуск"));
+    }
+
+    [Fact]
+    public async Task ProbeAllAsync_WithPartialLossMarksAntiFlood()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var index = 0;
+        var probe = new FakeProbeClient(call => ++index == 1 ? TestFactories.Timeout(call) : TestFactories.Success(call));
+        await DiagnosticBatch.ProbeAllAsync(
+            TestFactories.Context(probe), [64], [hop], new HashSet<int>(), 2, 0,
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Equal(Strings.Diagnosis.AntiFlood, hop.Diagnosis);
     }
 
     [Fact]
@@ -77,5 +91,6 @@ public sealed class DiagnosticBatchTests
         Assert.Empty(probe.Calls);
         Assert.Equal(0, hop.Sent);
         Assert.Equal(Strings.Status.NoAnswer, hop.Status);
+        Assert.Equal(Strings.Diagnosis.IcmpDisabled, hop.Diagnosis);
     }
 }

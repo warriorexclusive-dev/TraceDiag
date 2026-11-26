@@ -17,6 +17,7 @@ internal static class StatsGridRows
             .Concat(PingCells(stat))
             .Concat(CounterCells(stat))
             .Append(stat.Status)
+            .Append(stat.Diagnosis)
             .ToArray();
     }
 
@@ -55,6 +56,8 @@ internal static class StatsGridRows
     {
         if (stat.Sent > 0 && (stat.Lost > 0 || !stat.LastPingMs.HasValue))
             row.DefaultCellStyle.ForeColor = Color.Firebrick;
+        if (stat.Diagnosis != Strings.Diagnosis.None)
+            row.Cells[Strings.Ui.ColumnKeyDiagnosis].Style.ForeColor = Color.Firebrick;
     }
 
     private static string FormatPing(long? value, int sent)
