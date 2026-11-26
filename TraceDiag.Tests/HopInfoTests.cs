@@ -43,19 +43,6 @@ public sealed class HopInfoTests
     }
 
     [Fact]
-    public void ResetStats_ClearsSamplesAndCounters()
-    {
-        var hop = TestFactories.Hop(1, 1);
-        hop.ApplyPing(true, 15);
-        hop.ResetStats();
-        Assert.Equal(0, hop.Sent);
-        Assert.Equal(0, hop.Received);
-        Assert.Null(hop.MinPingMs);
-        Assert.Null(hop.LastPingMs);
-        Assert.Equal(Strings.Status.Pending, hop.Status);
-    }
-
-    [Fact]
     public void ApplyPing_AfterLoss_KeepsDelayEnabledForWholeHost()
     {
         var hop = TestFactories.Hop(1, 1);
@@ -64,7 +51,6 @@ public sealed class HopInfoTests
         hop.ApplyPing(false, 0);
         Assert.True(hop.LossDelayEnabled);
         hop.ApplyPing(true, 10);
-        hop.ResetStats();
         Assert.True(hop.LossDelayEnabled);
     }
 

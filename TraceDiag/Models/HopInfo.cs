@@ -67,17 +67,6 @@ public sealed class HopInfo
         LossDelayEnabled = true;
     }
 
-    /// <summary>Resets per-size statistics so the table shows only the last packet size results.</summary>
-    public void ResetStats()
-    {
-        Sent = 0;
-        Received = 0;
-        TotalRttMs = 0;
-        _rttSamples.Clear();
-        LastPingMs = null;
-        Status = Strings.Status.Pending;
-    }
-
     private void ApplySuccess(long roundtripTimeMs)
     {
         var rtt = Math.Max(0, roundtripTimeMs);

@@ -20,7 +20,8 @@ WinForms-утилита для диагностики маршрута до уд
 - Режим размера пакета:
   - галочка **«Динамический размер пакета»** включена — `64 → 128 → … → максимум`;
   - галочка выключена — только максимальный размер из поля ввода (`64–65534` байт).
-  - все размеры сначала проверяются на текущем узле, затем очередь переходит к следующему.
+  - все размеры сначала проверяются на текущем узле, затем очередь переходит к следующему;
+  - при смене размера счётчики узла и выборки RTT сохраняются и продолжают накапливаться.
 - Настраиваемое количество попыток на узел: `1–1000`, по умолчанию `100` — удобно для отчёта
   провайдеру и замера процента потерь.
 - Точная статистика по каждому узлу: средний, минимальный, максимальный и последний пинг,
@@ -61,10 +62,10 @@ dotnet test TraceDiag.slnx -c Release
 
 ## Готовые сборки
 
-Последний выпуск: [Release 1.4.0 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.4.0)
+Последний выпуск: [Release 1.4.1 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.4.1)
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.4.0/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.4.0/TraceDiag-install.zip)
+- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.4.1/TraceDiag.exe)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.4.1/TraceDiag-install.zip)
 
 История изменений: [ReleaseNotes.md](ReleaseNotes.md).
 

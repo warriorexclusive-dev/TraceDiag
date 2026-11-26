@@ -14,7 +14,21 @@ public sealed class DiagnosticBatchTests
             TestFactories.Context(probe), [64, 128, 256], [hop], new HashSet<int>(), 1, 0,
             TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
         Assert.Equal([64, 128, 256], probe.Calls.Select(c => c.BufferSize).Distinct());
-        Assert.Equal(1, hop.Sent);
+        Assert.Equal(3, hop.Sent);
+    }
+
+    [Fact]
+    public async Task ProbeAllAsync_KeepsCountersAcrossPacketSizes()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var probe = new FakeProbeClient(call => TestFactories.Success(call, 8));
+        await DiagnosticBatch.ProbeAllAsync(
+            TestFactories.Context(probe), [64, 128], [hop], new HashSet<int>(), 2, 0,
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Equal(4, hop.Sent);
+        Assert.Equal(4, hop.Received);
+        Assert.Equal(8, hop.AvgPingMs);
+        Assert.Equal(4, hop.RttSamples.Count);
     }
 
     [Fact]

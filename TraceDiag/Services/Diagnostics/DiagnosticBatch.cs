@@ -28,8 +28,6 @@ internal static class DiagnosticBatch
     private static async Task ProbeHopAsync(DiagnosticContext context, HashSet<IPAddress> nonResponding, IReadOnlySet<int> skippedTtls, HopInfo hop, IReadOnlyList<HopInfo> hops, int size, int attempts, int lossDelayMs, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         if (hop.IsSkipped || skippedTtls.Contains(hop.Ttl) || nonResponding.Contains(hop.Address)) { ReportSkipped(context, hop, progress, stats, hops); return; }
-        hop.ResetStats();
-        DiagnosticReporter.ReportStats(stats, hops);
         var stopped = await HopProber.ProbeAsync(context, hop, hops, new ProbeSettings(size, attempts, lossDelayMs), progress, stats, cancellationToken);
         if (stopped) nonResponding.Add(hop.Address);
     }
