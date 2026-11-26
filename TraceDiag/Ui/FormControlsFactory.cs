@@ -7,18 +7,18 @@ internal static class FormControlsFactory
         var host = CreateHostTextBox();
         var packet = CreatePacketInput();
         var attempts = CreateAttemptsInput();
-        var delay = CreateReplyDelayInput();
+        var lossDelay = CreateLossDelayInput();
         var font = CreateFontInput(fontSize);
         var dynamicPacketSize = CreateDynamicPacketSizeCheckBox();
         var darkThemeCheckBox = CreateDarkThemeCheckBox(darkTheme);
         var run = CreateRunButton();
         var (stats, output, status) = CreateFooter(fontSize);
-        var input = CreateInput(host, packet, attempts, delay, font, dynamicPacketSize, darkThemeCheckBox, run);
-        return new MainControls(LayoutFactory.Create(input, stats, output, status), host, packet, attempts, delay, font, dynamicPacketSize, darkThemeCheckBox, stats, output, run, status);
+        var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize, darkThemeCheckBox, run);
+        return new MainControls(LayoutFactory.Create(input, stats, output, status), host, packet, attempts, lossDelay, font, dynamicPacketSize, darkThemeCheckBox, stats, output, run, status);
     }
 
-    private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown delay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run) =>
-        InputPanelFactory.Create(host, packet, attempts, delay, font, dynamicPacketSize, darkTheme, run);
+    private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run) =>
+        InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize, darkTheme, run);
 
     private static (DataGridView Stats, TextBox Output, Label Status) CreateFooter(float fontSize) =>
         (StatsGridFactory.Create(), CreateOutputTextBox(fontSize), CreateStatusLabel());
@@ -46,13 +46,13 @@ internal static class FormControlsFactory
         Value = UiDefaults.DefaultAttempts
     };
 
-    private static NumericUpDown CreateReplyDelayInput() => new()
+    private static NumericUpDown CreateLossDelayInput() => new()
     {
         Width = 80,
         Minimum = 0,
-        Maximum = UiDefaults.MaxDelayMs,
+        Maximum = UiDefaults.MaxLossDelayMs,
         Increment = 100,
-        Value = UiDefaults.DefaultDelayMs,
+        Value = UiDefaults.DefaultLossDelayMs,
         Anchor = AnchorStyles.Right
     };
 

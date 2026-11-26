@@ -20,7 +20,7 @@ internal sealed record PingCounters(int Sent, int Received)
 
 internal static class LossMeasurement
 {
-    internal static async Task<LossSample> MeasureAsync(DiagnosticContext context, HopInfo hop, IReadOnlyList<HopInfo> allHops, int packetSize, int attempts, int delayMs, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    internal static async Task<LossSample> MeasureAsync(DiagnosticContext context, HopInfo hop, IReadOnlyList<HopInfo> allHops, int packetSize, int attempts, int lossDelayMs, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         if (hop.IsSkipped || !NetworkAddressPolicy.IsProbeTarget(hop.Address)) return new LossSample(0, 0, 0);
         var count = Math.Max(1, attempts);
@@ -29,19 +29,25 @@ internal static class LossMeasurement
         for (var i = 0; i < count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var result = await SendVerifyAsync(context, probe, packetSize, i, count, delayMs, progress, cancellationToken);
-            probe.ApplyPing(result.Success, result.RttMs);
-            DiagnosticReporter.ReportStats(stats, allHops);
+            await ApplyAttemptAsync(context, probe, allHops, packetSize, i, count, lossDelayMs, progress, stats, cancellationToken);
         }
         return before.Measure(probe);
     }
 
-    private static async Task<(bool Success, long RttMs)> SendVerifyAsync(DiagnosticContext context, HopInfo hop, int packetSize, int index, int count, int delayMs, IProgress<string> progress, CancellationToken cancellationToken)
+    private static async Task ApplyAttemptAsync(DiagnosticContext context, HopInfo probe, IReadOnlyList<HopInfo> allHops, int packetSize, int index, int count, int lossDelayMs, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    {
+        var result = await SendVerifyAsync(context, probe, packetSize, index, count, progress, cancellationToken);
+        probe.ApplyPing(result.Success, result.RttMs);
+        await ProbeDelay.ApplyAsync(probe.LossDelayEnabled, lossDelayMs, cancellationToken);
+        DiagnosticReporter.ReportStats(stats, allHops);
+    }
+
+    private static async Task<(bool Success, long RttMs)> SendVerifyAsync(DiagnosticContext context, HopInfo hop, int packetSize, int index, int count, IProgress<string> progress, CancellationToken cancellationToken)
     {
         try
         {
             var contextText = TextFormatter.Fmt(Strings.Diag.VerifyContextFormat, hop.Address, packetSize, index + 1, count);
-            var request = new ProbeRequest(hop.Address, DiagnosticConstants.DirectProbeTtl, packetSize, DiagnosticConstants.ProbeTimeoutMs, contextText, DelayMs: delayMs);
+            var request = new ProbeRequest(hop.Address, DiagnosticConstants.DirectProbeTtl, packetSize, DiagnosticConstants.ProbeTimeoutMs, contextText);
             var result = await ProbeExecutor.SendAsync(context, request, progress, cancellationToken);
             return (result.Outcome == ProbeOutcome.Success, result.RoundtripTimeMs);
         }

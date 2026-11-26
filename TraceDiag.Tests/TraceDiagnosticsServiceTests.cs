@@ -30,12 +30,12 @@ public sealed class TraceDiagnosticsServiceTests
     }
 
     [Fact]
-    public async Task RunAsync_ReportsConfiguredReplyDelay()
+    public async Task RunAsync_ReportsConfiguredLossDelay()
     {
         var progress = TestFactories.TextProgress();
         var input = new DiagnosticInput(TestFactories.Address(2), "target", 256, 1, 20, false);
         await CreateService(new FakeProbeClient(Reply)).RunAsync(input, progress, TestFactories.StatsProgress(), CancellationToken.None);
-        Assert.Contains(progress.Values, value => value.Contains("ICMP reply delay: 20 ms"));
+        Assert.Contains(progress.Values, value => value.Contains("ICMP loss delay: 20 ms"));
     }
 
     [Fact]

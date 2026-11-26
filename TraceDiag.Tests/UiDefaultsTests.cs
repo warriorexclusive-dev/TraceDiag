@@ -11,8 +11,8 @@ public sealed class UiDefaultsTests
     }
 
     [Fact]
-    public void DefaultDelayMs_Equals1000AfterIcmpReply()
+    public void DefaultLossDelayMs_Equals1000AfterPacketLoss()
     {
-        Assert.Equal(1000, UiDefaults.DefaultDelayMs);
+        Assert.Equal(1000, UiDefaults.DefaultLossDelayMs);
     }
 }

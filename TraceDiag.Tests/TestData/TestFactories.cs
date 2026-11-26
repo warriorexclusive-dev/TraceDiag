@@ -32,12 +32,11 @@ internal static class TestFactories
 
     internal static DiscoverySettings Discovery(
         int roundLimit = 1,
-        int intervalMs = 0,
         int packetSize = 64,
         int timeoutMs = 100,
         bool dontFragment = true,
-        int delayMs = 0) =>
-        new(packetSize, timeoutMs, intervalMs, roundLimit, dontFragment, delayMs);
+        int lossDelayMs = 0) =>
+        new(packetSize, timeoutMs, roundLimit, dontFragment, lossDelayMs);
 
     internal static CollectingProgress<string> TextProgress() => new();
 

@@ -55,6 +55,26 @@ public sealed class HostDiscoveryTests
     }
 
     [Fact]
+    public async Task DiscoverAsync_WithReplies_DoesNotApplyLossDelay()
+    {
+        var probe = new FakeProbeClient(call => TestFactories.Success(call));
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        await DiscoverAsync(probe, TestFactories.Discovery(lossDelayMs: 500));
+        Assert.True(stopwatch.ElapsedMilliseconds < 200);
+    }
+
+    [Fact]
+    public async Task DiscoverAsync_WithLostPacket_AppliesLossDelay()
+    {
+        var probe = new FakeProbeClient(call => call.Ttl == 1
+            ? TestFactories.Timeout(call)
+            : TestFactories.Success(call));
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        await DiscoverAsync(probe, TestFactories.Discovery(lossDelayMs: 60));
+        Assert.True(stopwatch.ElapsedMilliseconds >= 45);
+    }
+
+    [Fact]
     public async Task DiscoverAsync_UsesDiscoveryDefaults()
     {
         var probe = new FakeProbeClient(call => TestFactories.Success(call));

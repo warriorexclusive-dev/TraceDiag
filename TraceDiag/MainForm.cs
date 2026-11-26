@@ -17,7 +17,7 @@ public sealed class MainForm : Form
     private TextBox _remoteHostTextBox = null!;
     private NumericUpDown _maxPacketSizeInput = null!;
     private NumericUpDown _attemptsInput = null!;
-    private NumericUpDown _replyDelayInput = null!;
+    private NumericUpDown _lossDelayInput = null!;
     private NumericUpDown _fontSizeInput = null!;
     private CheckBox _dynamicPacketSizeInput = null!;
     private CheckBox _darkThemeInput = null!;
@@ -54,7 +54,7 @@ public sealed class MainForm : Form
         _remoteHostTextBox = controls.RemoteHost;
         _maxPacketSizeInput = controls.MaxPacketSize;
         _attemptsInput = controls.Attempts;
-        _replyDelayInput = controls.ReplyDelay;
+        _lossDelayInput = controls.LossDelay;
         _fontSizeInput = controls.FontSize;
         _dynamicPacketSizeInput = controls.DynamicPacketSize;
         _darkThemeInput = controls.DarkTheme;
@@ -131,9 +131,18 @@ public sealed class MainForm : Form
 
     private async void RunButtonOnClick(object? sender, EventArgs e)
     {
-        if (_runCts is not null) return;
+        if (RequestStop()) return;
         _runCts = new CancellationTokenSource();
         await RunFlow.StartAsync(new RunFlowContext(this, _runCts.Token));
+    }
+
+    private bool RequestStop()
+    {
+        if (_runCts is null) return false;
+        _runCts.Cancel();
+        _statusLabel.Text = Strings.Ui.Stopping;
+        RunButtonState.Stopping(_runButton);
+        return true;
     }
 
     internal RunInput? ReadRunInput()
@@ -148,7 +157,7 @@ public sealed class MainForm : Form
 
     private RunInput CreateRunInput(string host) =>
         new(host, (int)_maxPacketSizeInput.Value, (int)_attemptsInput.Value,
-            (int)_replyDelayInput.Value, _dynamicPacketSizeInput.Checked);
+            (int)_lossDelayInput.Value, _dynamicPacketSizeInput.Checked);
 
     internal void BeginRun()
     {
@@ -156,7 +165,7 @@ public sealed class MainForm : Form
         ClearStats();
         AppendOutputLine(TextFormatter.Fmt(Strings.App.ConsoleLogFileFormat, TextFormatter.Now(), _logger.LogFilePath));
         _statusLabel.Text = Strings.Ui.ResolvingHost;
-        _runButton.Enabled = false;
+        RunButtonState.Begin(_runButton);
         SetInputsEnabled(false);
     }
 
@@ -170,7 +179,7 @@ public sealed class MainForm : Form
     {
         _runCts?.Dispose();
         _runCts = null;
-        _runButton.Enabled = true;
+        RunButtonState.End(_runButton);
         SetInputsEnabled(true);
     }
 
@@ -179,7 +188,7 @@ public sealed class MainForm : Form
         _remoteHostTextBox.Enabled = enabled;
         _maxPacketSizeInput.Enabled = enabled;
         _attemptsInput.Enabled = enabled;
-        _replyDelayInput.Enabled = enabled;
+        _lossDelayInput.Enabled = enabled;
         _dynamicPacketSizeInput.Enabled = enabled;
     }
 

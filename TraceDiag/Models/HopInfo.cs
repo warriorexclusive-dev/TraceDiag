@@ -22,6 +22,9 @@ public sealed class HopInfo
     public string Status { get; set; } = Strings.Status.Pending;
     public bool IsSkipped { get; set; }
 
+    /// <summary>Set after a lost ping; all later probes for this host are paced.</summary>
+    public bool LossDelayEnabled { get; internal set; }
+
     /// <summary>Every successful RTT measurement, in milliseconds.</summary>
     public IReadOnlyList<long> RttSamples => _rttSamples;
 
@@ -54,8 +57,14 @@ public sealed class HopInfo
     {
         Sent++;
         if (success) ApplySuccess(roundtripTimeMs);
-        else LastPingMs = null;
+        else ApplyLoss();
         RefreshStatus();
+    }
+
+    private void ApplyLoss()
+    {
+        LastPingMs = null;
+        LossDelayEnabled = true;
     }
 
     /// <summary>Resets per-size statistics so the table shows only the last packet size results.</summary>

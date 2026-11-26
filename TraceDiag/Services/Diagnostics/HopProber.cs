@@ -23,6 +23,7 @@ internal static class HopProber
     {
         var result = await SendAttemptAsync(context, hop, settings, index, progress, cancellationToken);
         hop.ApplyPing(result.Success, result.RttMs);
+        await ProbeDelay.ApplyAsync(hop.LossDelayEnabled, settings.LossDelayMs, cancellationToken);
         state.ConsecutiveLoss = result.Success ? 0 : state.ConsecutiveLoss + 1;
         DiagnosticReporter.ReportStats(stats, allHops);
         ReportProgress(context, hop, state, index, settings.Attempts, progress);
@@ -33,7 +34,7 @@ internal static class HopProber
     {
         try
         {
-            var request = new ProbeRequest(hop.Address, DiagnosticConstants.DirectProbeTtl, settings.PacketSize, DiagnosticConstants.ProbeTimeoutMs, CreateContext(hop, settings, index), DelayMs: settings.DelayMs);
+            var request = new ProbeRequest(hop.Address, DiagnosticConstants.DirectProbeTtl, settings.PacketSize, DiagnosticConstants.ProbeTimeoutMs, CreateContext(hop, settings, index));
             var result = await ProbeExecutor.SendAsync(context, request, progress, cancellationToken);
             return (result.Outcome == ProbeOutcome.Success, result.RoundtripTimeMs);
         }

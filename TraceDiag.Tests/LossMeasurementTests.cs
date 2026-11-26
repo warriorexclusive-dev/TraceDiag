@@ -34,6 +34,27 @@ public sealed class LossMeasurementTests
     }
 
     [Fact]
+    public async Task MeasureAsync_AfterLoss_UsesDelayForVerificationHop()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var index = 0;
+        var probe = new FakeProbeClient(call => ++index == 1 ? TestFactories.Timeout(call) : TestFactories.Success(call));
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        await LossMeasurement.MeasureAsync(
+            TestFactories.Context(probe), hop, [hop], 64, 2, 60,
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.True(stopwatch.ElapsedMilliseconds >= 45);
+    }
+
+    [Fact]
+    public void VerificationHop_CopiesLossDelayFlag()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        hop.ApplyPing(false, 0);
+        Assert.True(VerificationHop.Create(hop).LossDelayEnabled);
+    }
+
+    [Fact]
     public async Task MeasureAsync_DoesNotChangeMainHopCounters()
     {
         var hop = TestFactories.Hop(1, 1);

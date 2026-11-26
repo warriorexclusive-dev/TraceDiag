@@ -10,6 +10,7 @@ internal static class VerificationHop
         Address = source.Address,
         HostName = source.HostName,
         Status = source.Status,
-        IsSkipped = source.IsSkipped
+        IsSkipped = source.IsSkipped,
+        LossDelayEnabled = source.LossDelayEnabled
     };
 }

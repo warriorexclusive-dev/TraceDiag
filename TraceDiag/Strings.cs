@@ -27,11 +27,13 @@ internal static class Strings
         public const string RemoteHostLabel = "Remote host (IP or domain):";
         public const string PacketSizeLabel = "Packet max size (64-65534):";
         public const string AttemptsLabel = "Количество попыток (1-1000):";
-        public const string ReplyDelayLabel = "Задержка ICMP, мс:";
+        public const string LossDelayLabel = "Задержка при потере, мс:";
         public const string FontSizeLabel = "Размер шрифта:";
         public const string DynamicPacketSizeLabel = "Динамический размер пакета";
         public const string DarkThemeLabel = "Тёмная тема";
         public const string RunButton = "Run";
+        public const string StopButton = "Stop";
+        public const string Stopping = "Stopping...";
         public const string Ready = "Ready";
         public const string ResolvingHost = "Resolving host...";
         public const string Running = "Running...";
@@ -97,7 +99,7 @@ internal static class Strings
         public const string ApplicationStarted = "Application started.";
         public const string SettingsSavedFormat = "Settings saved: OutputFontSize={0:0.0}";
         public const string ThemeChangedFormat = "Settings saved: Theme={0}";
-        public const string RunRequestedFormat = "Run requested: host='{0}', maxPacketSize={1}, attempts={2}, dynamic={3}, delayMs={4}";
+        public const string RunRequestedFormat = "Run requested: host='{0}', maxPacketSize={1}, attempts={2}, dynamic={3}, lossDelayMs={4}";
         public const string RunCompleted = "Run completed.";
         public const string RunCancelled = "Run cancelled by user.";
         public const string DnsNetworkError = "DNS/Network error during run.";
@@ -127,7 +129,7 @@ internal static class Strings
         public const string TargetFormat = "Target: {0} ({1})";
         public const string MaxPacketSizeFormat = "Max packet size: {0} bytes";
         public const string AttemptsFormat = "Attempts: {0}";
-        public const string ReplyDelayFormat = "ICMP reply delay: {0} ms";
+        public const string LossDelayFormat = "ICMP loss delay: {0} ms";
         public const string DynamicEnabled = "Dynamic packet size: enabled (from 64 bytes)";
         public const string DynamicDisabled = "Dynamic packet size: disabled (fixed max size)";
         public const string PacketSizesFormat = "Packet sizes (x2): {0}";

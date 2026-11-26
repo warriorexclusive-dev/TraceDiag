@@ -6,12 +6,7 @@ internal static class ProbeExecutor
 {
     internal static async Task<ProbeResult> SendAsync(DiagnosticContext context, ProbeRequest request, IProgress<string> progress, CancellationToken cancellationToken)
     {
-        try
-        {
-            var result = await ExecuteAsync(context, request, progress, cancellationToken).ConfigureAwait(false);
-            await ProbeDelay.AfterReplyAsync(result, request.DelayMs, cancellationToken);
-            return result;
-        }
+        try { return await ExecuteAsync(context, request, progress, cancellationToken).ConfigureAwait(false); }
         catch (OperationCanceledException) { throw; }
         catch (Exception ex) { return HandleFailure(context, request, progress, ex); }
     }

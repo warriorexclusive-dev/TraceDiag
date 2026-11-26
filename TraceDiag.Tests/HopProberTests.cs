@@ -23,6 +23,32 @@ public sealed class HopProberTests
     }
 
     [Fact]
+    public async Task ProbeAsync_WithReplies_DoesNotApplyLossDelay()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var probe = new FakeProbeClient(call => TestFactories.Success(call));
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        await HopProber.ProbeAsync(
+            TestFactories.Context(probe), hop, [hop], new ProbeSettings(64, 2, 500),
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.True(stopwatch.ElapsedMilliseconds < 200);
+    }
+
+    [Fact]
+    public async Task ProbeAsync_AfterLoss_DelaysLaterAttemptsForSameHop()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var index = 0;
+        var probe = new FakeProbeClient(call => ++index == 1 ? TestFactories.Timeout(call) : TestFactories.Success(call));
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        await HopProber.ProbeAsync(
+            TestFactories.Context(probe), hop, [hop], new ProbeSettings(64, 2, 60),
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.True(stopwatch.ElapsedMilliseconds >= 45);
+        Assert.True(hop.LossDelayEnabled);
+    }
+
+    [Fact]
     public async Task ProbeAsync_WithAllLoss_StopsAfterTenAttempts()
     {
         var hop = TestFactories.Hop(1, 1);

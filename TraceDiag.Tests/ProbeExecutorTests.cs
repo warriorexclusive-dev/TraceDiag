@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Net;
 using TraceDiag.Models;
 using TraceDiag.Services.Abstractions;
@@ -14,8 +13,7 @@ public sealed class ProbeExecutorTests
     {
         var probe = new FakeProbeClient(call => TestFactories.Success(call));
         var context = TestFactories.Context(probe);
-        var request = CreateRequest();
-        var result = await ProbeExecutor.SendAsync(context, request, TestFactories.TextProgress(), CancellationToken.None);
+        var result = await ProbeExecutor.SendAsync(context, CreateRequest(), TestFactories.TextProgress(), CancellationToken.None);
         Assert.Equal(ProbeOutcome.Success, result.Outcome);
         Assert.Single(probe.Calls);
     }
@@ -44,33 +42,12 @@ public sealed class ProbeExecutorTests
     public async Task SendAsync_WhenClientHangs_ReturnsTimedOut()
     {
         var context = new DiagnosticContext(new HangingProbeClient(), new FakeDnsResolver(_ => null), null);
-        var request = new ProbeRequest(TestFactories.Address(1), 64, 64, 1, "hang");
-        var result = await ProbeExecutor.SendAsync(context, request, TestFactories.TextProgress(), CancellationToken.None);
+        var result = await ProbeExecutor.SendAsync(context, CreateRequest(), TestFactories.TextProgress(), CancellationToken.None);
         Assert.Equal(ProbeOutcome.TimedOut, result.Outcome);
     }
 
-    [Fact]
-    public async Task SendAsync_WithReplyDelay_WaitsAfterReply()
-    {
-        var probe = new FakeProbeClient(call => TestFactories.Success(call));
-        var context = TestFactories.Context(probe);
-        var stopwatch = Stopwatch.StartNew();
-        await ProbeExecutor.SendAsync(context, CreateRequest(delayMs: 60), TestFactories.TextProgress(), CancellationToken.None);
-        Assert.True(stopwatch.ElapsedMilliseconds >= 45);
-    }
-
-    [Fact]
-    public async Task SendAsync_WithTimeout_DoesNotApplyReplyDelay()
-    {
-        var probe = new FakeProbeClient(TestFactories.Timeout);
-        var context = TestFactories.Context(probe);
-        var stopwatch = Stopwatch.StartNew();
-        await ProbeExecutor.SendAsync(context, CreateRequest(delayMs: 500), TestFactories.TextProgress(), CancellationToken.None);
-        Assert.True(stopwatch.ElapsedMilliseconds < 200);
-    }
-
-    private static ProbeRequest CreateRequest(int delayMs = 0) =>
-        new(TestFactories.Address(1), 64, 128, 100, "test", DelayMs: delayMs);
+    private static ProbeRequest CreateRequest() =>
+        new(TestFactories.Address(1), 64, 128, 1, "test");
 
     private sealed class HangingProbeClient : IIcmpProbeClient
     {

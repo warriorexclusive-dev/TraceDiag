@@ -2,11 +2,11 @@ namespace TraceDiag.Ui;
 
 internal static class InputPanelFactory
 {
-    internal static TableLayoutPanel Create(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown delay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run)
+    internal static TableLayoutPanel Create(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run)
     {
         var layout = CreateLayout();
         layout.Controls.Add(CreateLeftFrame(host, packet, attempts), 0, 0);
-        layout.Controls.Add(CreateRightFrame(delay, font, dynamicPacketSize, darkTheme, run), 1, 0);
+        layout.Controls.Add(CreateRightFrame(lossDelay, font, dynamicPacketSize, darkTheme, run), 1, 0);
         return layout;
     }
 
@@ -55,12 +55,12 @@ internal static class InputPanelFactory
         frame.Controls.Add(attempts, 1, 2);
     }
 
-    private static TableLayoutPanel CreateRightFrame(NumericUpDown delay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run)
+    private static TableLayoutPanel CreateRightFrame(NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run)
     {
         var frame = CreateFramePanel();
         ConfigureRightFrame(frame);
         frame.Controls.Add(CreateLabelledNumeric(Strings.Ui.FontSizeLabel, font), 0, 0);
-        frame.Controls.Add(CreateLabelledNumeric(Strings.Ui.ReplyDelayLabel, delay), 0, 1);
+        frame.Controls.Add(CreateLabelledNumeric(Strings.Ui.LossDelayLabel, lossDelay), 0, 1);
         frame.Controls.Add(dynamicPacketSize, 0, 2);
         frame.Controls.Add(darkTheme, 0, 3);
         frame.Controls.Add(run, 0, 4);

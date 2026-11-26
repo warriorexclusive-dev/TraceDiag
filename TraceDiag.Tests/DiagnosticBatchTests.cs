@@ -18,6 +18,23 @@ public sealed class DiagnosticBatchTests
     }
 
     [Fact]
+    public async Task ProbeAllAsync_FinishesAllSizesForHopBeforeNextHop()
+    {
+        var first = TestFactories.Hop(1, 1);
+        var second = TestFactories.Hop(2, 2);
+        var probe = new FakeProbeClient(call => TestFactories.Success(call));
+        await DiagnosticBatch.ProbeAllAsync(
+            TestFactories.Context(probe), [64, 128], [first, second], new HashSet<int>(), 1, 0,
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Equal(
+            [64, 128, 64, 128],
+            probe.Calls.Select(call => call.BufferSize));
+        Assert.Equal(
+            [first.Address, first.Address, second.Address, second.Address],
+            probe.Calls.Select(call => call.Address));
+    }
+
+    [Fact]
     public async Task ProbeAllAsync_AfterTotalLoss_SkipsHopForLaterSizes()
     {
         var hop = TestFactories.Hop(1, 1);

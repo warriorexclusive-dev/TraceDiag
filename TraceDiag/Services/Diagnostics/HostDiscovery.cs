@@ -23,7 +23,6 @@ internal static class HostDiscovery
             round++;
             await SweepAsync(context, state, target, settings, round, progress, stats, cancellationToken);
             if (state.Reached || IsLimitReached(state, settings, round)) break;
-            await DelayAsync(settings, cancellationToken);
         }
     }
 
@@ -38,9 +37,6 @@ internal static class HostDiscovery
         }
     }
 
-    private static Task DelayAsync(DiscoverySettings settings, CancellationToken cancellationToken) =>
-        settings.IntervalMs <= 0 ? Task.CompletedTask : Task.Delay(settings.IntervalMs, cancellationToken);
-
     private static bool IsLimitReached(DiscoveryState state, DiscoverySettings settings, int round) =>
         !state.Reached && settings.RoundLimit > 0 && round >= settings.RoundLimit;
 
@@ -48,14 +44,18 @@ internal static class HostDiscovery
     {
         var request = CreateRequest(target, ttl, round, settings);
         var result = await ProbeExecutor.SendAsync(context, request, progress, cancellationToken);
-        if (!IsHopReply(result.Outcome)) { ReportNoResponse(context, state, ttl, progress, stats); return; }
+        if (!IsHopReply(result.Outcome))
+        {
+            ReportNoResponse(context, state, ttl, progress, stats);
+            await ProbeDelay.ApplyAsync(true, settings.LossDelayMs, cancellationToken);
+            return;
+        }
         ApplyResolved(context, state, target, result, ttl, progress, stats);
     }
 
     private static ProbeRequest CreateRequest(IPAddress target, int ttl, int round, DiscoverySettings settings) =>
         new(target, ttl, settings.PacketSize, settings.TimeoutMs,
-            TextFormatter.Fmt(Strings.Diag.TraceRoundContextFormat, ttl, round),
-            DontFragment: settings.DontFragment, DelayMs: settings.DelayMs);
+            TextFormatter.Fmt(Strings.Diag.TraceRoundContextFormat, ttl, round), settings.DontFragment);
 
     private static bool IsHopReply(ProbeOutcome outcome) =>
         outcome is ProbeOutcome.Success or ProbeOutcome.TtlExpired;

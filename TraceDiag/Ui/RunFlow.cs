@@ -44,7 +44,7 @@ internal static class RunFlow
             input.MaxPacketSize,
             input.Attempts,
             input.DynamicPacketSize,
-            input.DelayMs));
+            input.LossDelayMs));
     }
 
     private static void ReportUnresolved(RunFlowContext context, RunInput input)
@@ -70,6 +70,6 @@ internal static class RunFlow
         var hostLabel = input.Host.Equals(address.ToString(), StringComparison.OrdinalIgnoreCase)
             ? input.Host
             : TextFormatter.Fmt(Strings.Ui.HostLabelFormat, input.Host, address);
-        return new DiagnosticInput(address, hostLabel, input.MaxPacketSize, input.Attempts, input.DelayMs, input.DynamicPacketSize);
+        return new DiagnosticInput(address, hostLabel, input.MaxPacketSize, input.Attempts, input.LossDelayMs, input.DynamicPacketSize);
     }
 }

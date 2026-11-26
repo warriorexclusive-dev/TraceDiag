@@ -43,11 +43,11 @@ public sealed class TraceDiagnosticsService : ITraceDiagnosticsService
     {
         var sizes = PacketSizePlanner.Build(input.MaxPacketSize, input.DynamicPacketSize);
         DiagnosticReporter.ReportHeader(_context, progress, input, sizes);
-        var discovery = await DiscoverAndResolveAsync(input, DiscoverySettings.CreateDefault(input.DelayMs), progress, statsProgress, cancellationToken);
+        var discovery = await DiscoverAndResolveAsync(input, DiscoverySettings.CreateDefault(input.LossDelayMs), progress, statsProgress, cancellationToken);
         if (discovery.Hops.Count == 0) return;
-        await DiagnosticBatch.ProbeAllAsync(_context, sizes, discovery.Hops, discovery.SkippedTtls, input.Attempts, input.DelayMs, progress, statsProgress, cancellationToken);
+        await DiagnosticBatch.ProbeAllAsync(_context, sizes, discovery.Hops, discovery.SkippedTtls, input.Attempts, input.LossDelayMs, progress, statsProgress, cancellationToken);
         DiagnosticReporter.Separator(_context, progress);
-        await LossAnalyzer.AnalyzeAsync(_context, input.RemoteAddress, discovery.Hops, sizes[^1], input.Attempts, input.DelayMs, progress, statsProgress, cancellationToken);
+        await LossAnalyzer.AnalyzeAsync(_context, input.RemoteAddress, discovery.Hops, sizes[^1], input.Attempts, input.LossDelayMs, progress, statsProgress, cancellationToken);
         DiagnosticReporter.ReportStats(statsProgress, discovery.Hops);
         DiagnosticReporter.Report(_context, progress, Strings.Diag.RunFinished);
     }

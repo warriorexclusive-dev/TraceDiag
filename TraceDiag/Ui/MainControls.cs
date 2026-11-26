@@ -5,7 +5,7 @@ internal sealed record MainControls(
     TextBox RemoteHost,
     NumericUpDown MaxPacketSize,
     NumericUpDown Attempts,
-    NumericUpDown ReplyDelay,
+    NumericUpDown LossDelay,
     NumericUpDown FontSize,
     CheckBox DynamicPacketSize,
     CheckBox DarkTheme,

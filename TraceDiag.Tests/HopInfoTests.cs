@@ -56,6 +56,19 @@ public sealed class HopInfoTests
     }
 
     [Fact]
+    public void ApplyPing_AfterLoss_KeepsDelayEnabledForWholeHost()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        hop.ApplyPing(true, 10);
+        Assert.False(hop.LossDelayEnabled);
+        hop.ApplyPing(false, 0);
+        Assert.True(hop.LossDelayEnabled);
+        hop.ApplyPing(true, 10);
+        hop.ResetStats();
+        Assert.True(hop.LossDelayEnabled);
+    }
+
+    [Fact]
     public void RttSamples_StoresEverySuccessfulMeasurement()
     {
         var hop = TestFactories.Hop(1, 1);

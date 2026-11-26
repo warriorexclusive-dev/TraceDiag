@@ -21,7 +21,7 @@ public sealed class RunFlowTests
     }
 
     [Fact]
-    public async Task StartAsync_PassesReplyDelayToDiagnosticInput()
+    public async Task StartAsync_PassesLossDelayToDiagnosticInput()
     {
         using var directory = new TempDirectory();
         using var status = new Label();
@@ -32,11 +32,29 @@ public sealed class RunFlowTests
             () => input, () => { }, _ => { }, _ => { }, ResolveLocalhost,
             (diagnostic, _, _, _) => { captured = diagnostic; return Task.CompletedTask; }, () => { });
         await RunFlow.StartAsync(context);
-        Assert.Equal(250, captured?.DelayMs);
+        Assert.Equal(250, captured?.LossDelayMs);
+    }
+
+    [Fact]
+    public async Task StartAsync_WhenStopped_SetsCancelledStatus()
+    {
+        using var directory = new TempDirectory();
+        using var status = new Label();
+        using var source = new CancellationTokenSource();
+        source.Cancel();
+        var input = new RunInput("10.0.0.1", 64, 1, 0, false);
+        var context = new RunFlowContext(
+            source.Token, new FileDiagnosticLogger(directory.File("stop.log")), status,
+            () => input, () => { }, _ => { }, _ => { }, CancelResolve, ExecuteNothing, () => { });
+        await RunFlow.StartAsync(context);
+        Assert.Equal(Strings.Ui.Cancelled, status.Text);
     }
 
     private static Task<IPAddress?> ResolveNothing(string host, CancellationToken token) =>
         Task.FromResult<IPAddress?>(null);
+
+    private static Task<IPAddress?> CancelResolve(string host, CancellationToken token) =>
+        throw new OperationCanceledException();
 
     private static Task<IPAddress?> ResolveLocalhost(string host, CancellationToken token) =>
         Task.FromResult<IPAddress?>(IPAddress.Parse(host));
