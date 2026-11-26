@@ -29,7 +29,8 @@ WinForms-утилита для диагностики маршрута до уд
   из всех сохранённых замеров RTT, а не из приблизительных величин.
 - При `100%` потерях узел получает статус `не отвечает`, после `10` последовательных
   неудач проверка узла прекращается, а на следующих размерах пакета он пропускается.
-- Анализ потерь: сравнение соседних узлов, отделение разовых потерь от повреждённого сегмента.
+- Потери отображаются в столбце «Состояние» как процент, причина — в отдельном столбце
+  «Диагноз». Повторные проверки предыдущих узлов не выполняются.
 - Таблица статистики над логом на всю ширину окна; проблемные строки подсвечиваются.
   Отдельный столбец «Диагноз» показывает: `ICMP отключён`, `Обрезка размера ICMP`,
   `Антифлуд ICMP` или `—`, если признаков нет. Диагноз также пишется в лог.
@@ -64,17 +65,17 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**124 юнит-теста** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
+**117 юнит-тестов** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
 маппинг ICMP-ответов, конфигурацию, логирование, сохранение состояния интерфейса,
 диагностические модули и полный цикл `TraceDiagnosticsService` с тестовыми фейками
 ICMP, DNS и логера.
 
 ## Готовые сборки
 
-Последний выпуск: [Release 1.6.0 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.6.0)
+Последний выпуск: [Release 1.7.0 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.7.0)
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.6.0/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.6.0/TraceDiag-install.zip)
+- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.7.0/TraceDiag.exe)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.7.0/TraceDiag-install.zip)
 
 История изменений: [ReleaseNotes.md](ReleaseNotes.md).
 
@@ -100,7 +101,7 @@ cd installer
 TraceDiag/
   Models/                    данные и расчёт статусов узлов
   Services/                  ICMP, DNS, конфигурация, логирование
-  Services/Diagnostics/      маршрут, проверка узлов, анализ потерь
+  Services/Diagnostics/      маршрут, проверка узлов, диагноз потерь
   Ui/                        фабрики контролов, layout, поток запуска
   Strings.cs                 все пользовательские и лог-строки
 TraceDiag.Tests/

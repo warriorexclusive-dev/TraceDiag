@@ -93,11 +93,6 @@ internal static class Strings
         public const string Target = "цель";
         public const string Responds = "отвечает";
         public const string PacketLossFormat = "потеря пакетов ({0:F0}%)";
-        public const string FirstHopLoss = "потеря на первом узле";
-        public const string DamagedLoss = "поврежден: потеря между узлами";
-        public const string PreviousAlsoLoss = "потеря также на предыдущем узле";
-        public const string LossNotConfirmed = "потеря не подтверждена";
-        public const string NoPreviousHop = "нет предыдущего узла для сравнения";
     }
 
     public static class LogLevel
@@ -190,23 +185,10 @@ internal static class Strings
 
         public const string RemoteNotResponse = "Status: remote host not response";
         public const string RemoteResponds = "Status: remote host responds";
-        public const string HopNoResponseAnalysisFormat = "Hop {0} ({1}): 100% потерь — статус «не отвечает» (запрет ICMP echo или ограничение размера пакета). Проверка узла пропущена.";
-        public const string LossDetectedFormat = "Loss detected at hop {0} ({1}): {2}/{3} packets lost.";
-        public const string FirstHopLossStatus = "  Status: packet loss observed at first hop; previous hop unavailable for comparison.";
-        public const string VerifyingPreviousFormat = "  Verifying previous hop {0} ({1})...";
-        public const string PreviousCheckFormat = "  Previous hop check: lost {0}/{1} ({2:F0}%)";
-        public const string CurrentCheckFormat = "  Current hop check:  lost {0}/{1} ({2:F0}%)";
-        public const string DamagedStatusFormat = "  Status: хост поврежден, имеется потеря пакетов между {0} и {1}.";
-        public const string PreviousLossStatus = "  Status: previous hop also shows loss; cannot isolate damage to the segment between previous and current hop.";
-        public const string TransientLossStatus = "  Status: loss not reproduced on recheck; possible transient packet loss.";
-        public const string NoPreviousHopStatus = "  Status: no responding previous hop available for comparison.";
         public const string NoLossDetected = "Status: no packet loss detected on discovered hops.";
         public const string Summary = "Summary:";
         public const string SummaryRowFormat = "  hop {0,2} {1} - sent={2}, recv={3}, lost={4} ({5:F1}%)";
 
-        public const string VerifyContextFormat = "verify addr={0} size={1} attempt={2}/{3}";
-        public const string VerifyErrorFormat = "Verification probe error for {0}, attempt={1}";
-        public const string VerifyErrorConsoleFormat = "    ! verification probe error: {0}";
         public const string WatchdogFormat = "Watchdog timeout/hang detected ({0}); treating probe as timed out.";
         public const string ProbeSendFailedFormat = "Probe send failed ({0})";
         public const string ProbeSendFailedConsoleFormat = "    ! Probe send failed ({0}): {1}";

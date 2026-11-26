@@ -47,7 +47,7 @@ public sealed class TraceDiagnosticsService : ITraceDiagnosticsService
         if (discovery.Hops.Count == 0) return;
         await DiagnosticBatch.ProbeAllAsync(_context, sizes, discovery.Hops, discovery.SkippedTtls, input.Attempts, input.LossDelayMs, progress, statsProgress, cancellationToken);
         DiagnosticReporter.Separator(_context, progress);
-        await LossAnalyzer.AnalyzeAsync(_context, input.RemoteAddress, discovery.Hops, sizes[^1], input.Attempts, input.LossDelayMs, progress, statsProgress, cancellationToken);
+        RunSummary.Report(_context, input.RemoteAddress, discovery.Hops, progress);
         DiagnosticReporter.ReportStats(statsProgress, discovery.Hops);
         DiagnosticReporter.Report(_context, progress, Strings.Diag.RunFinished);
     }
