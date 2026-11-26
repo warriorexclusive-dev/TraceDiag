@@ -25,10 +25,11 @@ public sealed class RunFlowTests
     {
         using var directory = new TempDirectory();
         using var status = new Label();
+        using var logger = new FileDiagnosticLogger(directory.File("run.log"));
         DiagnosticInput? captured = null;
         var input = new RunInput("10.0.0.1", 64, 1, 250, false);
         var context = new RunFlowContext(
-            CancellationToken.None, new FileDiagnosticLogger(directory.File("run.log")), status,
+            CancellationToken.None, logger, status,
             () => input, () => { }, _ => { }, _ => { }, ResolveLocalhost,
             (diagnostic, _, _, _) => { captured = diagnostic; return Task.CompletedTask; }, () => { });
         await RunFlow.StartAsync(context);
@@ -40,11 +41,12 @@ public sealed class RunFlowTests
     {
         using var directory = new TempDirectory();
         using var status = new Label();
+        using var logger = new FileDiagnosticLogger(directory.File("stop.log"));
         using var source = new CancellationTokenSource();
         source.Cancel();
         var input = new RunInput("10.0.0.1", 64, 1, 0, false);
         var context = new RunFlowContext(
-            source.Token, new FileDiagnosticLogger(directory.File("stop.log")), status,
+            source.Token, logger, status,
             () => input, () => { }, _ => { }, _ => { }, CancelResolve, ExecuteNothing, () => { });
         await RunFlow.StartAsync(context);
         Assert.Equal(Strings.Ui.Cancelled, status.Text);

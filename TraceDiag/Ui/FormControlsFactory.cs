@@ -10,27 +10,30 @@ internal static class FormControlsFactory
         var lossDelay = CreateLossDelayInput();
         var font = CreateFontInput(fontSize);
         var dynamicPacketSize = CreateDynamicPacketSizeCheckBox();
+        var monitoringMode = CreateMonitoringModeCheckBox();
         var darkThemeCheckBox = CreateDarkThemeCheckBox(darkTheme);
         var run = CreateRunButton();
         var (stats, output, status) = CreateFooter(fontSize);
-        var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize, darkThemeCheckBox, run);
-        return new MainControls(LayoutFactory.Create(input, stats, output, status), host, packet, attempts, lossDelay, font, dynamicPacketSize, darkThemeCheckBox, stats, output, run, status);
+        var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize, monitoringMode, darkThemeCheckBox, run);
+        return new MainControls(LayoutFactory.Create(input, stats, output, status), host, packet, attempts, lossDelay, font, dynamicPacketSize, monitoringMode, darkThemeCheckBox, stats, output, run, status);
     }
 
-    private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run) =>
-        InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize, darkTheme, run);
+    private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox monitoringMode, CheckBox darkTheme, Button run) =>
+        InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize, monitoringMode, darkTheme, run);
 
     private static (DataGridView Stats, TextBox Output, Label Status) CreateFooter(float fontSize) =>
         (StatsGridFactory.Create(), CreateOutputTextBox(fontSize), CreateStatusLabel());
 
     private static TextBox CreateHostTextBox() => new()
     {
-        Dock = DockStyle.Fill
+        Dock = DockStyle.None,
+        Width = 276,
+        Anchor = AnchorStyles.Top | AnchorStyles.Left
     };
 
     private static NumericUpDown CreatePacketInput() => new()
     {
-        Dock = DockStyle.Left,
+        Dock = DockStyle.None,
         Width = 140,
         Minimum = 64,
         Maximum = 65534,
@@ -39,7 +42,7 @@ internal static class FormControlsFactory
 
     private static NumericUpDown CreateAttemptsInput() => new()
     {
-        Dock = DockStyle.Left,
+        Dock = DockStyle.None,
         Width = 140,
         Minimum = 1,
         Maximum = 1000,
@@ -75,6 +78,15 @@ internal static class FormControlsFactory
         Anchor = AnchorStyles.Top | AnchorStyles.Right,
         Dock = DockStyle.None,
         Margin = new Padding(8, 6, 0, 0)
+    };
+
+    private static CheckBox CreateMonitoringModeCheckBox() => new()
+    {
+        Text = Strings.Ui.MonitoringModeLabel,
+        AutoSize = true,
+        Checked = false,
+        Dock = DockStyle.None,
+        Anchor = AnchorStyles.Top | AnchorStyles.Right
     };
 
     private static CheckBox CreateDarkThemeCheckBox(bool darkTheme) => new()

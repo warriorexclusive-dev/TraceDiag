@@ -28,7 +28,7 @@ internal static class DiagnosticReporter
 
     internal static void ReportStats(IProgress<IReadOnlyList<HopStatSnapshot>> stats, IReadOnlyList<HopInfo> hops)
     {
-        var snapshot = hops.Select(ToSnapshot).ToArray();
+        var snapshot = hops.Select(Snapshot).ToArray();
         stats.Report(snapshot);
     }
 
@@ -39,7 +39,7 @@ internal static class DiagnosticReporter
         else context.Logger?.Info(message);
     }
 
-    private static HopStatSnapshot ToSnapshot(HopInfo hop) => new(
+    internal static HopStatSnapshot Snapshot(HopInfo hop) => new(
         hop.Ttl,
         hop.Address,
         hop.HostName,

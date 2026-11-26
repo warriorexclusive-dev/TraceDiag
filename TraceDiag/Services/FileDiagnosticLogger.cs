@@ -1,19 +1,15 @@
 using TraceDiag.Services.Abstractions;
+using TraceDiag.Services.Logging;
 
 namespace TraceDiag.Services;
 
-public sealed class FileDiagnosticLogger : IDiagnosticLogger
+public sealed class FileDiagnosticLogger : IDiagnosticLogger, IDisposable
 {
-    private readonly string _logFilePath;
-    private readonly object _sync = new();
+    private readonly AsyncLogWriter _writer;
 
-    public FileDiagnosticLogger(string logFilePath)
-    {
-        _logFilePath = logFilePath;
-        LogFileWriter.EnsureDirectory(logFilePath);
-    }
+    public FileDiagnosticLogger(string logFilePath) => _writer = new AsyncLogWriter(logFilePath);
 
-    public string LogFilePath => _logFilePath;
+    public string LogFilePath => _writer.CurrentPath;
 
     public void Info(string message) => Write(Strings.LogLevel.Info, message, null);
 
@@ -21,12 +17,10 @@ public sealed class FileDiagnosticLogger : IDiagnosticLogger
 
     public void Error(string message, Exception? exception = null) => Write(Strings.LogLevel.Error, message, exception);
 
-    private void Write(string level, string message, Exception? exception)
-    {
-        try { LogFileWriter.Append(_logFilePath, LogLineBuilder.Build(level, message, exception), _sync); }
-        catch
-        {
-            // Logging must never break diagnostics flow.
-        }
-    }
+    public void Flush() => _writer.Flush();
+
+    public void Dispose() => _writer.Dispose();
+
+    private void Write(string level, string message, Exception? exception) =>
+        _writer.Write(LogLineBuilder.Build(level, message, exception));
 }

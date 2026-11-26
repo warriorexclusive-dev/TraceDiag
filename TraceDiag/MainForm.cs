@@ -1,12 +1,12 @@
 using TraceDiag.Models;
 using TraceDiag.Services;
+using TraceDiag.Services.Monitoring;
 using TraceDiag.Ui;
 
 namespace TraceDiag;
 
 public sealed class MainForm : Form
 {
-    private readonly List<HopStatSnapshot> _currentStats = new();
     private readonly FullScreenState _fullScreen = new();
     private CancellationTokenSource? _runCts;
     private float _outputFontSize;
@@ -14,8 +14,11 @@ public sealed class MainForm : Form
     private readonly AppConfig _appConfig;
     private readonly FileDiagnosticLogger _logger;
     private readonly UiStateStore _uiStateStore;
+    private readonly StatisticsController _statistics;
+    private readonly OutputBufferController _outputBuffer = new();
     private readonly bool _resetRequested;
     private MainControls _controls = null!;
+    private StatsGridController _statsGrid = null!;
 
     private TextBox _remoteHostTextBox = null!;
     private NumericUpDown _maxPacketSizeInput = null!;
@@ -23,6 +26,7 @@ public sealed class MainForm : Form
     private NumericUpDown _lossDelayInput = null!;
     private NumericUpDown _fontSizeInput = null!;
     private CheckBox _dynamicPacketSizeInput = null!;
+    private CheckBox _monitoringModeInput = null!;
     private CheckBox _darkThemeInput = null!;
     private DataGridView _statsGridView = null!;
     private TextBox _outputTextBox = null!;
@@ -32,18 +36,15 @@ public sealed class MainForm : Form
     internal FileDiagnosticLogger Logger => _logger;
     internal Label StatusLabel => _statusLabel;
 
-    public MainForm() : this(false, null)
-    {
-    }
+    public MainForm() : this(false, null) { }
 
-    internal MainForm(bool resetUiState) : this(resetUiState, null)
-    {
-    }
+    internal MainForm(bool resetUiState) : this(resetUiState, null) { }
 
     internal MainForm(bool resetUiState, UiStateStore? uiStateStore)
     {
         (_configStore, _appConfig, _logger, _uiStateStore) = CreateServices(resetUiState, uiStateStore);
         _resetRequested = resetUiState;
+        _statistics = new StatisticsController(publish: RenderStats);
         var loadResult = _uiStateStore.Load();
         var state = loadResult.State;
         _outputFontSize = state?.OutputFontSize ?? _appConfig.OutputFontSize;
@@ -73,8 +74,10 @@ public sealed class MainForm : Form
         _lossDelayInput = controls.LossDelay;
         _fontSizeInput = controls.FontSize;
         _dynamicPacketSizeInput = controls.DynamicPacketSize;
+        _monitoringModeInput = controls.MonitoringMode;
         _darkThemeInput = controls.DarkTheme;
         _statsGridView = controls.Stats;
+        _statsGrid = new StatsGridController(_statsGridView);
         _outputTextBox = controls.Output;
         _runButton = controls.Run;
         _statusLabel = controls.Status;
@@ -119,6 +122,7 @@ public sealed class MainForm : Form
     {
         _fontSizeInput.ValueChanged += FontSizeInputOnValueChanged;
         _darkThemeInput.CheckedChanged += DarkThemeInputOnCheckedChanged;
+        _monitoringModeInput.CheckedChanged += MonitoringModeOnCheckedChanged;
         _runButton.Click += RunButtonOnClick;
         KeyDown += MainFormOnKeyDown;
     }
@@ -160,6 +164,8 @@ public sealed class MainForm : Form
         _logger.Info(TextFormatter.Fmt(Strings.Log.ThemeChangedFormat, _appConfig.Theme));
     }
 
+    private void MonitoringModeOnCheckedChanged(object? sender, EventArgs e) => ApplyInputsEnabled();
+
     private void MainFormOnKeyDown(object? sender, KeyEventArgs e)
     {
         if (FullScreenController.HandleKey(this, e, _fullScreen)) e.Handled = true;
@@ -169,6 +175,10 @@ public sealed class MainForm : Form
     {
         _runCts?.Cancel();
         SaveUiState();
+        _statistics.Flush();
+        _statistics.Dispose();
+        _logger.Flush();
+        _logger.Dispose();
         base.OnFormClosing(e);
     }
 
@@ -176,7 +186,8 @@ public sealed class MainForm : Form
     {
         if (RequestStop()) return;
         _runCts = new CancellationTokenSource();
-        await RunFlow.StartAsync(new RunFlowContext(this, _runCts.Token));
+        if (_monitoringModeInput.Checked) await MonitorFlow.StartAsync(new MonitorFlowContext(this, _runCts.Token));
+        else await RunFlow.StartAsync(new RunFlowContext(this, _runCts.Token));
     }
 
     private bool RequestStop()
@@ -190,26 +201,43 @@ public sealed class MainForm : Form
 
     internal RunInput? ReadRunInput()
     {
+        var host = ReadHost();
+        if (host is null) return null;
+        return new RunInput(host, (int)_maxPacketSizeInput.Value, (int)_attemptsInput.Value,
+            (int)_lossDelayInput.Value, _dynamicPacketSizeInput.Checked);
+    }
+
+    internal MonitorInput? ReadMonitorInput()
+    {
+        var host = ReadHost();
+        if (host is null) return null;
+        return new MonitorInput(host, (int)_maxPacketSizeInput.Value, (int)_lossDelayInput.Value);
+    }
+
+    private string? ReadHost()
+    {
         var host = _remoteHostTextBox.Text.Trim();
         _remoteHostTextBox.Text = host;
-        if (!string.IsNullOrWhiteSpace(host)) return CreateRunInput(host);
+        if (!string.IsNullOrWhiteSpace(host)) return host;
         MessageBox.Show(this, Strings.Ui.RemoteHostRequired, Strings.Ui.ValidationTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         _remoteHostTextBox.Focus();
         return null;
     }
 
-    private RunInput CreateRunInput(string host) =>
-        new(host, (int)_maxPacketSizeInput.Value, (int)_attemptsInput.Value,
-            (int)_lossDelayInput.Value, _dynamicPacketSizeInput.Checked);
+    internal void BeginRun() => Begin(Strings.Ui.ResolvingHost);
 
-    internal void BeginRun()
+    internal void BeginMonitor() => Begin(Strings.Ui.Monitoring);
+
+    private void Begin(string status)
     {
+        _outputBuffer.Clear();
         _outputTextBox.Clear();
-        ClearStats();
+        _statistics.Clear();
+        _statsGrid.Render(Array.Empty<HopStatSnapshot>());
         AppendOutputLine(TextFormatter.Fmt(Strings.App.ConsoleLogFileFormat, TextFormatter.Now(), _logger.LogFilePath));
-        _statusLabel.Text = Strings.Ui.ResolvingHost;
+        _statusLabel.Text = status;
         RunButtonState.Begin(_runButton);
-        SetInputsEnabled(false);
+        ApplyInputsEnabled();
     }
 
     internal Task ExecuteServiceAsync(DiagnosticInput input, IProgress<string> text, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken token)
@@ -218,50 +246,40 @@ public sealed class MainForm : Form
         return service.RunAsync(input, text, stats, token);
     }
 
+    internal Task ExecuteMonitorAsync(MonitoringInput input, IProgress<string> text, IProgress<HopStatSnapshot> stats, CancellationToken token)
+    {
+        var service = new MonitoringService(new IcmpProbeClient(), new DnsResolverService(), _logger);
+        return service.RunAsync(input, text, stats, token);
+    }
+
     internal void EndRun()
     {
         _runCts?.Dispose();
         _runCts = null;
         RunButtonState.End(_runButton);
-        SetInputsEnabled(true);
+        ApplyInputsEnabled();
     }
 
-    private void SetInputsEnabled(bool enabled)
+    private void ApplyInputsEnabled()
     {
-        _remoteHostTextBox.Enabled = enabled;
-        _maxPacketSizeInput.Enabled = enabled;
-        _attemptsInput.Enabled = enabled;
-        _lossDelayInput.Enabled = enabled;
-        _dynamicPacketSizeInput.Enabled = enabled;
+        var active = _runCts is null;
+        var fixedSize = _monitoringModeInput.Checked;
+        _remoteHostTextBox.Enabled = active;
+        _maxPacketSizeInput.Enabled = active;
+        _attemptsInput.Enabled = active && !fixedSize;
+        _lossDelayInput.Enabled = active;
+        _dynamicPacketSizeInput.Enabled = active && !fixedSize;
+        _monitoringModeInput.Enabled = active;
+        _darkThemeInput.Enabled = active;
     }
 
-    private void ClearStats()
-    {
-        _currentStats.Clear();
-        UiInvoker.OnUiThread(_statsGridView, RefreshStatsGrid);
-    }
+    internal void ApplyStats(IReadOnlyList<HopStatSnapshot> stats) => _statistics.Replace(stats);
 
-    internal void ApplyStats(IReadOnlyList<HopStatSnapshot> stats)
-    {
-        UiInvoker.OnUiThread(_statsGridView, () =>
-        {
-            _currentStats.Clear();
-            _currentStats.AddRange(stats);
-            RefreshStatsGrid();
-        });
-    }
+    internal void ApplyMonitorStat(HopStatSnapshot stat) => _statistics.Upsert(stat);
 
-    private void RefreshStatsGrid()
-    {
-        if (IsDisposed) return;
-        _statsGridView.SuspendLayout();
-        _statsGridView.Rows.Clear();
-        foreach (var stat in _currentStats) StatsGridRows.AddRow(_statsGridView, stat);
-        _statsGridView.ResumeLayout();
-    }
+    private void RenderStats(IReadOnlyList<HopStatSnapshot> stats) =>
+        UiInvoker.OnUiThread(_statsGridView, () => _statsGrid.Render(stats));
 
-    internal void AppendOutputLine(string line)
-    {
-        UiInvoker.OnUiThread(_outputTextBox, () => _outputTextBox.AppendText(line + Environment.NewLine));
-    }
+    internal void AppendOutputLine(string line) =>
+        UiInvoker.OnUiThread(_outputTextBox, () => _outputBuffer.Append(_outputTextBox, line));
 }

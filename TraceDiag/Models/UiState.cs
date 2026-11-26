@@ -11,6 +11,7 @@ internal sealed class UiState
     public int LossDelayMs { get; set; } = UiDefaults.DefaultLossDelayMs;
     public float OutputFontSize { get; set; } = UiDefaults.DefaultOutputFontSize;
     public bool DynamicPacketSize { get; set; } = true;
+    public bool MonitoringMode { get; set; }
     public bool DarkTheme { get; set; } = true;
     public string WindowState { get; set; } = UiDefaults.NormalWindowState;
     public UiWindowBounds Bounds { get; set; } = new();

@@ -28,6 +28,7 @@ public sealed class UiStateTests
         Assert.False(result.Corrupted);
         Assert.NotNull(result.State);
         Assert.Equal(state.RemoteHost, result.State!.RemoteHost);
+        Assert.Equal(state.MonitoringMode, result.State.MonitoringMode);
         Assert.Equal(state.ColumnWidths[Strings.Ui.ColumnKeyIp], result.State.ColumnWidths[Strings.Ui.ColumnKeyIp]);
     }
 
@@ -124,6 +125,7 @@ public sealed class UiStateTests
         LossDelayMs = 500,
         OutputFontSize = 11.5f,
         DynamicPacketSize = false,
+        MonitoringMode = true,
         DarkTheme = false,
         WindowState = nameof(FormWindowState.Normal),
         Bounds = new UiWindowBounds { X = 100, Y = 100, X2 = 900, Y2 = 700 },
@@ -144,6 +146,7 @@ public sealed class UiStateTests
         controls.LossDelay.Value = 300;
         controls.FontSize.Value = 13.5m;
         controls.DynamicPacketSize.Checked = false;
+        controls.MonitoringMode.Checked = true;
         controls.DarkTheme.Checked = false;
     }
 
@@ -158,6 +161,7 @@ public sealed class UiStateTests
         Assert.Equal(300, state.LossDelayMs);
         Assert.Equal(13.5f, state.OutputFontSize);
         Assert.False(state.DynamicPacketSize);
+        Assert.True(state.MonitoringMode);
         Assert.False(state.DarkTheme);
         Assert.Equal(nameof(FormWindowState.Normal), state.WindowState);
     }
@@ -178,6 +182,7 @@ public sealed class UiStateTests
         Assert.Equal(500m, controls.LossDelay.Value);
         Assert.Equal(11.5m, controls.FontSize.Value);
         Assert.False(controls.DynamicPacketSize.Checked);
+        Assert.True(controls.MonitoringMode.Checked);
         Assert.False(controls.DarkTheme.Checked);
     }
 

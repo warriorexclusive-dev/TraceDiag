@@ -21,6 +21,7 @@ internal static class UiStateRestorer
         controls.LossDelay.Value = Clamp(state.LossDelayMs, controls.LossDelay);
         controls.FontSize.Value = Clamp((decimal)state.OutputFontSize, controls.FontSize);
         controls.DynamicPacketSize.Checked = state.DynamicPacketSize;
+        controls.MonitoringMode.Checked = state.MonitoringMode;
         controls.DarkTheme.Checked = state.DarkTheme;
     }
 

@@ -11,59 +11,70 @@ internal static class StatsGridRows
         ApplyHighlight(grid.Rows[rowIndex], stat);
     }
 
-    private static object[] CreateCells(HopStatSnapshot stat)
+    internal static object Value(HopStatSnapshot stat, string columnName) => columnName switch
     {
-        return IdentityCells(stat)
-            .Concat(PingCells(stat))
-            .Concat(CounterCells(stat))
-            .Append(stat.Status)
-            .Append(stat.Diagnosis)
-            .ToArray();
+        Strings.Ui.ColumnKeyHostName => HostName(stat),
+        Strings.Ui.ColumnKeyIp => stat.Address.ToString(),
+        Strings.Ui.ColumnKeyAvgPing => Average(stat),
+        Strings.Ui.ColumnKeyMinPing => FormatPing(stat.MinPingMs, stat.Sent),
+        Strings.Ui.ColumnKeyMaxPing => FormatPing(stat.MaxPingMs, stat.Sent),
+        Strings.Ui.ColumnKeyLastPing => FormatPing(stat.LastPingMs, stat.Sent),
+        Strings.Ui.ColumnKeySent => Counter(stat.Sent),
+        Strings.Ui.ColumnKeyReceived => Counter(stat.Received),
+        Strings.Ui.ColumnKeyStatus => stat.Status,
+        Strings.Ui.ColumnKeyDiagnosis => stat.Diagnosis,
+        _ => string.Empty
+    };
+
+    internal static void ApplyCellStyle(DataGridViewCellStyle style, HopStatSnapshot stat, string columnName)
+    {
+        style.ForeColor = Color.Empty;
+        if (HasLossHighlight(stat)) style.ForeColor = Color.Firebrick;
+        if (IsDiagnosis(columnName, stat)) style.ForeColor = Color.Firebrick;
     }
 
-    private static object[] IdentityCells(HopStatSnapshot stat)
-    {
-        return
-        [
-            string.IsNullOrWhiteSpace(stat.HostName) ? Strings.Ui.NoDns : stat.HostName,
-            stat.Address.ToString()
-        ];
-    }
+    private static object[] CreateCells(HopStatSnapshot stat) =>
+        Columns.Select(name => Value(stat, name)).ToArray();
 
-    private static object[] PingCells(HopStatSnapshot stat)
-    {
-        return
-        [
-            stat.Received == 0
-                ? Strings.Ui.Dash
-                : stat.AvgPingMs.ToString(Strings.Ui.AvgPingFormat, CultureInfo.InvariantCulture),
-            FormatPing(stat.MinPingMs, stat.Sent),
-            FormatPing(stat.MaxPingMs, stat.Sent),
-            FormatPing(stat.LastPingMs, stat.Sent)
-        ];
-    }
+    private static string[] Columns =>
+    [
+        Strings.Ui.ColumnKeyHostName,
+        Strings.Ui.ColumnKeyIp,
+        Strings.Ui.ColumnKeyAvgPing,
+        Strings.Ui.ColumnKeyMinPing,
+        Strings.Ui.ColumnKeyMaxPing,
+        Strings.Ui.ColumnKeyLastPing,
+        Strings.Ui.ColumnKeySent,
+        Strings.Ui.ColumnKeyReceived,
+        Strings.Ui.ColumnKeyStatus,
+        Strings.Ui.ColumnKeyDiagnosis
+    ];
 
-    private static object[] CounterCells(HopStatSnapshot stat)
-    {
-        return
-        [
-            stat.Sent.ToString(CultureInfo.InvariantCulture),
-            stat.Received.ToString(CultureInfo.InvariantCulture)
-        ];
-    }
+    private static string HostName(HopStatSnapshot stat) =>
+        string.IsNullOrWhiteSpace(stat.HostName) ? Strings.Ui.NoDns : stat.HostName;
+
+    private static string Average(HopStatSnapshot stat) =>
+        stat.Received == 0
+            ? Strings.Ui.Dash
+            : stat.AvgPingMs.ToString(Strings.Ui.AvgPingFormat, CultureInfo.InvariantCulture);
+
+    private static string Counter(int value) => value.ToString(CultureInfo.InvariantCulture);
 
     private static void ApplyHighlight(DataGridViewRow row, HopStatSnapshot stat)
     {
-        if (stat.Sent > 0 && (stat.Lost > 0 || !stat.LastPingMs.HasValue))
-            row.DefaultCellStyle.ForeColor = Color.Firebrick;
-        if (stat.Diagnosis != Strings.Diagnosis.None)
-            row.Cells[Strings.Ui.ColumnKeyDiagnosis].Style.ForeColor = Color.Firebrick;
+        ApplyCellStyle(row.DefaultCellStyle, stat, string.Empty);
+        row.Cells[Strings.Ui.ColumnKeyDiagnosis].Style.ForeColor =
+            stat.Diagnosis == Strings.Diagnosis.None ? Color.Empty : Color.Firebrick;
     }
 
-    private static string FormatPing(long? value, int sent)
-    {
-        return value.HasValue
+    private static bool HasLossHighlight(HopStatSnapshot stat) =>
+        stat.Sent > 0 && (stat.Lost > 0 || !stat.LastPingMs.HasValue);
+
+    private static bool IsDiagnosis(string columnName, HopStatSnapshot stat) =>
+        columnName == Strings.Ui.ColumnKeyDiagnosis && stat.Diagnosis != Strings.Diagnosis.None;
+
+    private static string FormatPing(long? value, int sent) =>
+        value.HasValue
             ? value.Value.ToString(CultureInfo.InvariantCulture)
             : (sent == 0 ? Strings.Ui.Dash : Strings.Ui.NoAnswer);
-    }
 }

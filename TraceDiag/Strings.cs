@@ -12,6 +12,7 @@ internal static class Strings
         public const string ResetArgument = "reset";
         public const string LogsFolder = "logs";
         public const string LogFileNameFormat = "tracediag-{0:yyyyMMdd}.log";
+        public const string RotatedLogFileNameFormat = "{0}-{1}{2}";
         public const string ConsoleTimestampFormat = "HH:mm:ss";
         public const string LogTimestampFormat = "yyyy-MM-dd HH:mm:ss.fff";
         public const string LogLinePrefixFormat = "[{0}] [{1}] ";
@@ -34,13 +35,16 @@ internal static class Strings
         public const string FontSizeLabel = "Размер шрифта:";
         public const string DynamicPacketSizeLabel = "Динамический размер пакета";
         public const string DarkThemeLabel = "Тёмная тема";
+        public const string MonitoringModeLabel = "Режим постоянного мониторинга";
         public const string RunButton = "Run";
         public const string StopButton = "Stop";
         public const string Stopping = "Stopping...";
         public const string Ready = "Ready";
         public const string ResolvingHost = "Resolving host...";
         public const string Running = "Running...";
+        public const string Monitoring = "Мониторинг...";
         public const string Completed = "Completed";
+        public const string MonitoringCompleted = "Мониторинг остановлен";
         public const string Cancelled = "Cancelled";
         public const string ResolveError = "Resolve error";
         public const string Error = "Error";
@@ -113,7 +117,10 @@ internal static class Strings
         public const string UiStateSaved = "UI state saved.";
         public const string UiStateSaveFailed = "UI state could not be saved.";
         public const string RunRequestedFormat = "Run requested: host='{0}', maxPacketSize={1}, attempts={2}, dynamic={3}, lossDelayMs={4}";
+        public const string MonitorRequestedFormat = "Monitoring requested: host='{0}', packetSize={1}, lossDelayMs={2}";
         public const string RunCompleted = "Run completed.";
+        public const string MonitorCompleted = "Monitoring completed.";
+        public const string LogRotated = "Log file rotated.";
         public const string RunCancelled = "Run cancelled by user.";
         public const string DnsNetworkError = "DNS/Network error during run.";
         public const string UnhandledError = "Unhandled error during run.";
@@ -152,6 +159,12 @@ internal static class Strings
         public const string SkipHopFormat = "  hop {0,2} {1}: пропуск (100% потерь, ICMP запрещён или ограничение размера).";
         public const string RunFinished = "Diagnostic run finished.";
         public const string RunCancelled = "Diagnostic run cancelled.";
+        public const string MonitorStarted = "Continuous monitoring started.";
+        public const string MonitorStopped = "Continuous monitoring stopped.";
+        public const string MonitorCancelled = "Continuous monitoring cancelled.";
+        public const string MonitorContextFormat = "monitor ttl={0} addr={1}";
+        public const string MonitorCycleFormat = "  monitor hop {0,2} {1}: size={2}, rtt={3}, sent={4}, recv={5}";
+        public const string MonitorExcludedFormat = "  hop {0,2} {1}: excluded from monitoring ({2}).";
         public const string RunFailed = "Diagnostic run failed.";
         public const string FatalErrorFormat = "Fatal error: {0}: {1}";
 

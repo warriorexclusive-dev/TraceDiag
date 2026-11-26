@@ -38,10 +38,11 @@ public sealed class LoggingTests
     public void FileDiagnosticLogger_WritesAllLevels()
     {
         using var temp = new TempDirectory();
-        var logger = new FileDiagnosticLogger(temp.File("test.log"));
+        using var logger = new FileDiagnosticLogger(temp.File("test.log"));
         logger.Info("i");
         logger.Warn("w");
         logger.Error("e");
+        logger.Flush();
         var text = File.ReadAllText(logger.LogFilePath);
         Assert.Contains("[INFO] i", text);
         Assert.Contains("[WARN] w", text);
@@ -51,7 +52,8 @@ public sealed class LoggingTests
     [Fact]
     public void FileDiagnosticLogger_WithInvalidPath_DoesNotThrow()
     {
-        var logger = new FileDiagnosticLogger(string.Empty);
+        using var logger = new FileDiagnosticLogger(string.Empty);
         logger.Info("ignored");
+        logger.Flush();
     }
 }

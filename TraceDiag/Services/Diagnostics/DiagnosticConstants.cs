@@ -10,6 +10,7 @@ internal static class DiagnosticConstants
     internal const int DiscoveryTimeoutMs = 5000;
     internal const int DiscoveryRoundLimit = 3;
     internal const int VerifyAttemptLimit = 10;
+    internal const int MonitorIntervalMs = 1000;
     internal const int SlowDnsThresholdMs = 2000;
     internal const int DirectProbeTtl = 64;
 }
