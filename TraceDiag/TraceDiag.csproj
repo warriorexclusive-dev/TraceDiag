@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>TraceDiag</AssemblyName>
     <RootNamespace>TraceDiag</RootNamespace>
-    <Version>1.2.1</Version>
+    <Version>1.3.0</Version>
     <ApplicationIcon>Resources\cable_24dp.ico</ApplicationIcon>
   </PropertyGroup>
 

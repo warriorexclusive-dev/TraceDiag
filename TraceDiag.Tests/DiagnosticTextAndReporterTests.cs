@@ -75,5 +75,5 @@ public sealed class DiagnosticTextAndReporterTests
         TestFactories.Context(new FakeProbeClient(_ => TestFactories.Success(new ProbeCall(TestFactories.Address(1), 64, 64))), logger);
 
     private static DiagnosticInput CreateInput(bool dynamic) =>
-        new(TestFactories.Address(2), "target", 512, 2, dynamic);
+        new(TestFactories.Address(2), "target", 512, 2, 0, dynamic);
 }

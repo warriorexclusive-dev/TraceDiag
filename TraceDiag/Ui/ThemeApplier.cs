@@ -79,6 +79,9 @@ internal static class ThemeApplier
     {
         check.BackColor = palette.Surface;
         check.ForeColor = palette.Text;
+        check.FlatStyle = FlatStyle.Flat;
+        check.FlatAppearance.BorderColor = palette.GridLine;
+        check.FlatAppearance.CheckedBackColor = palette.Accent;
     }
 
     private static void ApplyButton(Button button, ThemePalette palette)

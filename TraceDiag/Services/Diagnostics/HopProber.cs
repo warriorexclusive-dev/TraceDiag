@@ -33,7 +33,7 @@ internal static class HopProber
     {
         try
         {
-            var request = new ProbeRequest(hop.Address, DiagnosticConstants.DirectProbeTtl, settings.PacketSize, DiagnosticConstants.ProbeTimeoutMs, CreateContext(hop, settings, index));
+            var request = new ProbeRequest(hop.Address, DiagnosticConstants.DirectProbeTtl, settings.PacketSize, DiagnosticConstants.ProbeTimeoutMs, CreateContext(hop, settings, index), DelayMs: settings.DelayMs);
             var result = await ProbeExecutor.SendAsync(context, request, progress, cancellationToken);
             return (result.Outcome == ProbeOutcome.Success, result.RoundtripTimeMs);
         }

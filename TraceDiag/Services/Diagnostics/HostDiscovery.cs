@@ -54,7 +54,8 @@ internal static class HostDiscovery
 
     private static ProbeRequest CreateRequest(IPAddress target, int ttl, int round, DiscoverySettings settings) =>
         new(target, ttl, settings.PacketSize, settings.TimeoutMs,
-            TextFormatter.Fmt(Strings.Diag.TraceRoundContextFormat, ttl, round), settings.DontFragment);
+            TextFormatter.Fmt(Strings.Diag.TraceRoundContextFormat, ttl, round),
+            DontFragment: settings.DontFragment, DelayMs: settings.DelayMs);
 
     private static bool IsHopReply(ProbeOutcome outcome) =>
         outcome is ProbeOutcome.Success or ProbeOutcome.TtlExpired;

@@ -117,6 +117,6 @@ public sealed class LossAnalyzerTests
 
     private static Task AnalyzeAsync(List<HopInfo> hops, int target, CollectingProgress<string> progress, FakeProbeClient probe) =>
         LossAnalyzer.AnalyzeAsync(
-            TestFactories.Context(probe), TestFactories.Address(target), hops, 64, 2,
+            TestFactories.Context(probe), TestFactories.Address(target), hops, 64, 2, 0,
             progress, TestFactories.StatsProgress(), CancellationToken.None);
 }

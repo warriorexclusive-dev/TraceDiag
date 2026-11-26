@@ -35,8 +35,9 @@ internal static class TestFactories
         int intervalMs = 0,
         int packetSize = 64,
         int timeoutMs = 100,
-        bool dontFragment = true) =>
-        new(packetSize, timeoutMs, intervalMs, roundLimit, dontFragment);
+        bool dontFragment = true,
+        int delayMs = 0) =>
+        new(packetSize, timeoutMs, intervalMs, roundLimit, dontFragment, delayMs);
 
     internal static CollectingProgress<string> TextProgress() => new();
 

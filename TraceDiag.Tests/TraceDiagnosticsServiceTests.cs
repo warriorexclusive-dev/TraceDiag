@@ -30,6 +30,15 @@ public sealed class TraceDiagnosticsServiceTests
     }
 
     [Fact]
+    public async Task RunAsync_ReportsConfiguredReplyDelay()
+    {
+        var progress = TestFactories.TextProgress();
+        var input = new DiagnosticInput(TestFactories.Address(2), "target", 256, 1, 20, false);
+        await CreateService(new FakeProbeClient(Reply)).RunAsync(input, progress, TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Contains(progress.Values, value => value.Contains("ICMP reply delay: 20 ms"));
+    }
+
+    [Fact]
     public async Task RunAsync_WithNoDiscoveryReplies_MarksAllHopsSkipped()
     {
         var probe = new FakeProbeClient(TestFactories.Timeout);
@@ -55,7 +64,7 @@ public sealed class TraceDiagnosticsServiceTests
     {
         var stats = TestFactories.StatsProgress();
         await CreateService(CreateLossOnceProbe()).RunAsync(
-            new DiagnosticInput(TestFactories.Address(2), "target", 256, 4, false),
+            new DiagnosticInput(TestFactories.Address(2), "target", 256, 4, 0, false),
             TestFactories.TextProgress(), stats, CancellationToken.None);
         var target = stats.Values.Last().Single(s => s.Address.Equals(TestFactories.Address(2)));
         Assert.Equal(4, target.Sent);
@@ -66,7 +75,7 @@ public sealed class TraceDiagnosticsServiceTests
         new(probe, new FakeDnsResolver(address => "host-" + address), new FakeDiagnosticLogger());
 
     private static DiagnosticInput CreateInput(bool dynamic) =>
-        new(TestFactories.Address(2), "target", 256, 1, dynamic);
+        new(TestFactories.Address(2), "target", 256, 1, 0, dynamic);
 
     private static bool IsProbing(ProbeCall call) => call.Ttl == 64;
 

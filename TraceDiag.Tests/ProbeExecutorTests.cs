@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using TraceDiag.Models;
 using TraceDiag.Services.Abstractions;
@@ -48,8 +49,28 @@ public sealed class ProbeExecutorTests
         Assert.Equal(ProbeOutcome.TimedOut, result.Outcome);
     }
 
-    private static ProbeRequest CreateRequest() =>
-        new(TestFactories.Address(1), 64, 128, 100, "test");
+    [Fact]
+    public async Task SendAsync_WithReplyDelay_WaitsAfterReply()
+    {
+        var probe = new FakeProbeClient(call => TestFactories.Success(call));
+        var context = TestFactories.Context(probe);
+        var stopwatch = Stopwatch.StartNew();
+        await ProbeExecutor.SendAsync(context, CreateRequest(delayMs: 60), TestFactories.TextProgress(), CancellationToken.None);
+        Assert.True(stopwatch.ElapsedMilliseconds >= 45);
+    }
+
+    [Fact]
+    public async Task SendAsync_WithTimeout_DoesNotApplyReplyDelay()
+    {
+        var probe = new FakeProbeClient(TestFactories.Timeout);
+        var context = TestFactories.Context(probe);
+        var stopwatch = Stopwatch.StartNew();
+        await ProbeExecutor.SendAsync(context, CreateRequest(delayMs: 500), TestFactories.TextProgress(), CancellationToken.None);
+        Assert.True(stopwatch.ElapsedMilliseconds < 200);
+    }
+
+    private static ProbeRequest CreateRequest(int delayMs = 0) =>
+        new(TestFactories.Address(1), 64, 128, 100, "test", DelayMs: delayMs);
 
     private sealed class HangingProbeClient : IIcmpProbeClient
     {

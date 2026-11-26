@@ -9,4 +9,10 @@ public sealed class UiDefaultsTests
     {
         Assert.Equal(100, UiDefaults.DefaultAttempts);
     }
+
+    [Fact]
+    public void DefaultDelayMs_Equals1000AfterIcmpReply()
+    {
+        Assert.Equal(1000, UiDefaults.DefaultDelayMs);
+    }
 }

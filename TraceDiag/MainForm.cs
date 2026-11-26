@@ -17,6 +17,7 @@ public sealed class MainForm : Form
     private TextBox _remoteHostTextBox = null!;
     private NumericUpDown _maxPacketSizeInput = null!;
     private NumericUpDown _attemptsInput = null!;
+    private NumericUpDown _replyDelayInput = null!;
     private NumericUpDown _fontSizeInput = null!;
     private CheckBox _dynamicPacketSizeInput = null!;
     private CheckBox _darkThemeInput = null!;
@@ -53,6 +54,7 @@ public sealed class MainForm : Form
         _remoteHostTextBox = controls.RemoteHost;
         _maxPacketSizeInput = controls.MaxPacketSize;
         _attemptsInput = controls.Attempts;
+        _replyDelayInput = controls.ReplyDelay;
         _fontSizeInput = controls.FontSize;
         _dynamicPacketSizeInput = controls.DynamicPacketSize;
         _darkThemeInput = controls.DarkTheme;
@@ -138,11 +140,15 @@ public sealed class MainForm : Form
     {
         var host = _remoteHostTextBox.Text.Trim();
         _remoteHostTextBox.Text = host;
-        if (!string.IsNullOrWhiteSpace(host)) return new RunInput(host, (int)_maxPacketSizeInput.Value, (int)_attemptsInput.Value, _dynamicPacketSizeInput.Checked);
+        if (!string.IsNullOrWhiteSpace(host)) return CreateRunInput(host);
         MessageBox.Show(this, Strings.Ui.RemoteHostRequired, Strings.Ui.ValidationTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         _remoteHostTextBox.Focus();
         return null;
     }
+
+    private RunInput CreateRunInput(string host) =>
+        new(host, (int)_maxPacketSizeInput.Value, (int)_attemptsInput.Value,
+            (int)_replyDelayInput.Value, _dynamicPacketSizeInput.Checked);
 
     internal void BeginRun()
     {
@@ -173,6 +179,7 @@ public sealed class MainForm : Form
         _remoteHostTextBox.Enabled = enabled;
         _maxPacketSizeInput.Enabled = enabled;
         _attemptsInput.Enabled = enabled;
+        _replyDelayInput.Enabled = enabled;
         _dynamicPacketSizeInput.Enabled = enabled;
     }
 

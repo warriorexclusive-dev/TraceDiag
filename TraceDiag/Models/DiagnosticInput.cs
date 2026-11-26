@@ -7,4 +7,5 @@ public sealed record DiagnosticInput(
     string RemoteHostLabel,
     int MaxPacketSize,
     int Attempts,
+    int DelayMs,
     bool DynamicPacketSize);

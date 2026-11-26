@@ -5,12 +5,14 @@ internal sealed record DiscoverySettings(
     int TimeoutMs,
     int IntervalMs,
     int RoundLimit,
-    bool DontFragment)
+    bool DontFragment,
+    int DelayMs)
 {
-    internal static DiscoverySettings CreateDefault() =>
+    internal static DiscoverySettings CreateDefault(int delayMs) =>
         new(DiagnosticConstants.DiscoveryPacketSize,
             DiagnosticConstants.DiscoveryTimeoutMs,
-            DiagnosticConstants.DiscoveryIntervalMs,
+            Math.Max(0, delayMs),
             DiagnosticConstants.DiscoveryRoundLimit,
-            true);
+            true,
+            Math.Max(0, delayMs));
 }

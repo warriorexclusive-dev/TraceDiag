@@ -13,7 +13,7 @@ public sealed class HopProberTests
         var probe = new FakeProbeClient(call => TestFactories.Success(call, 10));
         var progress = TestFactories.TextProgress();
         var stopped = await HopProber.ProbeAsync(
-            TestFactories.Context(probe), hop, [hop], new ProbeSettings(64, 3),
+            TestFactories.Context(probe), hop, [hop], new ProbeSettings(64, 3, 0),
             progress, TestFactories.StatsProgress(), CancellationToken.None);
         Assert.False(stopped);
         Assert.Equal(3, probe.Calls.Count);
@@ -29,7 +29,7 @@ public sealed class HopProberTests
         var probe = new FakeProbeClient(TestFactories.Timeout);
         var logger = new FakeDiagnosticLogger();
         var stopped = await HopProber.ProbeAsync(
-            TestFactories.Context(probe, logger), hop, [hop], new ProbeSettings(128, 20),
+            TestFactories.Context(probe, logger), hop, [hop], new ProbeSettings(128, 20, 0),
             TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
         Assert.True(stopped);
         Assert.Equal(DiagnosticConstants.MaxLostPingsBeforeSkip, probe.Calls.Count);
@@ -45,7 +45,7 @@ public sealed class HopProberTests
         var index = 0;
         var probe = new FakeProbeClient(call => ++index % 2 == 0 ? TestFactories.Timeout(call) : TestFactories.Success(call, 5));
         await HopProber.ProbeAsync(
-            TestFactories.Context(probe), hop, [hop], new ProbeSettings(64, 4),
+            TestFactories.Context(probe), hop, [hop], new ProbeSettings(64, 4, 0),
             TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
         Assert.Equal(4, hop.Sent);
         Assert.Equal(2, hop.Received);

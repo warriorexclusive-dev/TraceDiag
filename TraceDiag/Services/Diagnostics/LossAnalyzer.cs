@@ -5,10 +5,10 @@ namespace TraceDiag.Services.Diagnostics;
 
 internal static class LossAnalyzer
 {
-    internal static async Task AnalyzeAsync(DiagnosticContext context, IPAddress target, IReadOnlyList<HopInfo> hops, int verifyPacketSize, int attempts, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    internal static async Task AnalyzeAsync(DiagnosticContext context, IPAddress target, IReadOnlyList<HopInfo> hops, int verifyPacketSize, int attempts, int delayMs, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         ReportTargetStatus(context, target, hops, progress, stats);
-        await AnalyzeLossesAsync(context, hops, verifyPacketSize, attempts, progress, stats, cancellationToken);
+        await AnalyzeLossesAsync(context, hops, verifyPacketSize, attempts, delayMs, progress, stats, cancellationToken);
         ReportSummary(context, hops, progress);
     }
 
@@ -34,24 +34,24 @@ internal static class LossAnalyzer
         DiagnosticReporter.ReportStats(stats, hops);
     }
 
-    private static async Task AnalyzeLossesAsync(DiagnosticContext context, IReadOnlyList<HopInfo> hops, int verifyPacketSize, int attempts, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    private static async Task AnalyzeLossesAsync(DiagnosticContext context, IReadOnlyList<HopInfo> hops, int verifyPacketSize, int attempts, int delayMs, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         for (var i = 0; i < hops.Count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var hop = hops[i];
             if (!hop.HasLoss) continue;
-            await AnalyzeHopLossAsync(context, hops, hop, i, verifyPacketSize, attempts, progress, stats, cancellationToken);
+            await AnalyzeHopLossAsync(context, hops, hop, i, verifyPacketSize, attempts, delayMs, progress, stats, cancellationToken);
         }
         if (hops.All(h => !h.HasLoss)) DiagnosticReporter.Report(context, progress, Strings.Diag.NoLossDetected);
     }
 
-    private static async Task AnalyzeHopLossAsync(DiagnosticContext context, IReadOnlyList<HopInfo> hops, HopInfo hop, int index, int verifyPacketSize, int attempts, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    private static async Task AnalyzeHopLossAsync(DiagnosticContext context, IReadOnlyList<HopInfo> hops, HopInfo hop, int index, int verifyPacketSize, int attempts, int delayMs, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         if (!hop.Responded) { MarkNoAnswer(context, hop, hops, progress, stats); return; }
         DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.LossDetectedFormat, hop.Ttl, DiagnosticText.Hop(hop), hop.Lost, hop.Sent), isWarn: true);
         if (index == 0) { MarkFirstHopLoss(context, hop, hops, progress, stats); return; }
-        await CompareWithPreviousAsync(context, hops, index, verifyPacketSize, attempts, progress, stats, cancellationToken);
+        await CompareWithPreviousAsync(context, hops, index, verifyPacketSize, attempts, delayMs, progress, stats, cancellationToken);
     }
 
     private static void MarkNoAnswer(DiagnosticContext context, HopInfo hop, IReadOnlyList<HopInfo> hops, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats)
@@ -66,15 +66,15 @@ internal static class LossAnalyzer
         DiagnosticReporter.Report(context, progress, Strings.Diag.FirstHopLossStatus, isWarn: true);
     }
 
-    private static async Task CompareWithPreviousAsync(DiagnosticContext context, IReadOnlyList<HopInfo> hops, int index, int verifyPacketSize, int attempts, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    private static async Task CompareWithPreviousAsync(DiagnosticContext context, IReadOnlyList<HopInfo> hops, int index, int verifyPacketSize, int attempts, int delayMs, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         var previous = FindPreviousHop(hops, index);
         var hop = hops[index];
         if (previous is null) { MarkNoPrevious(context, hops, hop, progress, stats); return; }
         DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.VerifyingPreviousFormat, previous.Ttl, DiagnosticText.Hop(previous)));
         var limit = Math.Min(attempts, DiagnosticConstants.VerifyAttemptLimit);
-        var previousLoss = await LossMeasurement.MeasureAsync(context, previous, hops, verifyPacketSize, limit, progress, stats, cancellationToken);
-        var currentLoss = await LossMeasurement.MeasureAsync(context, hop, hops, verifyPacketSize, limit, progress, stats, cancellationToken);
+        var previousLoss = await LossMeasurement.MeasureAsync(context, previous, hops, verifyPacketSize, limit, delayMs, progress, stats, cancellationToken);
+        var currentLoss = await LossMeasurement.MeasureAsync(context, hop, hops, verifyPacketSize, limit, delayMs, progress, stats, cancellationToken);
         DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.PreviousCheckFormat, previousLoss.Lost, previousLoss.Sent, previousLoss.Percent));
         DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.CurrentCheckFormat, currentLoss.Lost, currentLoss.Sent, currentLoss.Percent));
         ApplyComparison(context, hops, hop, previous, previousLoss, currentLoss, progress, stats);

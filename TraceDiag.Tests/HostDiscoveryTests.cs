@@ -58,7 +58,7 @@ public sealed class HostDiscoveryTests
     public async Task DiscoverAsync_UsesDiscoveryDefaults()
     {
         var probe = new FakeProbeClient(call => TestFactories.Success(call));
-        await DiscoverAsync(probe, DiscoverySettings.CreateDefault());
+        await DiscoverAsync(probe, DiscoverySettings.CreateDefault(0));
         var call = Assert.Single(probe.Calls);
         Assert.Equal(64, call.BufferSize);
         Assert.Equal(5000, call.TimeoutMs);

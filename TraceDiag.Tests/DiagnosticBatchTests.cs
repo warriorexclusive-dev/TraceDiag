@@ -11,7 +11,7 @@ public sealed class DiagnosticBatchTests
         var hop = TestFactories.Hop(1, 1);
         var probe = new FakeProbeClient(call => TestFactories.Success(call));
         await DiagnosticBatch.ProbeAllAsync(
-            TestFactories.Context(probe), [64, 128, 256], [hop], new HashSet<int>(), 1,
+            TestFactories.Context(probe), [64, 128, 256], [hop], new HashSet<int>(), 1, 0,
             TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
         Assert.Equal([64, 128, 256], probe.Calls.Select(c => c.BufferSize).Distinct());
         Assert.Equal(1, hop.Sent);
@@ -26,7 +26,7 @@ public sealed class DiagnosticBatchTests
             : TestFactories.Success(call));
         var progress = TestFactories.TextProgress();
         await DiagnosticBatch.ProbeAllAsync(
-            TestFactories.Context(probe), [64, 128, 256], [hop], new HashSet<int>(), 10,
+            TestFactories.Context(probe), [64, 128, 256], [hop], new HashSet<int>(), 10, 0,
             progress, TestFactories.StatsProgress(), CancellationToken.None);
         Assert.DoesNotContain(probe.Calls, call => call.BufferSize == 256);
         Assert.Equal(Strings.Status.NoAnswer, hop.Status);
@@ -41,7 +41,7 @@ public sealed class DiagnosticBatchTests
         hop.IsSkipped = true;
         var probe = new FakeProbeClient(call => TestFactories.Success(call));
         await DiagnosticBatch.ProbeAllAsync(
-            TestFactories.Context(probe), [64], [hop], new HashSet<int>(), 1,
+            TestFactories.Context(probe), [64], [hop], new HashSet<int>(), 1, 0,
             TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
         Assert.Empty(probe.Calls);
         Assert.Equal(0, hop.Sent);

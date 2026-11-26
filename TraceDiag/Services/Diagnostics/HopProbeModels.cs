@@ -2,7 +2,7 @@ using TraceDiag.Models;
 
 namespace TraceDiag.Services.Diagnostics;
 
-internal sealed record ProbeSettings(int PacketSize, int Attempts);
+internal sealed record ProbeSettings(int PacketSize, int Attempts, int DelayMs);
 
 internal sealed class ProbeState
 {

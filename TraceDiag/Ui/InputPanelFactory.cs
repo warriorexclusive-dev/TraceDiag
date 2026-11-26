@@ -2,11 +2,11 @@ namespace TraceDiag.Ui;
 
 internal static class InputPanelFactory
 {
-    internal static TableLayoutPanel Create(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run)
+    internal static TableLayoutPanel Create(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown delay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run)
     {
         var layout = CreateLayout();
         layout.Controls.Add(CreateLeftFrame(host, packet, attempts), 0, 0);
-        layout.Controls.Add(CreateRightFrame(font, dynamicPacketSize, darkTheme, run), 1, 0);
+        layout.Controls.Add(CreateRightFrame(delay, font, dynamicPacketSize, darkTheme, run), 1, 0);
         return layout;
     }
 
@@ -55,14 +55,15 @@ internal static class InputPanelFactory
         frame.Controls.Add(attempts, 1, 2);
     }
 
-    private static TableLayoutPanel CreateRightFrame(NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run)
+    private static TableLayoutPanel CreateRightFrame(NumericUpDown delay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox darkTheme, Button run)
     {
         var frame = CreateFramePanel();
         ConfigureRightFrame(frame);
-        frame.Controls.Add(CreateFontPanel(font), 0, 0);
-        frame.Controls.Add(dynamicPacketSize, 0, 1);
-        frame.Controls.Add(darkTheme, 0, 2);
-        frame.Controls.Add(run, 0, 3);
+        frame.Controls.Add(CreateLabelledNumeric(Strings.Ui.FontSizeLabel, font), 0, 0);
+        frame.Controls.Add(CreateLabelledNumeric(Strings.Ui.ReplyDelayLabel, delay), 0, 1);
+        frame.Controls.Add(dynamicPacketSize, 0, 2);
+        frame.Controls.Add(darkTheme, 0, 3);
+        frame.Controls.Add(run, 0, 4);
         return frame;
     }
 
@@ -71,65 +72,55 @@ internal static class InputPanelFactory
         Dock = DockStyle.Fill,
         AutoSize = true,
         ColumnCount = 1,
-        RowCount = 4,
+        RowCount = 5,
         Padding = new Padding(8, 0, 0, 0)
     };
 
     private static void ConfigureRightFrame(TableLayoutPanel frame)
     {
         frame.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        frame.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        frame.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        frame.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        frame.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        for (var i = 0; i < frame.RowCount; i++) frame.RowStyles.Add(new RowStyle(SizeType.AutoSize));
     }
 
-    private static TableLayoutPanel CreateFontPanel(NumericUpDown font)
+    private static TableLayoutPanel CreateLabelledNumeric(string label, NumericUpDown input)
     {
-        var panel = CreateFontPanelLayout();
-        ConfigureFontPanel(panel);
-        panel.Controls.Add(CreateFontLabel(), 0, 0);
-        panel.Controls.Add(font, 1, 0);
+        var panel = CreateNumericPanelLayout();
+        panel.Controls.Add(CreateRightLabel(label), 0, 0);
+        panel.Controls.Add(input, 1, 0);
         return panel;
     }
 
-    private static TableLayoutPanel CreateFontPanelLayout() => new()
+    private static TableLayoutPanel CreateNumericPanelLayout()
     {
-        AutoSize = true,
-        ColumnCount = 2,
-        RowCount = 1,
-        Anchor = AnchorStyles.Top | AnchorStyles.Right,
-        Dock = DockStyle.None,
-        Margin = new Padding(8, 0, 0, 0)
-    };
-
-    private static void ConfigureFontPanel(TableLayoutPanel panel)
-    {
+        var panel = new TableLayoutPanel
+        {
+            AutoSize = true,
+            ColumnCount = 2,
+            RowCount = 1,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right,
+            Dock = DockStyle.None,
+            Margin = new Padding(8, 0, 0, 0)
+        };
         panel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         panel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
+        return panel;
     }
 
-    private static Label CreateFontLabel()
+    private static Label CreateRightLabel(string text) => new()
     {
-        return new Label
-        {
-            Text = Strings.Ui.FontSizeLabel,
-            AutoSize = true,
-            Anchor = AnchorStyles.Right,
-            TextAlign = ContentAlignment.MiddleRight,
-            Padding = new Padding(0, 6, 6, 6)
-        };
-    }
+        Text = text,
+        AutoSize = true,
+        Anchor = AnchorStyles.Right,
+        TextAlign = ContentAlignment.MiddleRight,
+        Padding = new Padding(0, 6, 6, 6)
+    };
 
-    private static Label CreateFieldLabel(string text)
+    private static Label CreateFieldLabel(string text) => new()
     {
-        return new Label
-        {
-            Text = text,
-            AutoSize = true,
-            Anchor = AnchorStyles.Left,
-            TextAlign = ContentAlignment.MiddleLeft,
-            Padding = new Padding(0, 6, 0, 6)
-        };
-    }
+        Text = text,
+        AutoSize = true,
+        Anchor = AnchorStyles.Left,
+        TextAlign = ContentAlignment.MiddleLeft,
+        Padding = new Padding(0, 6, 0, 6)
+    };
 }

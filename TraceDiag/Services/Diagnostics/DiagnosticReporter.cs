@@ -19,6 +19,7 @@ internal static class DiagnosticReporter
         Report(context, progress, TextFormatter.Fmt(Strings.Diag.TargetFormat, input.RemoteHostLabel, input.RemoteAddress));
         Report(context, progress, TextFormatter.Fmt(Strings.Diag.MaxPacketSizeFormat, input.MaxPacketSize));
         Report(context, progress, TextFormatter.Fmt(Strings.Diag.AttemptsFormat, input.Attempts));
+        Report(context, progress, TextFormatter.Fmt(Strings.Diag.ReplyDelayFormat, input.DelayMs));
         Report(context, progress, input.DynamicPacketSize ? Strings.Diag.DynamicEnabled : Strings.Diag.DynamicDisabled);
         var sizesFormat = input.DynamicPacketSize ? Strings.Diag.PacketSizesFormat : Strings.Diag.PacketSizeFixedFormat;
         Report(context, progress, TextFormatter.Fmt(sizesFormat, string.Join(Strings.Diag.PacketSizeListSeparator, sizes)));
