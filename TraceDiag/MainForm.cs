@@ -154,7 +154,12 @@ public sealed class MainForm : Form
         previous.Dispose();
     }
 
-    private void ApplyTheme() => ThemeApplier.Apply(this, _appConfig.Theme);
+    private void ApplyTheme()
+    {
+        var palette = ThemeApplier.Palette(_appConfig.Theme);
+        ThemeApplier.Apply(this, palette);
+        _statsGrid.SetPalette(palette);
+    }
 
     private void DarkThemeInputOnCheckedChanged(object? sender, EventArgs e)
     {

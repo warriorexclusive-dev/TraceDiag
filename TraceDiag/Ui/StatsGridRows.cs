@@ -5,10 +5,10 @@ namespace TraceDiag.Ui;
 
 internal static class StatsGridRows
 {
-    internal static void AddRow(DataGridView grid, HopStatSnapshot stat)
+    internal static void AddRow(DataGridView grid, HopStatSnapshot stat, ThemePalette? palette = null)
     {
         var rowIndex = grid.Rows.Add(CreateCells(stat));
-        ApplyHighlight(grid.Rows[rowIndex], stat);
+        ApplyHighlight(grid.Rows[rowIndex], stat, palette ?? ThemePalette.Dark);
     }
 
     internal static object Value(HopStatSnapshot stat, string columnName) => columnName switch
@@ -26,11 +26,14 @@ internal static class StatsGridRows
         _ => string.Empty
     };
 
-    internal static void ApplyCellStyle(DataGridViewCellStyle style, HopStatSnapshot stat, string columnName)
+    internal static void ApplyCellStyle(DataGridViewCellStyle style, HopStatSnapshot stat,
+        string columnName, ThemePalette palette) => style.ForeColor = TextColor(stat, columnName, palette);
+
+    private static Color TextColor(HopStatSnapshot stat, string columnName, ThemePalette palette)
     {
-        style.ForeColor = Color.Empty;
-        if (HasLossHighlight(stat)) style.ForeColor = Color.Firebrick;
-        if (IsDiagnosis(columnName, stat)) style.ForeColor = Color.Firebrick;
+        if (IsInactive(stat)) return palette.DisabledText;
+        if (HasLossHighlight(stat) || IsDiagnosis(columnName, stat)) return palette.WarningText;
+        return palette.Text;
     }
 
     private static object[] CreateCells(HopStatSnapshot stat) =>
@@ -60,12 +63,15 @@ internal static class StatsGridRows
 
     private static string Counter(int value) => value.ToString(CultureInfo.InvariantCulture);
 
-    private static void ApplyHighlight(DataGridViewRow row, HopStatSnapshot stat)
+    private static void ApplyHighlight(DataGridViewRow row, HopStatSnapshot stat, ThemePalette palette)
     {
-        ApplyCellStyle(row.DefaultCellStyle, stat, string.Empty);
+        ApplyCellStyle(row.DefaultCellStyle, stat, string.Empty, palette);
         row.Cells[Strings.Ui.ColumnKeyDiagnosis].Style.ForeColor =
-            stat.Diagnosis == Strings.Diagnosis.None ? Color.Empty : Color.Firebrick;
+            TextColor(stat, Strings.Ui.ColumnKeyDiagnosis, palette);
     }
+
+    private static bool IsInactive(HopStatSnapshot stat) =>
+        stat.Diagnosis == Strings.Diagnosis.IcmpDisabled;
 
     private static bool HasLossHighlight(HopStatSnapshot stat) =>
         stat.Sent > 0 && (stat.Lost > 0 || !stat.LastPingMs.HasValue);

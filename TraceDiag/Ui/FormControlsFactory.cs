@@ -70,7 +70,7 @@ internal static class FormControlsFactory
         Anchor = AnchorStyles.Right
     };
 
-    private static CheckBox CreateDynamicPacketSizeCheckBox() => new()
+    private static ThemedCheckBox CreateDynamicPacketSizeCheckBox() => new()
     {
         Text = Strings.Ui.DynamicPacketSizeLabel,
         AutoSize = true,
@@ -80,7 +80,7 @@ internal static class FormControlsFactory
         Margin = new Padding(8, 6, 0, 0)
     };
 
-    private static CheckBox CreateMonitoringModeCheckBox() => new()
+    private static ThemedCheckBox CreateMonitoringModeCheckBox() => new()
     {
         Text = Strings.Ui.MonitoringModeLabel,
         AutoSize = true,
@@ -89,7 +89,7 @@ internal static class FormControlsFactory
         Anchor = AnchorStyles.Top | AnchorStyles.Left
     };
 
-    private static CheckBox CreateDarkThemeCheckBox(bool darkTheme) => new()
+    private static ThemedCheckBox CreateDarkThemeCheckBox(bool darkTheme) => new()
     {
         Text = Strings.Ui.DarkThemeLabel,
         AutoSize = true,

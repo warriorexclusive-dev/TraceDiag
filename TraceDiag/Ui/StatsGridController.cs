@@ -7,6 +7,7 @@ internal sealed class StatsGridController
 {
     private readonly DataGridView _grid;
     private IReadOnlyList<HopStatSnapshot> _items = Array.Empty<HopStatSnapshot>();
+    private ThemePalette _palette = ThemePalette.Dark;
 
     internal StatsGridController(DataGridView grid)
     {
@@ -14,6 +15,12 @@ internal sealed class StatsGridController
         _grid.VirtualMode = true;
         _grid.CellValueNeeded += CellValueNeeded;
         _grid.CellFormatting += CellFormatting;
+    }
+
+    internal void SetPalette(ThemePalette palette)
+    {
+        _palette = palette;
+        _grid.Invalidate();
     }
 
     internal void Render(IReadOnlyList<HopStatSnapshot> items)
@@ -32,7 +39,7 @@ internal sealed class StatsGridController
     private void CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
     {
         if (!TryGet(e.RowIndex, e.ColumnIndex, out var stat, out var column)) return;
-        StatsGridRows.ApplyCellStyle(e.CellStyle, stat, column);
+        StatsGridRows.ApplyCellStyle(e.CellStyle, stat, column, _palette);
     }
 
     private bool TryGet(int row, int column, out HopStatSnapshot stat, out string name)

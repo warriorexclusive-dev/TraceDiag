@@ -49,7 +49,8 @@ WinForms-утилита для диагностики маршрута до уд
 - Выбор размера шрифта лога, задержки при потере и крупная кнопка `Run`/`Stop`
   в правой панели: во время проверки кнопка останавливает запуск.
 - Полноэкранный режим: `F11` — включить/выключить, `Esc` — выйти.
-- Тёмная тема по умолчанию с переключателем в правой панели; выбор сохраняется в настройках.
+- Тёмная тема по умолчанию с переключателем в левой панели; выбор сохраняется в настройках.
+  Чекбоксы и таблица используют цвета темы: активный текст белый, непроверяемые узлы — серый.
 - При закрытии окна отдельный файл `ui-state.json` сохраняет все поля ввода, чекбоксы,
   ширины столбцов таблицы и состояние окна: развёрнуто по пикселям (`x, y, x2, y2`)
   или maximized. При запуске состояние восстанавливается; повреждённый файл удаляется,
@@ -77,17 +78,17 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**134 юнит-теста** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
+**137 юнит-тестов** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
 маппинг ICMP-ответов, конфигурацию, логирование, сохранение состояния интерфейса,
 диагностические модули и полный цикл `TraceDiagnosticsService` с тестовыми фейками
 ICMP, DNS и логера.
 
 ## Готовые сборки
 
-Последний выпуск: [Release 1.8.1 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.8.1)
+Последний выпуск: [Release 1.8.2 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.8.2)
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.1/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.1/TraceDiag-install.zip)
+- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.2/TraceDiag.exe)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.2/TraceDiag-install.zip)
 
 История изменений: [ReleaseNotes.md](ReleaseNotes.md).
 

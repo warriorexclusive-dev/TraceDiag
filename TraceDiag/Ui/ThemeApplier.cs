@@ -4,7 +4,7 @@ namespace TraceDiag.Ui;
 
 internal static class ThemeApplier
 {
-    internal static void Apply(Form form, AppTheme theme) => Apply(form, PaletteFor(theme));
+    internal static void Apply(Form form, AppTheme theme) => Apply(form, Palette(theme));
 
     internal static void Apply(Form form, ThemePalette palette)
     {
@@ -13,7 +13,7 @@ internal static class ThemeApplier
         ApplyControl(form, palette);
     }
 
-    private static ThemePalette PaletteFor(AppTheme theme) =>
+    internal static ThemePalette Palette(AppTheme theme) =>
         theme == AppTheme.Dark ? ThemePalette.Dark : ThemePalette.Light;
 
     private static void ApplyControl(Control control, ThemePalette palette)
@@ -29,6 +29,7 @@ internal static class ThemeApplier
             case TextBox text: ApplyTextBox(text, palette); break;
             case NumericUpDown numeric: ApplyNumeric(numeric, palette); break;
             case DataGridView grid: ApplyGrid(grid, palette); break;
+            case ThemedCheckBox check: ApplyThemedCheckBox(check, palette); break;
             case CheckBox check: ApplyCheckBox(check, palette); break;
             case Button button: ApplyButton(button, palette); break;
             case Label label: ApplyLabel(label, palette); break;
@@ -73,6 +74,14 @@ internal static class ThemeApplier
     {
         style.BackColor = back;
         style.ForeColor = fore;
+    }
+
+    private static void ApplyThemedCheckBox(ThemedCheckBox check, ThemePalette palette)
+    {
+        check.SetPalette(palette);
+        check.BackColor = Color.Transparent;
+        check.ForeColor = palette.Text;
+        check.Invalidate();
     }
 
     private static void ApplyCheckBox(CheckBox check, ThemePalette palette)
