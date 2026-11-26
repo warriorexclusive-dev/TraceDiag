@@ -20,6 +20,15 @@ public sealed class FormControlsFactoryTests
     }
 
     [Fact]
+    public void Create_UsesStandardCheckBoxes()
+    {
+        var controls = FormControlsFactory.Create(12f);
+        Assert.Equal(typeof(CheckBox), controls.DynamicPacketSize.GetType());
+        Assert.Equal(typeof(CheckBox), controls.MonitoringMode.GetType());
+        Assert.Equal(typeof(CheckBox), controls.DarkTheme.GetType());
+    }
+
+    [Fact]
     public void Create_StartsWithMonitoringModeDisabled()
     {
         var controls = FormControlsFactory.Create(12f);

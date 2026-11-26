@@ -40,6 +40,15 @@ public sealed class StatsGridTests
         Assert.Equal(ThemePalette.Dark.DisabledText, style.ForeColor);
     }
 
+    [Fact]
+    public void ApplyCellStyle_UsesGrayForLightThemeIcmpDisabledHop()
+    {
+        var style = new DataGridViewCellStyle();
+        StatsGridRows.ApplyCellStyle(style, CreateSnapshot(Strings.Diagnosis.IcmpDisabled),
+            Strings.Ui.ColumnKeyIp, ThemePalette.Light);
+        Assert.Equal(ThemePalette.Light.DisabledText, style.ForeColor);
+    }
+
     private static HopStatSnapshot CreateSnapshot(string diagnosis = Strings.Diagnosis.PacketSizeLimit) => new(
         1, TestFactories.Address(1), null, 4, 3, 8, 5, 10, 9,
         Strings.Status.Normal, diagnosis);

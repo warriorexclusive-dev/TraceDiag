@@ -19,15 +19,4 @@ public sealed class ThemeApplierTests
         Assert.Equal(palette.GridLine, check.FlatAppearance.BorderColor);
         Assert.Equal(palette.Accent, check.FlatAppearance.CheckedBackColor);
     }
-
-    [Fact]
-    public void ApplyThemedCheckBox_UsesCurrentPalette()
-    {
-        using var form = new Form();
-        var check = new ThemedCheckBox();
-        form.Controls.Add(check);
-        ThemeApplier.Apply(form, ThemePalette.Dark);
-        Assert.Equal(ThemePalette.Dark, check.GetPalette());
-        Assert.Equal(ThemePalette.Dark.Text, check.ForeColor);
-    }
 }

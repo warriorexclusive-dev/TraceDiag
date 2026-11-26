@@ -29,7 +29,6 @@ internal static class ThemeApplier
             case TextBox text: ApplyTextBox(text, palette); break;
             case NumericUpDown numeric: ApplyNumeric(numeric, palette); break;
             case DataGridView grid: ApplyGrid(grid, palette); break;
-            case ThemedCheckBox check: ApplyThemedCheckBox(check, palette); break;
             case CheckBox check: ApplyCheckBox(check, palette); break;
             case Button button: ApplyButton(button, palette); break;
             case Label label: ApplyLabel(label, palette); break;
@@ -74,14 +73,6 @@ internal static class ThemeApplier
     {
         style.BackColor = back;
         style.ForeColor = fore;
-    }
-
-    private static void ApplyThemedCheckBox(ThemedCheckBox check, ThemePalette palette)
-    {
-        check.SetPalette(palette);
-        check.BackColor = Color.Transparent;
-        check.ForeColor = palette.Text;
-        check.Invalidate();
     }
 
     private static void ApplyCheckBox(CheckBox check, ThemePalette palette)
