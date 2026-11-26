@@ -37,6 +37,12 @@ WinForms-утилита для диагностики маршрута до уд
   в правой панели: во время проверки кнопка останавливает запуск.
 - Полноэкранный режим: `F11` — включить/выключить, `Esc` — выйти.
 - Тёмная тема по умолчанию с переключателем в правой панели; выбор сохраняется в настройках.
+- При закрытии окна отдельный файл `ui-state.json` сохраняет все поля ввода, чекбоксы,
+  ширины столбцов таблицы и состояние окна: развёрнуто по пикселям (`x, y, x2, y2`)
+  или maximized. При запуске состояние восстанавливается; повреждённый файл удаляется,
+  и программа стартует со значениями по умолчанию.
+- Ключ запуска `reset` (например, `TraceDiag.exe reset`) принудительно удаляет сохранённое
+  состояние интерфейса перед загрузкой.
 - Собственная иконка `cable_24dp.ico`, файловое логирование и сохранение настроек в JSON.
 
 ## Требования
@@ -58,16 +64,17 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**115 юнит-тестов** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
-маппинг ICMP-ответов, конфигурацию и логирование, диагностические модули и полный цикл
-`TraceDiagnosticsService` с тестовыми фейками ICMP, DNS и логера.
+**124 юнит-теста** (xUnit) покрывают планировщик размеров пакета, статистику узлов,
+маппинг ICMP-ответов, конфигурацию, логирование, сохранение состояния интерфейса,
+диагностические модули и полный цикл `TraceDiagnosticsService` с тестовыми фейками
+ICMP, DNS и логера.
 
 ## Готовые сборки
 
-Последний выпуск: [Release 1.5.0 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.5.0)
+Последний выпуск: [Release 1.6.0 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.6.0)
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.5.0/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.5.0/TraceDiag-install.zip)
+- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.6.0/TraceDiag.exe)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.6.0/TraceDiag-install.zip)
 
 История изменений: [ReleaseNotes.md](ReleaseNotes.md).
 
@@ -107,6 +114,7 @@ installer/
 ## Данные приложения
 
 - Настройки: `%LOCALAPPDATA%\TraceDiag\settings.json`
+- Состояние интерфейса: `%LOCALAPPDATA%\TraceDiag\ui-state.json`
 - Логи: `%LOCALAPPDATA%\TraceDiag\logs\tracediag-yyyyMMdd.log`
 
 ## Лицензия

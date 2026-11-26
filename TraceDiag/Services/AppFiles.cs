@@ -9,6 +9,9 @@ internal static class AppFiles
     internal static AppConfigStore CreateConfigStore(string appDataDir) =>
         new(Path.Combine(appDataDir, Strings.App.ConfigFile));
 
+    internal static UiStateStore CreateUiStateStore(string appDataDir) =>
+        new(Path.Combine(appDataDir, Strings.App.UiStateFile));
+
     internal static FileDiagnosticLogger CreateLogger(string appDataDir) =>
         new(Path.Combine(appDataDir, Strings.App.LogsFolder, BuildLogFileName()));
 

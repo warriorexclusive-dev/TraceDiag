@@ -34,7 +34,7 @@ internal static class FormControlsFactory
         Width = 140,
         Minimum = 64,
         Maximum = 65534,
-        Value = 1024
+        Value = UiDefaults.DefaultMaxPacketSize
     };
 
     private static NumericUpDown CreateAttemptsInput() => new()

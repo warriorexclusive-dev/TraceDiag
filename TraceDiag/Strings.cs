@@ -8,6 +8,8 @@ internal static class Strings
         public const string Title = "TraceDiag - Traceroute Diagnostic";
         public const string DataFolder = "TraceDiag";
         public const string ConfigFile = "settings.json";
+        public const string UiStateFile = "ui-state.json";
+        public const string ResetArgument = "reset";
         public const string LogsFolder = "logs";
         public const string LogFileNameFormat = "tracediag-{0:yyyyMMdd}.log";
         public const string ConsoleTimestampFormat = "HH:mm:ss";
@@ -16,6 +18,7 @@ internal static class Strings
         public const string TimestampedMessageFormat = "[{0}] {1}";
         public const string ConsoleLogFileFormat = "[{0}] Log file: {1}";
         public const string ConsoleConfigFileFormat = "[{0}] Config: {1}";
+        public const string ConsoleUiStateFileFormat = "[{0}] UI state: {1}";
         public const string NetworkIconFile1 = "ncpa.cpl";
         public const string NetworkIconFile2 = "netshell.dll";
         public const string NetworkIconFile3 = "netcenter.dll";
@@ -109,6 +112,11 @@ internal static class Strings
         public const string ApplicationStarted = "Application started.";
         public const string SettingsSavedFormat = "Settings saved: OutputFontSize={0:0.0}";
         public const string ThemeChangedFormat = "Settings saved: Theme={0}";
+        public const string UiStateLoaded = "UI state loaded.";
+        public const string UiStateReset = "UI state reset by launch argument.";
+        public const string UiStateCorruptedReset = "UI state file was invalid and has been removed.";
+        public const string UiStateSaved = "UI state saved.";
+        public const string UiStateSaveFailed = "UI state could not be saved.";
         public const string RunRequestedFormat = "Run requested: host='{0}', maxPacketSize={1}, attempts={2}, dynamic={3}, lossDelayMs={4}";
         public const string RunCompleted = "Run completed.";
         public const string RunCancelled = "Run cancelled by user.";

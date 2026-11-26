@@ -13,6 +13,9 @@ public sealed class MainForm : Form
     private readonly AppConfigStore _configStore;
     private readonly AppConfig _appConfig;
     private readonly FileDiagnosticLogger _logger;
+    private readonly UiStateStore _uiStateStore;
+    private readonly bool _resetRequested;
+    private MainControls _controls = null!;
 
     private TextBox _remoteHostTextBox = null!;
     private NumericUpDown _maxPacketSizeInput = null!;
@@ -29,28 +32,41 @@ public sealed class MainForm : Form
     internal FileDiagnosticLogger Logger => _logger;
     internal Label StatusLabel => _statusLabel;
 
-    public MainForm()
+    public MainForm() : this(false, null)
     {
-        (_configStore, _appConfig, _logger) = CreateServices();
-        _outputFontSize = _appConfig.OutputFontSize;
-        var controls = FormControlsFactory.Create(_outputFontSize, _appConfig.Theme == AppTheme.Dark);
-        AssignControls(controls);
-        ConfigureWindow();
-        SubscribeEvents();
-        Controls.Add(controls.Root);
-        ApplyTheme();
-        LogStartup();
     }
 
-    private static (AppConfigStore Store, AppConfig Config, FileDiagnosticLogger Logger) CreateServices()
+    internal MainForm(bool resetUiState) : this(resetUiState, null)
+    {
+    }
+
+    internal MainForm(bool resetUiState, UiStateStore? uiStateStore)
+    {
+        (_configStore, _appConfig, _logger, _uiStateStore) = CreateServices(resetUiState, uiStateStore);
+        _resetRequested = resetUiState;
+        var loadResult = _uiStateStore.Load();
+        var state = loadResult.State;
+        _outputFontSize = state?.OutputFontSize ?? _appConfig.OutputFontSize;
+        var darkTheme = state?.DarkTheme ?? _appConfig.Theme == AppTheme.Dark;
+        var controls = FormControlsFactory.Create(_outputFontSize, darkTheme);
+        AssignControls(controls);
+        ConfigureWindow();
+        ApplyLoadedState(loadResult);
+        FinishInitialization(controls, loadResult);
+    }
+
+    private static (AppConfigStore Store, AppConfig Config, FileDiagnosticLogger Logger, UiStateStore UiStateStore) CreateServices(bool resetUiState, UiStateStore? provided)
     {
         var appDataDir = AppFiles.GetAppDataDirectory();
-        var store = AppFiles.CreateConfigStore(appDataDir);
-        return (store, store.Load(), AppFiles.CreateLogger(appDataDir));
+        var stateStore = provided ?? AppFiles.CreateUiStateStore(appDataDir);
+        if (resetUiState) stateStore.Reset();
+        var configStore = AppFiles.CreateConfigStore(appDataDir);
+        return (configStore, configStore.Load(), AppFiles.CreateLogger(appDataDir), stateStore);
     }
 
     private void AssignControls(MainControls controls)
     {
+        _controls = controls;
         _remoteHostTextBox = controls.RemoteHost;
         _maxPacketSizeInput = controls.MaxPacketSize;
         _attemptsInput = controls.Attempts;
@@ -62,6 +78,28 @@ public sealed class MainForm : Form
         _outputTextBox = controls.Output;
         _runButton = controls.Run;
         _statusLabel = controls.Status;
+    }
+
+    private void FinishInitialization(MainControls controls, UiStateLoadResult loadResult)
+    {
+        SubscribeEvents();
+        Controls.Add(controls.Root);
+        ApplyTheme();
+        LogStartup(loadResult);
+    }
+
+    private void ApplyLoadedState(UiStateLoadResult loadResult)
+    {
+        if (loadResult.State is null) return;
+        UiStateRestorer.Apply(this, _controls, loadResult.State, _appConfig);
+        _configStore.Save(_appConfig);
+    }
+
+    private void SaveUiState()
+    {
+        var state = UiStateCapture.Create(this, _controls, _fullScreen);
+        if (_uiStateStore.Save(state)) _logger.Info(Strings.Log.UiStateSaved);
+        else _logger.Warn(Strings.Log.UiStateSaveFailed);
     }
 
     private void ConfigureWindow()
@@ -85,11 +123,15 @@ public sealed class MainForm : Form
         KeyDown += MainFormOnKeyDown;
     }
 
-    private void LogStartup()
+    private void LogStartup(UiStateLoadResult loadResult)
     {
         _logger.Info(Strings.Log.ApplicationStarted);
         AppendOutputLine(TextFormatter.Fmt(Strings.App.ConsoleLogFileFormat, TextFormatter.Now(), _logger.LogFilePath));
         AppendOutputLine(TextFormatter.Fmt(Strings.App.ConsoleConfigFileFormat, TextFormatter.Now(), _configStore.ConfigFilePath));
+        AppendOutputLine(TextFormatter.Fmt(Strings.App.ConsoleUiStateFileFormat, TextFormatter.Now(), _uiStateStore.FilePath));
+        if (_resetRequested) _logger.Info(Strings.Log.UiStateReset);
+        if (loadResult.Corrupted) _logger.Warn(Strings.Log.UiStateCorruptedReset);
+        if (loadResult.State is not null) _logger.Info(Strings.Log.UiStateLoaded);
     }
 
     private void FontSizeInputOnValueChanged(object? sender, EventArgs e)
@@ -126,6 +168,7 @@ public sealed class MainForm : Form
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         _runCts?.Cancel();
+        SaveUiState();
         base.OnFormClosing(e);
     }
 
