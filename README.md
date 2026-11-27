@@ -1,5 +1,8 @@
 # TraceDiag
 
+> Языки: [English](docs/en/README.md) · [中文](docs/cn/README.md) · [Français](docs/fr/README.md) ·
+> [Deutsch](docs/de/README.md) · [Русский](docs/ru/README.md) · [日本語](docs/jp/README.md)
+
 Утилита для диагностики маршрута до удалённого хоста. Собирает ICMP-трассировку,
 разрешает имена узлов, измеряет потери и проверяет устойчивость маршрута к разным размерам
 пакета. Канонические строки находятся в `Strings.cs`, а переводы — в JSON-файлах папки
@@ -115,8 +118,9 @@ TraceDiag.Console reset [--language en|cn|fr|de|ru|jp]
 - Консоль `net48`: Windows 7 SP1 / Server 2008 R2 SP1 или новее, .NET Framework 4.8.
 - Консоль `net10.0`: Windows Server 2012+, Ubuntu 22.04/24.04/26.04 и другие
   поддерживаемые .NET 10 системы; Linux-пакет self-contained, отдельный Runtime не нужен.
-- Для сборки: .NET 10 SDK. Установка .NET Framework 4.8 на legacy-Windows требует прав
-  администратора и локального установщика из альтернативного репозитория (см. ниже).
+- Для сборки: .NET 10 SDK; для MSI — WiX 5 (`dotnet tool restore`), для deb — WSL с `dpkg-deb`.
+  Установка .NET Framework 4.8 на legacy-Windows требует прав администратора и локального
+  установщика из альтернативного репозитория (см. ниже).
 
 ## Сборка и запуск
 
@@ -132,7 +136,7 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**247 прогонов тестов** (173 WinForms + 37 консольных на `net48` и `net10.0`) покрывают
+**252 прогона тестов** (174 WinForms + 39 консольных на `net48` и `net10.0`) покрывают
 планировщик размеров пакета, статистику узлов, маппинг ICMP-ответов, конфигурацию,
 логирование, сохранение состояния интерфейса, локализацию на всех шести языках, разбор
 аргументов консоли, форматы вывода, диагностические модули и полный цикл
@@ -146,21 +150,24 @@ ICMP, DNS и логера.
 - [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.4/TraceDiag.exe)
 - [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.4/TraceDiag-install.zip)
 
-История изменений: [ReleaseNotes.md](ReleaseNotes.md).
+История изменений: [ReleaseNotes.md](ReleaseNotes.md); переводы — в `docs/<язык>/`.
 
 ## Установка на чистый ПК
+
+Архивы (пер-user установка и «распаковать и запустить»):
 
 ```powershell
 cd installer
 .\Publish-TraceDiag.ps1
 ```
 
-Скрипт публикует WinForms и консоль `net48` в `installer\App`, консоль `net10.0` для
-`linux-x64` в `installer\ConsoleLinux`, копирует `localizations\` в обе папки и собирает
-два архива:
+Скрипт публикует WinForms и консоль `net48` в `installer\App`, self-contained консоль
+`net10.0` в `installer\ConsoleLinux` (`linux-x64`) и `installer\ConsoleLinux-arm64`,
+копирует `localizations\` во все папки и собирает архивы:
 
 - `installer\TraceDiag-install.zip` — Windows: GUI + консоль `net48` и установщик;
-- `installer\TraceDiag-console-linux-x64.tar.gz` — self-contained консоль для Linux.
+- `installer\TraceDiag-console-linux-x64.tar.gz` — консоль для Linux/amd64;
+- `installer\TraceDiag-console-linux-arm64.tar.gz` — консоль для Linux/arm64.
 
 На Windows распакуйте первый архив и запустите `Install-TraceDiag.cmd`. Установщик
 проверяет .NET Framework 4.8 по реестру. Если его нет, положите `dotNetFx48_Full.exe`
@@ -169,12 +176,27 @@ cd installer
 Прямая загрузка с сайта Microsoft не используется. Установщик копирует файлы в
 `%LOCALAPPDATA%\Programs\TraceDiag` и создаёт ярлык в меню «Пуск».
 
-На Linux распакуйте tar.gz и запустите `bash install-console.sh`; скрипт скопирует
+На Linux распакуйте нужный tar.gz и запустите `bash install-console.sh`; скрипт скопирует
 self-contained файлы в `~/.local/share/TraceDiag` и создаст символическую ссылку
 в `~/.local/bin`. Отдельный .NET Runtime скачивать не нужно.
 
+Системные пакеты (per-machine):
+
+```powershell
+cd installer
+dotnet tool restore
+.\Build-TraceDiag-Packages.ps1
+```
+
+Результат — в `installer\dist`: `TraceDiag-<версия>-x86.msi`, `TraceDiag-<версия>-x64.msi`,
+`tracediag_<версия>_amd64.deb` и `tracediag_<версия>_arm64.deb`. MSI содержит GUI и консоль
+соответствующей разрядности, `localizations\` и ярлыки в меню «Пуск»; перед установкой
+проверяется .NET Framework 4.8. deb-пакеты ставят консоль в `/usr/share/tracediag` и
+создают команду `tracediag` через `/usr/bin`. Для deb требуется WSL с `dpkg-deb`.
+
 Подробности: [installer/README-Installer.md](installer/README-Installer.md).
-Скомпилированные файлы (`installer\App`, `installer\ConsoleLinux`, архивы) в Git не попадают.
+Скомпилированные файлы (`installer\App`, `installer\ConsoleLinux*`, `installer\build`,
+`installer\dist`, архивы) в Git не попадают.
 
 ## Структура проекта
 
@@ -190,15 +212,20 @@ TraceDiag.Core/              netstandard2.0, бизнес-логика без п
   Localization/              чтение JSON-переводов и выбор языка
   Strings.cs                 канонические пользовательские и лог-строки
 localizations/               en/cn/fr/de/ru/jp.json — переводы интерфейса
+docs/                        en/cn/fr/de/ru/jp — README.md и ReleaseNotes.md на 6 языках
 TraceDiag/                   net48, WinForms-хост
   Ui/                        фабрики контролов, layout, потоки запуска и политика размера
 TraceDiag.Console/           net48 + net10.0, консольный хост
 TraceDiag.Tests/             net48, тесты WinForms и ядра
 TraceDiag.Console.Tests/     net48 + net10.0, тесты консоли и совместимости
 installer/
-  Install-TraceDiag.ps1      установка на Windows
+  Install-TraceDiag.ps1      установка на Windows (per-user)
   install-console.sh         установка консоли на Linux
-  Publish-TraceDiag.ps1      сборка дистрибутивов
+  Publish-TraceDiag.ps1      сборка архивов
+  Build-TraceDiag-Packages.ps1  сборка MSI (x86/x64) и deb (amd64/arm64)
+  wix/                       источники MSI
+  deb/                       скрипт сборки deb в WSL
+.config/dotnet-tools.json    закреплённая версия WiX 5
 ```
 
 ## Данные приложения

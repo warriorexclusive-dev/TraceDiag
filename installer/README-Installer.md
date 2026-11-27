@@ -16,11 +16,30 @@ self-contained консоль для Linux (`net10.0`, `linux-x64`). Загру�
 `localizations\` и собирает рядом с собой:
 
 - `TraceDiag-install.zip` — Windows: GUI + консоль `net48`;
-- `TraceDiag-console-linux-x64.tar.gz` — self-contained консоль для Linux.
+- `TraceDiag-console-linux-x64.tar.gz` — self-contained консоль для Linux/amd64;
+- `TraceDiag-console-linux-arm64.tar.gz` — self-contained консоль для Linux/arm64.
 
 Если положить `dotNetFx48_Full.exe` в эту папку, скрипт включит его в Windows-архив.
 
-## 2. Установка на Windows
+## 2. Системные пакеты
+
+Скрипт `Build-TraceDiag-Packages.ps1` собирает четыре пакета в `installer\dist`:
+
+```powershell
+dotnet tool restore
+powershell -ExecutionPolicy Bypass -File .\Build-TraceDiag-Packages.ps1
+```
+
+- `TraceDiag-<версия>-x86.msi` и `TraceDiag-<версия>-x64.msi` — Windows, per-machine,
+  GUI и консоль соответствующей разрядности, папка `localizations`, ярлыки в меню «Пуск».
+  Перед установкой проверяется .NET Framework 4.8 (`Release >= 528040`); скачивание с
+  сайта Microsoft не выполняется. Установка: `msiexec /i TraceDiag-1.9.0-x64.msi /qn`.
+- `tracediag_<версия>_amd64.deb` и `tracediag_<версия>_arm64.deb` — Linux, self-contained
+  консоль `net10.0` в `/usr/share/tracediag` и символическая ссылка `/usr/bin/tracediag`.
+  Установка: `sudo dpkg -i tracediag_1.9.0_amd64.deb`. Для сборки deb нужна WSL с
+  `dpkg-deb`; ключи `-SkipPublish` и `-SkipDeb` позволяют пересобрать только часть.
+
+## 3. Установка на Windows из архива
 
 1. Скопируйте `TraceDiag-install.zip` на целевой ПК и распакуйте.
 2. Запустите `Install-TraceDiag.cmd`.
@@ -40,12 +59,13 @@ self-contained консоль для Linux (`net10.0`, `linux-x64`). Загру�
 запуске, пересборка не нужна. Ключ — каноничный английский текст, поле `language` — код
 языка (`en`, `cn`, `fr`, `de`, `ru`, `jp`).
 
-## 3. Установка консоли на Linux
+## 4. Установка консоли на Linux из архива
 
 Отдельный .NET Runtime не нужен: архив содержит self-contained сборку `net10.0`.
 
 ```bash
 tar -xzf TraceDiag-console-linux-x64.tar.gz -C /tmp/tracediag
+# на arm64: tar -xzf TraceDiag-console-linux-arm64.tar.gz -C /tmp/tracediag
 bash /tmp/tracediag/install-console.sh
 export PATH="$HOME/.local/bin:$PATH"
 TraceDiag.Console --help

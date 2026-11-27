@@ -1,5 +1,8 @@
 # Release Notes
 
+> Языки: [English](docs/en/ReleaseNotes.md) · [中文](docs/cn/ReleaseNotes.md) · [Français](docs/fr/ReleaseNotes.md) ·
+> [Deutsch](docs/de/ReleaseNotes.md) · [Русский](docs/ru/ReleaseNotes.md) · [日本語](docs/jp/ReleaseNotes.md)
+
 История изменений TraceDiag. Готовые сборки публикуются на страницах
 [Releases](https://github.com/warriorexclusive-dev/TraceDiag/releases).
 
@@ -33,6 +36,12 @@
   альтернативного репозитория (`-Framework48InstallerPath` / `-Framework48Url`);
   загрузка с сайта Microsoft не используется. Консоль Linux поставляется
   self-contained tar.gz с `install-console.sh`, отдельный Runtime не нужен.
+- Добавлены системные пакеты: MSI для Windows x86 и x64 (с проверкой .NET Framework 4.8
+  и ярлыками в меню «Пуск») и deb для Linux amd64 и arm64 (самостоятельная консоль
+  и команда `tracediag`). Сборка — `installer\Build-TraceDiag-Packages.ps1`.
+  Архивы дополнены вариантом консоли для `linux-arm64`.
+- README и Release Notes переведены на `En`, `Cn`, `Fr`, `De`, `Ru`, `Jp` и лежат
+  отдельными файлами в `docs/<язык>/`.
 - GUI для Linux запланирован отдельной доработкой: архитектура Core готова к
   подключению второго UI-адаптера без изменения бизнес-логики.
 

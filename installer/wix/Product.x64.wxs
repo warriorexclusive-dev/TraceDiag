@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="TraceDiag (x64)" Language="1033" Version="$(var.Version)"
+           Manufacturer="Enaleven" UpgradeCode="01a21d1e-fa2c-761e-8896-b0e8240a94f6"
+           InstallerVersion="200" Compressed="yes" Scope="perMachine">
+    <SummaryInformation Description="TraceDiag route diagnostics (x64)" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of TraceDiag is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Property Id="NETFRAMEWORK48">
+      <RegistrySearch Id="Net48Native" Root="HKLM"
+                      Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"
+                      Name="Release" Type="raw" />
+    </Property>
+    <Property Id="NETFRAMEWORK48WOW">
+      <RegistrySearch Id="Net48Wow" Root="HKLM"
+                      Key="SOFTWARE\WOW6432Node\Microsoft\NET Framework Setup\NDP\v4\Full"
+                      Name="Release" Type="raw" />
+    </Property>
+    <Launch Condition="Installed OR (NETFRAMEWORK48 &gt;= 528040) OR (NETFRAMEWORK48WOW &gt;= 528040)"
+            Message="TraceDiag requires .NET Framework 4.8 or later." />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="TraceDiag">
+        <Directory Id="LOCALIZATIONSFOLDER" Name="localizations" />
+      </Directory>
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="TraceDiag" />
+    </StandardDirectory>
+
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="GuiShortcut" Guid="01a21d1e-fa2c-7ec5-8633-7078ea03734c">
+        <Shortcut Id="GuiStartMenuShortcut" Name="TraceDiag" Description="TraceDiag GUI"
+                  Target="[INSTALLFOLDER]TraceDiag.exe" WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="RemoveProgramMenuFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\Enaleven\TraceDiag\x64"
+                       Name="GuiShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+      <Component Id="ConsoleShortcut" Guid="01a21d1e-fa2c-7986-8ab7-6521d6e780eb">
+        <Shortcut Id="ConsoleStartMenuShortcut" Name="TraceDiag Console" Description="TraceDiag console"
+                  Target="[INSTALLFOLDER]TraceDiag.Console.exe" WorkingDirectory="INSTALLFOLDER" />
+        <RegistryValue Root="HKCU" Key="Software\Enaleven\TraceDiag\x64"
+                       Name="ConsoleShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="Main" Title="TraceDiag" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="GuiShortcut" />
+      <ComponentRef Id="ConsoleShortcut" />
+    </Feature>
+  </Package>
+</Wix>

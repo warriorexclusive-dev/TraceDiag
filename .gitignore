@@ -52,6 +52,9 @@ installer/App/
 installer/ConsoleLinux/
 installer/TraceDiag-install.zip
 installer/TraceDiag-console-linux-x64.tar.gz
+installer/ConsoleLinux-arm64/
+installer/TraceDiag-console-linux-arm64.tar.gz
+installer/dist/
 
 # NuGet
 *.nupkg
