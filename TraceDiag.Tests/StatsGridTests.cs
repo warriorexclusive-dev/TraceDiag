@@ -23,6 +23,17 @@ public sealed class StatsGridTests
     }
 
     [Fact]
+    public void AddRow_WritesEveryDiagnosis()
+    {
+        using var grid = StatsGridFactory.Create();
+        var combined = string.Join(Strings.Diagnosis.Separator,
+            Strings.Diagnosis.PacketSizeLimit, Strings.Diagnosis.AntiFlood,
+            Strings.Diagnosis.EcmpBalancing);
+        StatsGridRows.AddRow(grid, CreateSnapshot(combined));
+        Assert.Equal(combined, grid.Rows[0].Cells[Strings.Ui.ColumnKeyDiagnosis].Value);
+    }
+
+    [Fact]
     public void ApplyCellStyle_UsesPaletteTextForActiveHop()
     {
         var style = new DataGridViewCellStyle();

@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using TraceDiag.Models;
+using TraceDiag.Services.Diagnostics;
 
 namespace TraceDiag.Console;
 
@@ -94,7 +95,7 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
 
     private static string Status(HopStatSnapshot hop) => Strings.T(hop.Status);
 
-    private static string Diagnosis(HopStatSnapshot hop) => Strings.T(hop.Diagnosis);
+    private static string Diagnosis(HopStatSnapshot hop) => DiagnosisText.Localize(hop.Diagnosis);
 
     private static string Average(HopStatSnapshot hop) => Metric(hop, hop.AvgPingMs);
 

@@ -99,6 +99,19 @@ public sealed class OutputWriterTests
     }
 
     [Fact]
+    public void WriteSummary_PrintsEveryDiagnosis()
+    {
+        using var text = new StringWriter();
+        var combined = string.Join(Strings.Diagnosis.Separator,
+            Strings.Diagnosis.PacketSizeLimit, Strings.Diagnosis.AntiFlood,
+            Strings.Diagnosis.EcmpBalancing);
+        var writer = new OutputWriter(Strings.Console.FormatPlain, text);
+        writer.Stats([Snapshot() with { Diagnosis = combined }]);
+        writer.WriteSummary();
+        Assert.Contains(combined, text.ToString());
+    }
+
+    [Fact]
     public void WriteSummary_WithoutStats_DoesNothing()
     {
         using var text = new StringWriter();

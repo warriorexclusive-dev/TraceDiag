@@ -1,4 +1,5 @@
 using TraceDiag.Models;
+using TraceDiag.Services.Diagnostics;
 
 namespace TraceDiag.Services.Monitoring;
 
@@ -6,5 +7,5 @@ namespace TraceDiag.Services.Monitoring;
 internal static class MonitorEligibility
 {
     internal static bool IsEligible(HopInfo hop) =>
-        hop.Diagnosis != Strings.Diagnosis.IcmpDisabled;
+        !DiagnosisText.Contains(hop.Diagnosis, Strings.Diagnosis.IcmpDisabled);
 }

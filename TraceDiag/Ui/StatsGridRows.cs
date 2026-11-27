@@ -1,5 +1,6 @@
 using System.Globalization;
 using TraceDiag.Models;
+using TraceDiag.Services.Diagnostics;
 
 namespace TraceDiag.Ui;
 
@@ -24,7 +25,7 @@ internal static class StatsGridRows
         Strings.Ui.ColumnKeySent => Counter(stat.Sent),
         Strings.Ui.ColumnKeyReceived => Counter(stat.Received),
         Strings.Ui.ColumnKeyStatus => Strings.T(stat.Status),
-        Strings.Ui.ColumnKeyDiagnosis => Strings.T(stat.Diagnosis),
+        Strings.Ui.ColumnKeyDiagnosis => DiagnosisText.Localize(stat.Diagnosis),
         _ => string.Empty
     };
 
@@ -77,7 +78,7 @@ internal static class StatsGridRows
     }
 
     private static bool IsInactive(HopStatSnapshot stat) =>
-        stat.Diagnosis == Strings.Diagnosis.IcmpDisabled;
+        DiagnosisText.Contains(stat.Diagnosis, Strings.Diagnosis.IcmpDisabled);
 
     private static bool HasLossHighlight(HopStatSnapshot stat) =>
         stat.Sent > 0 && (stat.Lost > 0 || !stat.LastPingMs.HasValue);

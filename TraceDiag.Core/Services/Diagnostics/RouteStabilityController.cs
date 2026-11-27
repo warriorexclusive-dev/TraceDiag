@@ -9,16 +9,10 @@ internal sealed class RouteStabilityController : IRouteStabilityController
 {
     public void Apply(HopInfo hop)
     {
-        if (!CanApply(hop.Diagnosis)) return;
         var addresses = RouteSequence.Build(hop.Address, hop.Responders);
         var diagnosis = RouteSequence.Detect(addresses);
-        if (diagnosis is not null) hop.Diagnosis = diagnosis;
+        if (diagnosis is not null) hop.AddDiagnosis(diagnosis);
     }
-
-    private static bool CanApply(string diagnosis) =>
-        diagnosis == Strings.Diagnosis.None ||
-        diagnosis == Strings.Diagnosis.RouteChange ||
-        diagnosis == Strings.Diagnosis.EcmpBalancing;
 }
 
 internal static class RouteSequence

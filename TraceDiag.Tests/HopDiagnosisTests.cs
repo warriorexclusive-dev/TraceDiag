@@ -31,11 +31,12 @@ public sealed class HopDiagnosisTests
     }
 
     [Fact]
-    public void Apply_WithDegradedLargerSizeMarksPacketSizeLimit()
+    public void Apply_WithDegradedLargerSizeReportsBothReasons()
     {
         var hop = TestFactories.Hop(1, 1);
         HopDiagnosis.Apply(hop, [new HopSizeResult(64, 4, 4), new HopSizeResult(128, 4, 2)]);
-        Assert.Equal(Strings.Diagnosis.PacketSizeLimit, hop.Diagnosis);
+        Assert.Equal(string.Join(Strings.Diagnosis.Separator,
+            Strings.Diagnosis.PacketSizeLimit, Strings.Diagnosis.AntiFlood), hop.Diagnosis);
     }
 
     [Fact]
@@ -55,10 +56,11 @@ public sealed class HopDiagnosisTests
     }
 
     [Fact]
-    public void Apply_PrefersSizeLimitOverAntiFlood()
+    public void Apply_ReportsSizeLimitAndAntiFloodTogether()
     {
         var hop = TestFactories.Hop(1, 1);
         HopDiagnosis.Apply(hop, [new HopSizeResult(64, 4, 3), new HopSizeResult(128, 4, 0)]);
-        Assert.Equal(Strings.Diagnosis.PacketSizeLimit, hop.Diagnosis);
+        Assert.Equal(string.Join(Strings.Diagnosis.Separator,
+            Strings.Diagnosis.PacketSizeLimit, Strings.Diagnosis.AntiFlood), hop.Diagnosis);
     }
 }

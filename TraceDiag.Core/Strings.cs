@@ -170,6 +170,7 @@ internal static partial class Strings
         public const string AntiFlood = "ICMP anti-flood";
         public const string RouteChange = "Route change";
         public const string EcmpBalancing = "ECMP balancing";
+        public const string Separator = " + ";
     }
 
     public static class Status

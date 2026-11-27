@@ -13,6 +13,7 @@ public sealed class HopInfo
 {
     private readonly List<long> _rttSamples = new();
     private readonly List<IPAddress> _responders = new();
+    private readonly List<string> _diagnoses = new() { Strings.Diagnosis.None };
 
     public required int Ttl { get; init; }
     public required IPAddress Address { get; init; }
@@ -23,7 +24,14 @@ public sealed class HopInfo
     public long TotalRttMs { get; private set; }
     public string Status { get; set; } = Strings.Status.Pending;
     public bool IsSkipped { get; set; }
-    public string Diagnosis { get; set; } = Strings.Diagnosis.None;
+    public string Diagnosis
+    {
+        get => string.Join(Strings.Diagnosis.Separator, _diagnoses);
+        set => SetDiagnosis(value);
+    }
+
+    /// <summary>All canonical diagnoses attached to this hop.</summary>
+    public IReadOnlyList<string> DiagnosisReasons => _diagnoses;
 
     /// <summary>Set after a lost ping; all later probes for this host are paced.</summary>
     public bool LossDelayEnabled { get; internal set; }
@@ -93,6 +101,19 @@ public sealed class HopInfo
     {
         if (address is null || (_responders.Count > 0 && _responders[_responders.Count - 1].Equals(address))) return;
         _responders.Add(address);
+    }
+
+    public void AddDiagnosis(string reason)
+    {
+        if (reason == Strings.Diagnosis.None || _diagnoses.Contains(reason)) return;
+        if (_diagnoses.Count == 1 && _diagnoses[0] == Strings.Diagnosis.None) _diagnoses.Clear();
+        _diagnoses.Add(reason);
+    }
+
+    public void SetDiagnosis(string reason)
+    {
+        _diagnoses.Clear();
+        _diagnoses.Add(string.IsNullOrEmpty(reason) ? Strings.Diagnosis.None : reason);
     }
 
     private void RefreshStatus() =>

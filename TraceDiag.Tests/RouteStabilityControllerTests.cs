@@ -47,17 +47,18 @@ public sealed class RouteStabilityControllerTests
     }
 
     [Fact]
-    public void Apply_DoesNotOverrideOtherDiagnosis()
+    public void Apply_AppendsToOtherDiagnosis()
     {
         var hop = TestFactories.Hop(1, 1);
         hop.Diagnosis = Strings.Diagnosis.AntiFlood;
         hop.ApplyPing(true, 5, TestFactories.Address(2));
         _controller.Apply(hop);
-        Assert.Equal(Strings.Diagnosis.AntiFlood, hop.Diagnosis);
+        Assert.Equal(string.Join(Strings.Diagnosis.Separator,
+            Strings.Diagnosis.AntiFlood, Strings.Diagnosis.RouteChange), hop.Diagnosis);
     }
 
     [Fact]
-    public void Apply_UpdatesEarlierRouteDiagnosis()
+    public void Apply_AppendsEcmpToEarlierRouteDiagnosis()
     {
         var hop = TestFactories.Hop(1, 1);
         hop.Diagnosis = Strings.Diagnosis.RouteChange;
@@ -65,6 +66,7 @@ public sealed class RouteStabilityControllerTests
         hop.ApplyPing(true, 5, TestFactories.Address(1));
         hop.ApplyPing(true, 5, TestFactories.Address(2));
         _controller.Apply(hop);
-        Assert.Equal(Strings.Diagnosis.EcmpBalancing, hop.Diagnosis);
+        Assert.Equal(string.Join(Strings.Diagnosis.Separator,
+            Strings.Diagnosis.RouteChange, Strings.Diagnosis.EcmpBalancing), hop.Diagnosis);
     }
 }

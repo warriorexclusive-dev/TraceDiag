@@ -56,7 +56,7 @@ internal static class DiagnosticBatch
     {
         if (hop.Diagnosis == Strings.Diagnosis.None) return;
         DiagnosticReporter.ReportFormatWarn(context, progress, Strings.Diag.DiagnosisFormat,
-            hop.Ttl, hop.Address, LocalizedArg.Of(hop.Diagnosis));
+            hop.Ttl, hop.Address, LocalizedArg.Create(hop.Diagnosis, DiagnosisText.Localize(hop.Diagnosis)));
     }
 
     private static async Task<HopSizeResult?> ProbeHopAsync(DiagnosticContext context,

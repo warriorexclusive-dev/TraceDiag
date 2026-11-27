@@ -6,15 +6,20 @@ internal sealed record HopSizeResult(int Size, int Sent, int Received);
 
 internal static class HopDiagnosis
 {
-    internal static void Apply(HopInfo hop, IReadOnlyList<HopSizeResult> results) =>
-        hop.Diagnosis = Detect(hop.IsSkipped, results);
-
-    private static string Detect(bool skipped, IReadOnlyList<HopSizeResult> results)
+    internal static void Apply(HopInfo hop, IReadOnlyList<HopSizeResult> results)
     {
-        if (results.Count == 0) return skipped ? Strings.Diagnosis.IcmpDisabled : Strings.Diagnosis.None;
-        if (results.All(result => result.Received == 0)) return Strings.Diagnosis.IcmpDisabled;
-        if (HasSizeCut(results)) return Strings.Diagnosis.PacketSizeLimit;
-        return HasPartialLoss(results) ? Strings.Diagnosis.AntiFlood : Strings.Diagnosis.None;
+        hop.SetDiagnosis(Strings.Diagnosis.None);
+        foreach (var reason in Collect(hop.IsSkipped, results)) hop.AddDiagnosis(reason);
+    }
+
+    private static IReadOnlyList<string> Collect(bool skipped, IReadOnlyList<HopSizeResult> results)
+    {
+        if (results.Count == 0) return [skipped ? Strings.Diagnosis.IcmpDisabled : Strings.Diagnosis.None];
+        if (results.All(result => result.Received == 0)) return [Strings.Diagnosis.IcmpDisabled];
+        var reasons = new List<string>();
+        if (HasSizeCut(results)) reasons.Add(Strings.Diagnosis.PacketSizeLimit);
+        if (HasPartialLoss(results)) reasons.Add(Strings.Diagnosis.AntiFlood);
+        return reasons.Count == 0 ? [Strings.Diagnosis.None] : reasons;
     }
 
     private static bool HasSizeCut(IReadOnlyList<HopSizeResult> results) =>
