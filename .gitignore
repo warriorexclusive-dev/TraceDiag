@@ -56,6 +56,10 @@ installer/ConsoleLinux-arm64/
 installer/TraceDiag-console-linux-arm64.tar.gz
 installer/dist/
 
+# Local runtime settings from builds and smoke runs
+settings.json
+ui-state.json
+
 # NuGet
 *.nupkg
 *.snupkg

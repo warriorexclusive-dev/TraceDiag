@@ -1,5 +1,4 @@
 using TraceDiag.Localization;
-
 namespace TraceDiag;
 
 /// <summary>All user-facing and log text used by the application.</summary>
@@ -7,7 +6,28 @@ internal static partial class Strings
 {
     /// <summary>Translates canonical text into the selected interface language.</summary>
     internal static string T(string english) => Translator.Text(english);
-
+    public static class App
+    {
+        public const string Title = "TraceDiag - Traceroute Diagnostic";
+        public const string DataFolder = "TraceDiag";
+        public const string ConfigFile = "settings.json";
+        public const string UiStateFile = "ui-state.json";
+        public const string ResetArgument = "reset";
+        public const string LogsFolder = "logs";
+        public const string LogFileNameFormat = "tracediag-{0:yyyyMMdd}.log";
+        public const string RotatedLogFileNameFormat = "{0}-{1}{2}";
+        public const string ConsoleTimestampFormat = "HH:mm:ss";
+        public const string LogTimestampFormat = "yyyy-MM-dd HH:mm:ss.fff";
+        public const string LogLinePrefixFormat = "[{0}] [{1}] ";
+        public const string TimestampedMessageFormat = "[{0}] {1}";
+        public const string ConsoleLogFileFormat = "[{0}] Log file: {1}";
+        public const string ConsoleConfigFileFormat = "[{0}] Config: {1}";
+        public const string ConsoleUiStateFileFormat = "[{0}] UI state: {1}";
+        public const string NetworkIconFile1 = "ncpa.cpl";
+        public const string NetworkIconFile2 = "netshell.dll";
+        public const string NetworkIconFile3 = "netcenter.dll";
+        public const string IconResourceName = "TraceDiag.Resources.cable_24dp.ico";
+    }
     public static class Console
     {
         public const string Usage = "Usage: TraceDiag.Console <run|monitor|reset> [options]";
@@ -113,7 +133,6 @@ internal static partial class Strings
         public const string Dash = "-";
         public const string HostLabelFormat = "{0} [{1}]";
         public const string AvgPingFormat = "F1";
-
         public const string ColumnKeyHostName = "HostName";
         public const string ColumnKeyIp = "Ip";
         public const string ColumnKeyAvgPing = "AvgPing";
@@ -139,7 +158,6 @@ internal static partial class Strings
         public const string ColumnReceived = "Received";
         public const string ColumnStatus = "Status";
         public const string ColumnDiagnosis = "Diagnosis";
-
         internal static readonly string[] LanguageNames =
             ["English", "Chinese", "French", "German", "Russian", "Japanese"];
     }
@@ -150,6 +168,8 @@ internal static partial class Strings
         public const string IcmpDisabled = "ICMP disabled";
         public const string PacketSizeLimit = "ICMP size truncation";
         public const string AntiFlood = "ICMP anti-flood";
+        public const string RouteChange = "Route change";
+        public const string EcmpBalancing = "ECMP balancing";
     }
 
     public static class Status
@@ -246,14 +266,12 @@ internal static partial class Strings
         public const string HopDiscoveredFormat = "  {0,2}: {1}{2}";
         public const string TraceHopLimit = "Trace did not reach target within hop limit.";
         public const string TraceRoundLimit = "Trace did not reach target within discovery round limit.";
-
         public const string ResolvingDns = "Resolving DNS names for hops...";
         public const string DnsResolveFailedFormat = "DNS resolve failed for {0}";
         public const string DnsErrorFormat = "  hop {0,2} {1} -> DNS error: {2}";
         public const string SlowDnsFormat = "Slow DNS resolve for {0}: {1} ms";
         public const string NoPtrName = "(no PTR/DNS name)";
         public const string HopDnsFormat = "  hop {0,2} {1} -> {2}";
-
         public const string ProbingFormat = "  hop {0,2} {1}{2}: probing size={3}, attempts={4}...";
         public const string ProbeContextFormat = "hop={0} addr={1} size={2} attempt={3}/{4}";
         public const string ProbeErrorFormat = "Probe error at hop {0} ({1}), size={2}, attempt={3}";
@@ -264,13 +282,11 @@ internal static partial class Strings
         public const string ConsoleWarningFormat = "  ! {0}";
         public const string HopSummaryFormat = "  hop {0,2} {1}{2}: size={3}, sent={4}, recv={5}, lost={6} ({7:F0}%), avg={8}";
         public const string DiagnosisFormat = "  hop {0,2} {1}: diagnosis — {2}";
-
         public const string RemoteNotResponse = "Status: remote host not response";
         public const string RemoteResponds = "Status: remote host responds";
         public const string NoLossDetected = "Status: no packet loss detected on discovered hops.";
         public const string Summary = "Summary:";
         public const string SummaryRowFormat = "  hop {0,2} {1} - sent={2}, recv={3}, lost={4} ({5:F1}%)";
-
         public const string WatchdogFormat = "Watchdog timeout/hang detected ({0}); treating probe as timed out.";
         public const string ProbeSendFailedFormat = "Probe send failed ({0})";
         public const string ProbeSendFailedConsoleFormat = "    ! Probe send failed ({0}): {1}";

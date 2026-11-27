@@ -1,3 +1,4 @@
+using System.Net;
 using TraceDiag.Models;
 using TraceDiag.Services.Abstractions;
 
@@ -34,7 +35,7 @@ internal sealed class FiniteHopTask(
         CancellationToken cancellationToken)
     {
         var result = await SendAttemptAsync(context, hop, settings, trigger, index, progress, cancellationToken);
-        hop.ApplyPing(result.Success, result.RttMs);
+        hop.ApplyPing(result.Success, result.RttMs, result.Address);
         await ProbeDelay.ApplyAsync(hop.LossDelayEnabled, settings.LossDelayMs, cancellationToken);
         state.ConsecutiveLoss = result.Success ? 0 : state.ConsecutiveLoss + 1;
         DiagnosticReporter.ReportStats(stats, allHops);
@@ -42,7 +43,7 @@ internal sealed class FiniteHopTask(
         return StopOnLoss(context, hop, allHops, state, settings, index, progress, stats);
     }
 
-    private async Task<(bool Success, long RttMs)> SendAttemptAsync(DiagnosticContext context, HopInfo hop,
+    private async Task<(bool Success, long RttMs, IPAddress? Address)> SendAttemptAsync(DiagnosticContext context, HopInfo hop,
         ProbeSettings settings, IProbeTrigger trigger, int index, IProgress<string> progress,
         CancellationToken cancellationToken)
     {
@@ -50,10 +51,10 @@ internal sealed class FiniteHopTask(
         {
             var job = CreateJob(hop, settings, trigger, index);
             var result = await runner.RunAsync(context, job, progress, cancellationToken);
-            return (result.Outcome == ProbeOutcome.Success, result.RoundtripTimeMs);
+            return (result.Outcome == ProbeOutcome.Success, result.RoundtripTimeMs, result.Address);
         }
         catch (OperationCanceledException) { throw; }
-        catch (Exception ex) { ReportAttemptError(context, hop, settings, index, ex, progress); return (false, 0); }
+        catch (Exception ex) { ReportAttemptError(context, hop, settings, index, ex, progress); return (false, 0, null); }
     }
 
     private ProbeJob CreateJob(HopInfo hop, ProbeSettings settings, IProbeTrigger trigger, int index) =>

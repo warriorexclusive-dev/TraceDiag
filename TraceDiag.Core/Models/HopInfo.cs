@@ -12,6 +12,7 @@ namespace TraceDiag.Models;
 public sealed class HopInfo
 {
     private readonly List<long> _rttSamples = new();
+    private readonly List<IPAddress> _responders = new();
 
     public required int Ttl { get; init; }
     public required IPAddress Address { get; init; }
@@ -29,6 +30,9 @@ public sealed class HopInfo
 
     /// <summary>Every successful RTT measurement, in milliseconds.</summary>
     public IReadOnlyList<long> RttSamples => _rttSamples;
+
+    /// <summary>Source addresses of successful replies, with consecutive duplicates collapsed.</summary>
+    public IReadOnlyList<IPAddress> Responders => _responders;
 
     /// <summary>RTT of the latest ping; null means the last request timed out.</summary>
     public long? LastPingMs { get; private set; }
@@ -61,10 +65,10 @@ public sealed class HopInfo
     public bool Responded => Received > 0;
 
     /// <summary>Corrects this node's statistics after every single ping.</summary>
-    public void ApplyPing(bool success, long roundtripTimeMs)
+    public void ApplyPing(bool success, long roundtripTimeMs, IPAddress? address = null)
     {
         Sent++;
-        if (success) ApplySuccess(roundtripTimeMs);
+        if (success) ApplySuccess(roundtripTimeMs, address);
         else ApplyLoss();
         RefreshStatus();
     }
@@ -75,13 +79,20 @@ public sealed class HopInfo
         LossDelayEnabled = true;
     }
 
-    private void ApplySuccess(long roundtripTimeMs)
+    private void ApplySuccess(long roundtripTimeMs, IPAddress? address)
     {
         var rtt = Math.Max(0, roundtripTimeMs);
         Received++;
         TotalRttMs += rtt;
         _rttSamples.Add(rtt);
         LastPingMs = rtt;
+        RecordResponder(address);
+    }
+
+    private void RecordResponder(IPAddress? address)
+    {
+        if (address is null || (_responders.Count > 0 && _responders[_responders.Count - 1].Equals(address))) return;
+        _responders.Add(address);
     }
 
     private void RefreshStatus() =>

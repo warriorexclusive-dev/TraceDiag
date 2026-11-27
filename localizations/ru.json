@@ -48,6 +48,8 @@
                     "ICMP disabled":  "ICMP отключён",
                     "ICMP size truncation":  "Обрезка размера ICMP",
                     "ICMP anti-flood":  "Антифлуд ICMP",
+                    "Route change":  "Смена маршрута",
+                    "ECMP balancing":  "Балансировка ECMP",
                     "Usage: TraceDiag.Console \u003crun|monitor|reset\u003e [options]":  "Использование: TraceDiag.Console \u003crun|monitor|reset\u003e [параметры]",
                     "  run     finite diagnostic check":  "  run     однократная проверка",
                     "  monitor continuous monitoring (Ctrl+C to stop)":  "  monitor непрерывный мониторинг (Ctrl+C — остановка)",

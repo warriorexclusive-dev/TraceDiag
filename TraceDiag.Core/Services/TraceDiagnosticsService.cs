@@ -30,7 +30,8 @@ public sealed class TraceDiagnosticsService : ITraceDiagnosticsService
         var runner = new ProbeJobRunner();
         var precheck = new FragmentationPrecheckController(factory, runner);
         var hopTask = new FiniteHopTask(factory, runner);
-        return new FiniteCheckController(factory, runner, precheck, hopTask);
+        var stability = new RouteStabilityController();
+        return new FiniteCheckController(factory, runner, precheck, hopTask, stability);
     }
 
     private static void Validate(DiagnosticInput input, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> statsProgress)

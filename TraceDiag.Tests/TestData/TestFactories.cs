@@ -11,6 +11,9 @@ internal static class TestFactories
     internal static ProbeResult Success(ProbeCall call, long rtt = 7) =>
         new(ProbeOutcome.Success, call.Address, rtt, call.BufferSize, call.Ttl);
 
+    internal static ProbeResult SuccessFrom(ProbeCall call, IPAddress address, long rtt = 7) =>
+        new(ProbeOutcome.Success, address, rtt, call.BufferSize, call.Ttl);
+
     internal static ProbeResult Expired(ProbeCall call, long rtt = 3) =>
         new(ProbeOutcome.TtlExpired, call.Address, rtt, call.BufferSize, call.Ttl);
 

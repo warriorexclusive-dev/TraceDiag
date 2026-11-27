@@ -63,4 +63,15 @@ public sealed class HopInfoTests
         hop.ApplyPing(true, 8);
         Assert.Equal([5, 8], hop.RttSamples);
     }
+
+    [Fact]
+    public void ApplyPing_RecordsResponderChangesOnly()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        hop.ApplyPing(true, 5, TestFactories.Address(2));
+        hop.ApplyPing(true, 5, TestFactories.Address(2));
+        hop.ApplyPing(true, 5, TestFactories.Address(3));
+        hop.ApplyPing(false, 0, TestFactories.Address(4));
+        Assert.Equal([TestFactories.Address(2), TestFactories.Address(3)], hop.Responders);
+    }
 }

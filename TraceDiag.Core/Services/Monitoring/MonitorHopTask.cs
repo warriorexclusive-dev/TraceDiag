@@ -7,8 +7,11 @@ namespace TraceDiag.Services.Monitoring;
 /// <summary>One independent periodic monitoring task driven by a probe job.</summary>
 internal sealed class MonitorHopTask(
     IProbeJobFactory factory,
-    IProbeJobRunner runner) : IMonitorHopTask
+    IProbeJobRunner runner,
+    IRouteStabilityController? stability = null) : IMonitorHopTask
 {
+    private readonly IRouteStabilityController _stability = stability ?? new RouteStabilityController();
+
     public async Task RunAsync(DiagnosticContext context, HopInfo hop, int packetSize,
         IProbeTrigger trigger, IProgress<string> progress, IProgress<HopStatSnapshot> stats,
         CancellationToken cancellationToken)
@@ -33,11 +36,12 @@ internal sealed class MonitorHopTask(
         Apply(hop, result, context, progress, stats);
     }
 
-    private static void Apply(HopInfo hop, ProbeResult result, DiagnosticContext context,
+    private void Apply(HopInfo hop, ProbeResult result, DiagnosticContext context,
         IProgress<string> progress, IProgress<HopStatSnapshot> stats)
     {
         var success = result.Outcome == ProbeOutcome.Success;
-        hop.ApplyPing(success, result.RoundtripTimeMs);
+        hop.ApplyPing(success, result.RoundtripTimeMs, result.Address);
+        _stability.Apply(hop);
         stats.Report(DiagnosticReporter.Snapshot(hop));
         Report(context, hop, result, success, progress);
     }

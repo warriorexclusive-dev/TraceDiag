@@ -79,6 +79,20 @@ public sealed class DiagnosticBatchTests
     }
 
     [Fact]
+    public async Task ProbeAllAsync_WithAlternatingReplySources_MarksEcmpBalancing()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var index = 0;
+        var probe = new FakeProbeClient(call => ++index % 2 == 0
+            ? TestFactories.Success(call)
+            : TestFactories.SuccessFrom(call, TestFactories.Address(2)));
+        await DiagnosticBatch.ProbeAllAsync(
+            TestFactories.Context(probe), [64], [hop], new HashSet<int>(), 4, 0,
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Equal(Strings.Diagnosis.EcmpBalancing, hop.Diagnosis);
+    }
+
+    [Fact]
     public async Task ProbeAllAsync_SkipsDiscoveryPlaceholder()
     {
         var hop = TestFactories.Hop(1, 1);

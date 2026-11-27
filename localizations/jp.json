@@ -10,6 +10,8 @@
                     "Sent":  "送信",
                     "Monitoring...":  "監視中...",
                     "ICMP anti-flood":  "ICMP フラッド対策",
+                    "Route change":  "ルート変更",
+                    "ECMP balancing":  "ECMP 負荷分散",
                     "Resolve error":  "解決エラー",
                     "packet loss ({0:F0}%)":  "パケットロス（{0:F0}%）",
                     "Monitoring stopped":  "監視を停止しました",

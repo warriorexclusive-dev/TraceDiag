@@ -48,6 +48,8 @@
                     "ICMP disabled":  "ICMP 已禁用",
                     "ICMP size truncation":  "ICMP 大小被截断",
                     "ICMP anti-flood":  "ICMP 防洪泛",
+                    "Route change":  "路由变更",
+                    "ECMP balancing":  "ECMP 负载均衡",
                     "Usage: TraceDiag.Console \u003crun|monitor|reset\u003e [options]":  "用法：TraceDiag.Console \u003crun|monitor|reset\u003e [选项]",
                     "  run     finite diagnostic check":  "  run     单次诊断检查",
                     "  monitor continuous monitoring (Ctrl+C to stop)":  "  monitor 持续监控（Ctrl+C 停止）",

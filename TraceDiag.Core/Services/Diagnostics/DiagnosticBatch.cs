@@ -9,24 +9,26 @@ internal static class DiagnosticBatch
     internal static async Task ProbeAllAsync(DiagnosticContext context, IReadOnlyList<int> packetSizes,
         IReadOnlyList<HopInfo> hops, IReadOnlyCollection<int> skippedTtls, int attempts, int lossDelayMs,
         IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats,
-        CancellationToken cancellationToken, IFiniteHopTask? task = null, IProbeTrigger? trigger = null)
+        CancellationToken cancellationToken, IFiniteHopTask? task = null, IProbeTrigger? trigger = null,
+        IRouteStabilityController? stability = null)
     {
         var hopTask = task ?? HopProber.Default;
         var probeTrigger = trigger ?? new DefaultProbeTrigger();
+        var routeStability = stability ?? new RouteStabilityController();
         var nonResponding = new HashSet<IPAddress>();
         foreach (var hop in hops)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await ProbeHopSizesAsync(context, nonResponding, skippedTtls, hop, hops, packetSizes,
-                attempts, lossDelayMs, hopTask, probeTrigger, progress, stats, cancellationToken);
+                attempts, lossDelayMs, hopTask, probeTrigger, routeStability, progress, stats, cancellationToken);
         }
     }
 
     private static async Task ProbeHopSizesAsync(DiagnosticContext context, HashSet<IPAddress> nonResponding,
         IReadOnlyCollection<int> skippedTtls, HopInfo hop, IReadOnlyList<HopInfo> hops, IReadOnlyList<int> packetSizes,
         int attempts, int lossDelayMs, IFiniteHopTask task, IProbeTrigger trigger,
-        IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats,
-        CancellationToken cancellationToken)
+        IRouteStabilityController stability, IProgress<string> progress,
+        IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         var results = new List<HopSizeResult>();
         foreach (var size in packetSizes)
@@ -37,14 +39,15 @@ internal static class DiagnosticBatch
                 attempts, lossDelayMs, task, trigger, progress, stats, cancellationToken);
             if (result is not null) results.Add(result);
         }
-        FinishHop(context, hop, hops, results, progress, stats);
+        FinishHop(context, hop, hops, results, stability, progress, stats);
     }
 
     private static void FinishHop(DiagnosticContext context, HopInfo hop, IReadOnlyList<HopInfo> hops,
-        IReadOnlyList<HopSizeResult> results, IProgress<string> progress,
-        IProgress<IReadOnlyList<HopStatSnapshot>> stats)
+        IReadOnlyList<HopSizeResult> results, IRouteStabilityController stability,
+        IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats)
     {
         HopDiagnosis.Apply(hop, results);
+        stability.Apply(hop);
         DiagnosticReporter.ReportStats(stats, hops);
         ReportDiagnosis(context, hop, progress);
     }
