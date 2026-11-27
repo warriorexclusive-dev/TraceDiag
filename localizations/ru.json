@@ -17,6 +17,7 @@
 
                     "DNS route precheck":  "Предпроверка маршрутов DNS",
                     "Deep routes":  "Глубокий режим",
+                    "Alternative DNS (dns-servers.json)":  "Альтернативные DNS (dns-servers.json)",
                     "Route":  "Маршрут",
                     "Target IP":  "Цель",
                     "Run":  "Пуск",
@@ -94,6 +95,7 @@
                     "  --no-ripe - disable RIPE owner fallback":  "  --no-ripe - отключить владельца из RIPE",
 
                     "  --no-route-precheck - use the original single-route tracing":  "  --no-route-precheck - использовать исходную проверку одного маршрута",
+                    "  --no-alt-dns - use only system DNS from the network card":  "  --no-alt-dns - использовать только системный DNS из сетевой карты",
                     "Enter remote host (IP or domain): ":  "Введите удалённый хост (IP или домен): ",
                     "Invalid host. Enter an IP address or a domain name.":  "Некорректный хост. Введите IP-адрес или доменное имя.",
                     "No input available. Exiting.":  "Нет входных данных. Выход.",
@@ -103,6 +105,8 @@
                     "started_at: {0:o}":  "started_at: {0:o}",
                     "Route precheck: enabled":  "Предпроверка маршрутов: включена",
                     "Route precheck: disabled (original algorithm)":  "Предпроверка маршрутов: отключена (исходный алгоритм)",
+                    "Alternative DNS: enabled":  "Альтернативные DNS: включены",
+                    "Alternative DNS: disabled (system DNS only)":  "Альтернативные DNS: отключены (только системный DNS)",
                     "Route precheck incomplete for {0}: {1}":  "Предпроверка маршрутов неполна для {0}: {1}",
                     "host={0} route={1} hop={2}":  "хост={0} маршрут={1} хоп={2}",
                     "host={0} route={1} hop={2}: {3}":  "хост={0} маршрут={1} хоп={2}: {3}",

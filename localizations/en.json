@@ -17,6 +17,7 @@
 
                     "DNS route precheck":  "DNS route precheck",
                     "Deep routes":  "Deep routes",
+                    "Alternative DNS (dns-servers.json)":  "Alternative DNS (dns-servers.json)",
                     "Route":  "Route",
                     "Target IP":  "Target",
                     "Run":  "Run",
@@ -94,6 +95,7 @@
                     "  --no-ripe - disable RIPE owner fallback":  "  --no-ripe - disable RIPE owner fallback",
 
                     "  --no-route-precheck - use the original single-route tracing":  "  --no-route-precheck - use the original single-route tracing",
+                    "  --no-alt-dns - use only system DNS from the network card":  "  --no-alt-dns - use only system DNS from the network card",
                     "Enter remote host (IP or domain): ":  "Enter remote host (IP or domain): ",
                     "Invalid host. Enter an IP address or a domain name.":  "Invalid host. Enter an IP address or a domain name.",
                     "No input available. Exiting.":  "No input available. Exiting.",
@@ -103,6 +105,8 @@
                     "started_at: {0:o}":  "started_at: {0:o}",
                     "Route precheck: enabled":  "Route precheck: enabled",
                     "Route precheck: disabled (original algorithm)":  "Route precheck: disabled (original algorithm)",
+                    "Alternative DNS: enabled":  "Alternative DNS: enabled",
+                    "Alternative DNS: disabled (system DNS only)":  "Alternative DNS: disabled (system DNS only)",
                     "Route precheck incomplete for {0}: {1}":  "Route precheck incomplete for {0}: {1}",
                     "host={0} route={1} hop={2}":  "host={0} route={1} hop={2}",
                     "host={0} route={1} hop={2}: {3}":  "host={0} route={1} hop={2}: {3}",

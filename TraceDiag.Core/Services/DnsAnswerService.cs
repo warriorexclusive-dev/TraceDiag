@@ -5,18 +5,20 @@ using TraceDiag.Services.Abstractions;
 
 namespace TraceDiag.Services;
 
-/// <summary>Collects A/AAAA answers from every resolver in dns-servers.json.</summary>
+/// <summary>Collects A/AAAA answers from system DNS and optional alternative resolvers.</summary>
 public sealed class DnsAnswerService : IDnsAnswerService
 {
     private const int DnsPort = 53;
     private const int TimeoutMs = 3000;
     private const int MaxAnswers = 8;
 
-    public async Task<IReadOnlyList<DnsAnswer>> ResolveAsync(string host, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<DnsAnswer>> ResolveAsync(string host, bool alternativeDns,
+        CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (IPAddress.TryParse(host, out var address)) return Direct(address);
-        var tasks = DnsServerConfig.Load().Select(server => QueryAllAsync(server, host, cancellationToken));
+        var servers = DnsResolverSelection.Get(alternativeDns);
+        var tasks = servers.Select(server => QueryAllAsync(server, host, cancellationToken));
         return Merge(await Task.WhenAll(tasks));
     }
 
@@ -33,12 +35,12 @@ public sealed class DnsAnswerService : IDnsAnswerService
 
     private static async Task<IReadOnlyList<DnsAnswer>> QueryAsync(IPAddress server, string host, bool ipv6, CancellationToken token)
     {
-        using var udp = new UdpClient();
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
         cts.CancelAfter(TimeoutMs);
         try
         {
             var query = DnsAddressQuery.Create(host, ipv6);
+            using var udp = new UdpClient(server.AddressFamily);
             await udp.SendAsync(query, query.Length, new IPEndPoint(server, DnsPort));
             return await ReadAsync(udp, query, ipv6, cts.Token);
         }

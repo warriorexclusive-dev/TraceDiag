@@ -73,6 +73,6 @@ internal static class RunFlow
             : TextFormatter.Fmt(Strings.Ui.HostLabelFormat, input.Host, address);
         return new DiagnosticInput(address, hostLabel, input.MaxPacketSize, input.Attempts,
             input.LossDelayMs, input.DynamicPacketSize, input.DontFragment, input.RipeLookup,
-            input.RoutePrecheck, input.DeepRoutes);
+            input.RoutePrecheck, input.DeepRoutes, AlternativeDns: input.AlternativeDns);
     }
 }

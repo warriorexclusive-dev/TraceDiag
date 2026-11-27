@@ -46,7 +46,7 @@ internal static partial class Strings
         public const string HelpDynamic = "  --dynamic - scan increasing packet sizes";
         public const string HelpDontFragment = "  --df - do not fragment packets";
         public const string HelpNoRipe = "  --no-ripe - disable RIPE owner fallback";
-        public const string HelpNoRoutePrecheck = "  --no-route-precheck - use the original single-route tracing";
+        public const string HelpNoRoutePrecheck = "  --no-route-precheck - use the original single-route tracing"; public const string HelpNoAltDns = "  --no-alt-dns - use only system DNS from the network card";
         public const string HelpDeepRoutes = "  --deep-routes - use 8 flow signatures instead of 4"; public const string HelpProbeTimeout = "  --probe-timeout <ms> - per-query timeout, capped at 3000 ms";
         public const string HelpIpv4 = "  --ipv4 - resolve and probe IPv4 only";
         public const string HelpIpv6 = "  --ipv6 - resolve and probe IPv6 only";
@@ -113,6 +113,7 @@ internal static partial class Strings
         public const string MonitoringModeLabel = "Continuous monitoring mode";
         public const string RipeLookupLabel = "RIPE owner";
         public const string RoutePrecheckLabel = "DNS route precheck"; public const string DeepRoutesLabel = "Deep routes";
+        public const string AltDnsLabel = "Alternative DNS (dns-servers.json)";
         public const string ColumnKeyRouteUid = "RouteUid"; public const string ColumnKeyRouteTarget = "RouteTarget";
         public const string ColumnRouteUid = "Route"; public const string ColumnRouteTarget = "Target IP";
         public const string RunButton = "Run";
@@ -266,6 +267,7 @@ internal static partial class Strings
         public const string RouteMiss = "*"; public const string RouteSeparator = "|";
         public const string RunIdFormat = "run_id: {0}"; public const string StartedAtFormat = "started_at: {0:o}";
         public const string RoutePrecheckEnabled = "Route precheck: enabled"; public const string RoutePrecheckDisabled = "Route precheck: disabled (original algorithm)";
+        public const string AltDnsEnabled = "Alternative DNS: enabled"; public const string AltDnsDisabled = "Alternative DNS: disabled (system DNS only)";
         public const string RouteFallbackFormat = "Route precheck incomplete for {0}: {1}"; public const string RouteDeviationFormat = "host={0} route={1} hop={2}: deviation {3}";
         public const string RouteSignatureFormat = "host={0} route={1} hop={2}";
         public const string NoPtrName = "(no PTR/DNS name)";

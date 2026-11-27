@@ -33,6 +33,7 @@ public sealed partial class MainForm : Form
     private CheckBox _ripeLookupInput = null!;
     private CheckBox _routePrecheckInput = null!;
     private CheckBox _deepRoutesInput = null!;
+    private CheckBox _altDnsInput = null!;
     private CheckBox _darkThemeInput = null!;
     private ComboBox _ipFamilyInput = null!;
     private DataGridView _statsGridView = null!;
@@ -99,6 +100,7 @@ public sealed partial class MainForm : Form
         _ripeLookupInput = controls.RipeLookup;
         _routePrecheckInput = controls.RoutePrecheck;
         _deepRoutesInput = controls.DeepRoutes;
+        _altDnsInput = controls.AlternativeDns;
         _darkThemeInput = controls.DarkTheme;
         _ipFamilyInput = controls.IpFamily;
     }
@@ -180,6 +182,7 @@ public sealed partial class MainForm : Form
     {
         var palette = ThemeApplier.Palette(_appConfig.Theme);
         ThemeApplier.Apply(this, palette);
+        CaptionThemeController.Apply(this, _appConfig.Theme);
         _statsGrid.SetPalette(palette);
     }
 
@@ -198,6 +201,12 @@ public sealed partial class MainForm : Form
     private void MainFormOnKeyDown(object? sender, KeyEventArgs e)
     {
         if (FullScreenController.HandleKey(this, e, _fullScreen)) e.Handled = true;
+    }
+
+    protected override void OnHandleCreated(EventArgs e)
+    {
+        base.OnHandleCreated(e);
+        CaptionThemeController.Apply(this, _appConfig.Theme);
     }
 
     protected override void OnShown(EventArgs e)

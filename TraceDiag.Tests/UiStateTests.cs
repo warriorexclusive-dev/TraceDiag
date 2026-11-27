@@ -31,6 +31,7 @@ public sealed class UiStateTests
         Assert.Equal(state.RemoteHost, result.State!.RemoteHost);
         Assert.Equal(state.MonitoringMode, result.State.MonitoringMode);
         Assert.Equal(state.DontFragment, result.State.DontFragment);
+        Assert.Equal(state.AlternativeDns, result.State.AlternativeDns);
         Assert.Equal(state.IpFamily, result.State.IpFamily);
         Assert.Equal(state.ColumnWidths[Strings.Ui.ColumnKeyIp], result.State.ColumnWidths[Strings.Ui.ColumnKeyIp]);
         Assert.Equal(62, result.State.StatsHeightPercent);
@@ -162,6 +163,7 @@ public sealed class UiStateTests
         DontFragment = true,
         MonitoringMode = true,
         RipeLookup = false,
+        AlternativeDns = false,
         DarkTheme = false,
         IpFamily = 2,
         WindowState = nameof(FormWindowState.Normal),
@@ -187,6 +189,7 @@ public sealed class UiStateTests
         controls.DontFragment.Checked = true;
         controls.MonitoringMode.Checked = true;
         controls.RipeLookup.Checked = false;
+        controls.AlternativeDns.Checked = false;
         controls.DarkTheme.Checked = false;
         controls.IpFamily.SelectedIndex = 2;
     }
@@ -205,6 +208,7 @@ public sealed class UiStateTests
         Assert.True(state.DontFragment);
         Assert.True(state.MonitoringMode);
         Assert.False(state.RipeLookup);
+        Assert.False(state.AlternativeDns);
         Assert.False(state.DarkTheme);
         Assert.Equal(2, state.IpFamily);
         Assert.Equal(nameof(FormWindowState.Normal), state.WindowState);
@@ -229,6 +233,7 @@ public sealed class UiStateTests
         Assert.True(controls.DontFragment.Checked);
         Assert.True(controls.MonitoringMode.Checked);
         Assert.False(controls.RipeLookup.Checked);
+        Assert.False(controls.AlternativeDns.Checked);
         Assert.False(controls.DarkTheme.Checked);
         Assert.Equal(2, controls.IpFamily.SelectedIndex);
     }

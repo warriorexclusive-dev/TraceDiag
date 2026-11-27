@@ -57,6 +57,7 @@ internal static class MonitorFlow
             ? input.Host
             : TextFormatter.Fmt(Strings.Ui.HostLabelFormat, input.Host, address);
         return new MonitoringInput(address, label, input.PacketSize, input.LossDelayMs,
-            input.DontFragment, input.RipeLookup, input.RoutePrecheck, input.DeepRoutes);
+            input.DontFragment, input.RipeLookup, input.RoutePrecheck, input.DeepRoutes,
+            AlternativeDns: input.AlternativeDns);
     }
 }

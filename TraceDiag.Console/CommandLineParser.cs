@@ -58,6 +58,7 @@ internal static class CommandLineParser
             case CommandLineSettingsArg.DontFragment: bag.DontFragment = true; return;
             case CommandLineSettingsArg.NoRipe: bag.RipeLookup = false; return;
             case CommandLineSettingsArg.NoRoutePrecheck: bag.RoutePrecheck = false; return;
+            case CommandLineSettingsArg.NoAltDns: bag.AlternativeDns = false; return;
             case CommandLineSettingsArg.DeepRoutes: bag.DeepRoutes = true; return;
             case CommandLineSettingsArg.Ipv4: bag.Family = IpFamily.IPv4; return;
             case CommandLineSettingsArg.Ipv6: bag.Family = IpFamily.IPv6; return;
@@ -127,5 +128,5 @@ internal static class CommandLineParser
     private static Invocation Build(string command, OptionsBag bag) =>
         new(command, bag.Host, bag.PacketSize, bag.Attempts, bag.LossDelayMs,
             bag.Dynamic, bag.DontFragment, bag.Family, bag.Format, bag.Language, bag.Reset, false,
-            bag.RipeLookup, bag.RoutePrecheck, bag.DeepRoutes, bag.ProbeTimeoutMs);
+            bag.RipeLookup, bag.RoutePrecheck, bag.DeepRoutes, bag.ProbeTimeoutMs, bag.AlternativeDns);
 }

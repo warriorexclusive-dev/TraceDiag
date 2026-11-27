@@ -12,4 +12,5 @@ public sealed record MonitoringInput(
     bool RipeLookup = true,
     bool RoutePrecheck = true,
     bool DeepRoutes = false,
-    int ProbeTimeoutMs = 3000);
+    int ProbeTimeoutMs = 3000,
+    bool AlternativeDns = true);

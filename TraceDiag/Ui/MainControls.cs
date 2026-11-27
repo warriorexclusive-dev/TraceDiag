@@ -14,6 +14,7 @@ internal sealed record MainControls(
     CheckBox RipeLookup,
     CheckBox RoutePrecheck,
     CheckBox DeepRoutes,
+    CheckBox AlternativeDns,
     CheckBox DarkTheme,
     ComboBox IpFamily,
     ComboBox Language,

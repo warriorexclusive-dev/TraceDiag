@@ -28,6 +28,7 @@ internal static class UiStateCapture
         RipeLookup = controls.RipeLookup.Checked,
         RoutePrecheck = controls.RoutePrecheck.Checked,
         DeepRoutes = controls.DeepRoutes.Checked,
+        AlternativeDns = controls.AlternativeDns.Checked,
         DarkTheme = controls.DarkTheme.Checked,
         IpFamily = controls.IpFamily.SelectedIndex
     };

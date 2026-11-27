@@ -44,11 +44,14 @@ internal static class DiagnosticReporter
     }
 
     internal static void ReportRouteMeta(DiagnosticContext context, IProgress<string> progress,
-        RouteDiscoveryResult tree, bool enabled, string host)
+        RouteDiscoveryResult tree, RoutePrecheckSettings settings, string host)
     {
         ReportFormat(context, progress, Strings.Diag.RunIdFormat, tree.RunId);
         ReportFormat(context, progress, Strings.Diag.StartedAtFormat, tree.StartedAt);
-        Report(context, progress, enabled ? Strings.Diag.RoutePrecheckEnabled : Strings.Diag.RoutePrecheckDisabled);
+        Report(context, progress, settings.Enabled
+            ? Strings.Diag.RoutePrecheckEnabled : Strings.Diag.RoutePrecheckDisabled);
+        Report(context, progress, settings.AlternativeDns
+            ? Strings.Diag.AltDnsEnabled : Strings.Diag.AltDnsDisabled);
         if (tree.Partial) ReportFormatWarn(context, progress, Strings.Diag.RouteFallbackFormat, host, tree.RouteCount);
     }
 

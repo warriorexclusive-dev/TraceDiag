@@ -11,4 +11,5 @@ internal sealed record MonitorInput(
     IpFamily Family = IpFamily.Auto,
     bool RipeLookup = true,
     bool RoutePrecheck = true,
-    bool DeepRoutes = false);
+    bool DeepRoutes = false,
+    bool AlternativeDns = true);

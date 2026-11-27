@@ -16,6 +16,7 @@ internal sealed class UiState
     public bool RipeLookup { get; set; } = true;
     public bool RoutePrecheck { get; set; } = true;
     public bool DeepRoutes { get; set; }
+    public bool AlternativeDns { get; set; } = true;
     public bool DarkTheme { get; set; } = true;
     public int IpFamily { get; set; }
     public int StatsHeightPercent { get; set; } = UiDefaults.DefaultStatsPercent;

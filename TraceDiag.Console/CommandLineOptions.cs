@@ -19,7 +19,8 @@ internal sealed record Invocation(
     bool RipeLookup = true,
     bool RoutePrecheck = true,
     bool DeepRoutes = false,
-    int ProbeTimeoutMs = 3000);
+    int ProbeTimeoutMs = 3000,
+    bool AlternativeDns = true);
 
 internal sealed class CommandLineException(string message, string? details = null) : Exception(message)
 {
@@ -51,4 +52,5 @@ internal sealed class OptionsBag
     internal bool RoutePrecheck { get; set; } = true;
     internal bool DeepRoutes { get; set; }
     internal int ProbeTimeoutMs { get; set; } = 3000;
+    internal bool AlternativeDns { get; set; } = true;
 }

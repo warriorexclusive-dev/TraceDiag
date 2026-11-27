@@ -12,7 +12,7 @@ public sealed partial class MainForm
         return new RunInput(host, (int)_maxPacketSizeInput.Value, (int)_attemptsInput.Value,
             (int)_lossDelayInput.Value, _dynamicPacketSizeInput.Checked, _dontFragmentInput.Checked,
             ReadIpFamily(), _ripeLookupInput.Checked,
-            _routePrecheckInput.Checked, _deepRoutesInput.Checked);
+            _routePrecheckInput.Checked, _deepRoutesInput.Checked, _altDnsInput.Checked);
     }
 
     internal MonitorInput? ReadMonitorInput()
@@ -21,7 +21,7 @@ public sealed partial class MainForm
         if (host is null) return null;
         return new MonitorInput(host, (int)_maxPacketSizeInput.Value, (int)_lossDelayInput.Value,
             _dontFragmentInput.Checked, ReadIpFamily(), _ripeLookupInput.Checked,
-            _routePrecheckInput.Checked, _deepRoutesInput.Checked);
+            _routePrecheckInput.Checked, _deepRoutesInput.Checked, _altDnsInput.Checked);
     }
 
     private IpFamily ReadIpFamily() =>

@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Net.Sockets;
 
 namespace TraceDiag.Services;
 
@@ -27,7 +26,6 @@ internal static class DnsServers
     {
         if (nic.OperationalStatus != OperationalStatus.Up) return;
         foreach (var address in nic.GetIPProperties().DnsAddresses)
-            if (address.AddressFamily == AddressFamily.InterNetwork && !servers.Contains(address))
-                servers.Add(address);
+            if (!servers.Contains(address)) servers.Add(address);
     }
 }

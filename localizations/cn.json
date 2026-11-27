@@ -17,6 +17,7 @@
 
                     "DNS route precheck":  "DNS 路由预检",
                     "Deep routes":  "深度模式",
+                    "Alternative DNS (dns-servers.json)":  "备用 DNS（dns-servers.json）",
                     "Route":  "路由",
                     "Target IP":  "目标",
                     "Run":  "运行",
@@ -94,6 +95,7 @@
                     "  --no-ripe - disable RIPE owner fallback":  "  --no-ripe - 禁用 RIPE 所有者回退",
 
                     "  --no-route-precheck - use the original single-route tracing":  "  --no-route-precheck - 使用原始单路由检测",
+                    "  --no-alt-dns - use only system DNS from the network card":  "  --no-alt-dns - 仅使用网卡中的系统 DNS",
                     "Enter remote host (IP or domain): ":  "请输入远程主机（IP 或域名）: ",
                     "Invalid host. Enter an IP address or a domain name.":  "主机无效。请输入 IP 地址或域名。",
                     "No input available. Exiting.":  "无可用输入。退出。",
@@ -103,6 +105,8 @@
                     "started_at: {0:o}":  "started_at: {0:o}",
                     "Route precheck: enabled":  "路由预检：已启用",
                     "Route precheck: disabled (original algorithm)":  "路由预检：已禁用（原始算法）",
+                    "Alternative DNS: enabled":  "备用 DNS：已启用",
+                    "Alternative DNS: disabled (system DNS only)":  "备用 DNS：已禁用（仅系统 DNS）",
                     "Route precheck incomplete for {0}: {1}":  "路由预检对 {0} 不完整：{1}",
                     "host={0} route={1} hop={2}":  "主机={0} 路由={1} 跳={2}",
                     "host={0} route={1} hop={2}: {3}":  "主机={0} 路由={1} 跳={2}: {3}",

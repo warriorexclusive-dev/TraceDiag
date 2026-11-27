@@ -32,7 +32,7 @@ internal sealed class ConsoleRunner(Invocation options, OutputWriter writer, Con
         LogRequest();
         var input = new DiagnosticInput(address, Label(address), options.PacketSize, options.Attempts,
             options.LossDelayMs, options.Dynamic, options.DontFragment, options.RipeLookup,
-            options.RoutePrecheck, options.DeepRoutes, options.ProbeTimeoutMs);
+            options.RoutePrecheck, options.DeepRoutes, options.ProbeTimeoutMs, options.AlternativeDns);
         var service = new TraceDiagnosticsService(new IcmpProbeClient(), new DnsResolverService(),
             logger, new RipeOwnerService());
         var stats = new SyncProgress<IReadOnlyList<HopStatSnapshot>>(writer.Stats);
@@ -47,7 +47,7 @@ internal sealed class ConsoleRunner(Invocation options, OutputWriter writer, Con
             options.PacketSize, options.LossDelayMs, options.DontFragment);
         var input = new MonitoringInput(address, Label(address), options.PacketSize,
             options.LossDelayMs, options.DontFragment, options.RipeLookup,
-            options.RoutePrecheck, options.DeepRoutes, options.ProbeTimeoutMs);
+            options.RoutePrecheck, options.DeepRoutes, options.ProbeTimeoutMs, options.AlternativeDns);
         var service = new MonitoringService(new IcmpProbeClient(), new DnsResolverService(),
             logger, new RipeOwnerService());
         var stats = new SyncProgress<HopStatSnapshot>(writer.Stats);

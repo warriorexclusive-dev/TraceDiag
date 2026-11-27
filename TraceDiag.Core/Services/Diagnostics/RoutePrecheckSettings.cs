@@ -5,12 +5,14 @@ internal sealed record RoutePrecheckSettings(
     bool Enabled,
     bool Deep,
     int ProbeTimeoutMs,
+    bool AlternativeDns = true,
     int MaxHops = 20,
     int Concurrency = 6,
     int DeadlineMs = 150000)
 {
     internal int FlowCount => Deep ? 8 : 4;
 
-    internal static RoutePrecheckSettings Create(bool enabled, bool deep, int probeTimeoutMs) =>
-        new(enabled, deep, Compat.Clamp(probeTimeoutMs, 100, DiagnosticConstants.ProbeTimeoutMs));
+    internal static RoutePrecheckSettings Create(bool enabled, bool deep, int probeTimeoutMs,
+        bool alternativeDns = true) =>
+        new(enabled, deep, Compat.Clamp(probeTimeoutMs, 100, DiagnosticConstants.ProbeTimeoutMs), alternativeDns);
 }

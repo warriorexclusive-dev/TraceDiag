@@ -38,6 +38,7 @@
 
                     "DNS route precheck":  "DNS ルート事前チェック",
                     "Deep routes":  "ディープモード",
+                    "Alternative DNS (dns-servers.json)":  "代替 DNS (dns-servers.json)",
                     "Route":  "ルート",
                     "Target IP":  "ターゲット",
                     "Error: {0}":  "エラー: {0}",
@@ -94,6 +95,7 @@
                     "  --no-ripe - disable RIPE owner fallback":  "  --no-ripe - RIPE 所有者のフォールバックを無効化",
 
                     "  --no-route-precheck - use the original single-route tracing":  "  --no-route-precheck - 元の単一ルート検査を使用",
+                    "  --no-alt-dns - use only system DNS from the network card":  "  --no-alt-dns - ネットワークカードのシステム DNS のみ使用",
                     "Enter remote host (IP or domain): ":  "リモートホスト（IP またはドメイン）を入力: ",
                     "Invalid host. Enter an IP address or a domain name.":  "無効なホストです。IP アドレスまたはドメイン名を入力してください。",
                     "No input available. Exiting.":  "入力がありません。終了します。",
@@ -103,6 +105,8 @@
                     "started_at: {0:o}":  "started_at: {0:o}",
                     "Route precheck: enabled":  "ルート事前チェック: 有効",
                     "Route precheck: disabled (original algorithm)":  "ルート事前チェック: 無効 (元のアルゴリズム)",
+                    "Alternative DNS: enabled":  "代替 DNS: 有効",
+                    "Alternative DNS: disabled (system DNS only)":  "代替 DNS: 無効 (システム DNS のみ)",
                     "Route precheck incomplete for {0}: {1}":  "{0} のルート事前チェックが不完全です: {1}",
                     "host={0} route={1} hop={2}":  "host={0} route={1} hop={2}",
                     "host={0} route={1} hop={2}: {3}":  "host={0} route={1} hop={2}: {3}",

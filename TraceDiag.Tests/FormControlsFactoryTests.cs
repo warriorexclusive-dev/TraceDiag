@@ -27,6 +27,15 @@ public sealed class FormControlsFactoryTests
         Assert.Equal(typeof(CheckBox), controls.DontFragment.GetType());
         Assert.Equal(typeof(CheckBox), controls.MonitoringMode.GetType());
         Assert.Equal(typeof(CheckBox), controls.DarkTheme.GetType());
+        Assert.Equal(typeof(CheckBox), controls.AlternativeDns.GetType());
+    }
+
+    [Fact]
+    public void Create_StartsWithAlternativeDnsEnabled()
+    {
+        var controls = FormControlsFactory.Create(12f);
+        Assert.True(controls.AlternativeDns.Checked);
+        Assert.Equal(Strings.Ui.AltDnsLabel, controls.AlternativeDns.Text);
     }
 
     [Fact]

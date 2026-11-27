@@ -17,7 +17,8 @@ internal sealed class RouteRunCoordinator(
         IProgress<string> text, IProgress<IReadOnlyList<HopStatSnapshot>> stats,
         CancellationToken token)
     {
-        var settings = RoutePrecheckSettings.Create(input.RoutePrecheck, input.DeepRoutes, input.ProbeTimeoutMs);
+        var settings = RoutePrecheckSettings.Create(input.RoutePrecheck, input.DeepRoutes,
+            input.ProbeTimeoutMs, input.AlternativeDns);
         return RunAsync(context, input.RemoteAddress, Host(input.RemoteHostLabel), settings, text, stats, token,
             (route, progress) => finite.RunAsync(context,
                 WithRoute(input, route), progress, progress, token));
@@ -27,7 +28,8 @@ internal sealed class RouteRunCoordinator(
         IProgress<string> text, IProgress<HopStatSnapshot> stats,
         CancellationToken token)
     {
-        var settings = RoutePrecheckSettings.Create(input.RoutePrecheck, input.DeepRoutes, input.ProbeTimeoutMs);
+        var settings = RoutePrecheckSettings.Create(input.RoutePrecheck, input.DeepRoutes,
+            input.ProbeTimeoutMs, input.AlternativeDns);
         return RunAsync(context, input.RemoteAddress, Host(input.RemoteHostLabel), settings, text,
             new BatchStatsAdapter(stats), token,
             (route, progress) => monitor.RunAsync(context,
@@ -55,23 +57,23 @@ internal sealed class RouteRunCoordinator(
         string host, RoutePrecheckSettings settings, IProgress<string> text, CancellationToken token)
     {
         var registry = new RouteRegistry();
-        var targets = await ResolveTargetsAsync(context, host, direct, settings.Enabled, token);
+        var targets = await ResolveTargetsAsync(context, host, direct, settings, token);
         var tree = settings.Enabled
             ? await detector.DetectAsync(context, host, targets, settings, registry, token)
             : detector.CreateFallback(host, targets, registry);
-        DiagnosticReporter.ReportRouteMeta(context, text, tree, settings.Enabled, host);
+        DiagnosticReporter.ReportRouteMeta(context, text, tree, settings, host);
         return tree;
     }
 
     private static async Task<IReadOnlyList<DnsAnswer>> ResolveTargetsAsync(DiagnosticContext context,
-        string host, IPAddress direct, bool enabled, CancellationToken token)
+        string host, IPAddress direct, RoutePrecheckSettings settings, CancellationToken token)
     {
         var fallback = Direct(host, direct);
-        if (!enabled) return [fallback];
+        if (!settings.Enabled) return [fallback];
         try
         {
             var service = context.DnsAnswers ?? new DnsAnswerService();
-            var answers = await service.ResolveAsync(host, token);
+            var answers = await service.ResolveAsync(host, settings.AlternativeDns, token);
             return answers.Count == 0 ? [fallback] : answers;
         }
         catch (Exception) { return [fallback]; }

@@ -17,6 +17,7 @@
 
                     "DNS route precheck":  "DNS-Routen-Vorprüfung",
                     "Deep routes":  "Tiefmodus",
+                    "Alternative DNS (dns-servers.json)":  "Alternative DNS (dns-servers.json)",
                     "Route":  "Route",
                     "Target IP":  "Ziel",
                     "Run":  "Start",
@@ -94,6 +95,7 @@
                     "  --no-ripe - disable RIPE owner fallback":  "  --no-ripe - RIPE-Inhaber deaktivieren",
 
                     "  --no-route-precheck - use the original single-route tracing":  "  --no-route-precheck - ursprüngliche Ein-Ruten-Prüfung verwenden",
+                    "  --no-alt-dns - use only system DNS from the network card":  "  --no-alt-dns - nur System-DNS der Netzwerkkarte verwenden",
                     "Enter remote host (IP or domain): ":  "Remote-Host eingeben (IP oder Domain): ",
                     "Invalid host. Enter an IP address or a domain name.":  "Ungültiger Host. IP-Adresse oder Domänenname eingeben.",
                     "No input available. Exiting.":  "Keine Eingabe verfügbar. Beenden.",
@@ -103,6 +105,8 @@
                     "started_at: {0:o}":  "started_at: {0:o}",
                     "Route precheck: enabled":  "Routen-Vorprüfung: aktiviert",
                     "Route precheck: disabled (original algorithm)":  "Routen-Vorprüfung: deaktiviert (ursprünglicher Algorithmus)",
+                    "Alternative DNS: enabled":  "Alternative DNS: aktiviert",
+                    "Alternative DNS: disabled (system DNS only)":  "Alternative DNS: deaktiviert (nur System-DNS)",
                     "Route precheck incomplete for {0}: {1}":  "Routen-Vorprüfung für {0} unvollständig: {1}",
                     "host={0} route={1} hop={2}":  "Host={0} Route={1} Hop={2}",
                     "host={0} route={1} hop={2}: {3}":  "Host={0} Route={1} Hop={2}: {3}",

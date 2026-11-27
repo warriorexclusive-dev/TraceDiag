@@ -23,9 +23,9 @@ internal static class AsnLookup
 
     private static async Task<string?> QueryAsync(IPAddress server, byte[] query, CancellationToken token)
     {
-        using var udp = new UdpClient();
         try
         {
+            using var udp = new UdpClient(server.AddressFamily);
             await udp.SendAsync(query, query.Length, new IPEndPoint(server, DnsPort));
             return await ReadAsync(udp, query, token);
         }

@@ -8,6 +8,7 @@ public static class CommandLineSettingsArg
     public const string Attempts = "--attempts"; public const string LossDelay = "--loss-delay";
     public const string Dynamic = "--dynamic"; public const string DontFragment = "--df";
     public const string NoRipe = "--no-ripe"; public const string NoRoutePrecheck = "--no-route-precheck";
+    public const string NoAltDns = "--no-alt-dns";
     public const string DeepRoutes = "--deep-routes"; public const string ProbeTimeout = "--probe-timeout";
     public const string Ipv4 = "--ipv4"; public const string Ipv6 = "--ipv6";
     public const string Format = "--format"; public const string Language = "--language";
@@ -15,7 +16,7 @@ public static class CommandLineSettingsArg
 
     public static readonly string[] Names =
         [Host, PacketSize, Attempts, LossDelay, Dynamic, DontFragment, NoRipe, NoRoutePrecheck,
-            DeepRoutes, ProbeTimeout, Ipv4, Ipv6, Format, Language, Help];
+            NoAltDns, DeepRoutes, ProbeTimeout, Ipv4, Ipv6, Format, Language, Help];
 
     public static bool IsCommand(string value) => value is Run or Monitor or Reset;
 }

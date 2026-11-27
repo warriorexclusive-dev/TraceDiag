@@ -13,6 +13,7 @@ internal static class OptionSuggestions
         Strings.Console.HelpDontFragment,
         Strings.Console.HelpNoRipe,
         Strings.Console.HelpNoRoutePrecheck,
+        Strings.Console.HelpNoAltDns,
         Strings.Console.HelpDeepRoutes,
         Strings.Console.HelpProbeTimeout,
         Strings.Console.HelpIpv4,

@@ -17,6 +17,7 @@ public sealed class CommandLineParserTests
         Assert.True(options.RipeLookup);
         Assert.True(options.RoutePrecheck);
         Assert.False(options.DeepRoutes);
+        Assert.True(options.AlternativeDns);
         Assert.Equal(3000, options.ProbeTimeoutMs);
     }
 
@@ -35,6 +36,13 @@ public sealed class CommandLineParserTests
         Assert.False(options.RoutePrecheck);
         Assert.True(options.DeepRoutes);
         Assert.Equal(1200, options.ProbeTimeoutMs);
+    }
+
+    [Fact]
+    public void Parse_Run_AppliesNoAltDns()
+    {
+        var options = CommandLineParser.Parse(["run", "--host", "example.com", "--no-alt-dns"]);
+        Assert.False(options.AlternativeDns);
     }
 
     [Theory]
