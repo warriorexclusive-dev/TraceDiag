@@ -7,5 +7,6 @@ namespace TraceDiag.Services.Monitoring;
 internal static class MonitorEligibility
 {
     internal static bool IsEligible(HopInfo hop) =>
-        !DiagnosisText.Contains(hop.Diagnosis, Strings.Diagnosis.IcmpDisabled);
+        !DiagnosisText.Contains(hop.Diagnosis, Strings.Diagnosis.IcmpDisabled) &&
+        !DiagnosisText.Contains(hop.Diagnosis, Strings.Diagnosis.IcmpBlocked);
 }

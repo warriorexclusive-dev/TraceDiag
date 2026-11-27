@@ -107,4 +107,45 @@ public sealed class DiagnosticBatchTests
         Assert.Equal(Strings.Status.NoAnswer, hop.Status);
         Assert.Equal(Strings.Diagnosis.IcmpDisabled, hop.Diagnosis);
     }
+
+    [Fact]
+    public async Task ProbeAllAsync_WithDontFragmentAndLargeLoss_MarksMtuBlackHole()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var probe = new FakeProbeClient(call => call.BufferSize == 128
+            ? TestFactories.Timeout(call)
+            : TestFactories.Success(call));
+        await DiagnosticBatch.ProbeAllAsync(
+            TestFactories.Context(probe), [64, 128], [hop], new HashSet<int>(), 1, 0,
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None,
+            dontFragment: true);
+        Assert.Contains(Strings.Diagnosis.MtuBlackHole, hop.DiagnosisReasons);
+    }
+
+    [Fact]
+    public async Task ProbeAllAsync_WithGapBeforeNextHop_MarksIcmpBlocked()
+    {
+        var skipped = TestFactories.Hop(1, 1);
+        skipped.IsSkipped = true;
+        skipped.Diagnosis = Strings.Diagnosis.IcmpDisabled;
+        var responding = TestFactories.Hop(2, 2);
+        var probe = new FakeProbeClient(call => TestFactories.Success(call));
+        await DiagnosticBatch.ProbeAllAsync(
+            TestFactories.Context(probe), [64], [skipped, responding], new HashSet<int> { 1 }, 1, 0,
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Equal(Strings.Diagnosis.IcmpBlocked, skipped.Diagnosis);
+    }
+
+    [Fact]
+    public async Task ProbeAllAsync_WithDifferentRespondersPerSize_MarksRouteAsymmetry()
+    {
+        var hop = TestFactories.Hop(1, 1);
+        var probe = new FakeProbeClient(call => call.BufferSize == 128
+            ? TestFactories.SuccessFrom(call, TestFactories.Address(2))
+            : TestFactories.Success(call));
+        await DiagnosticBatch.ProbeAllAsync(
+            TestFactories.Context(probe), [64, 128], [hop], new HashSet<int>(), 1, 0,
+            TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Contains(Strings.Diagnosis.RouteAsymmetry, hop.DiagnosisReasons);
+    }
 }

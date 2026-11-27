@@ -51,6 +51,7 @@ internal sealed class FiniteHopTask(
         {
             var job = CreateJob(hop, settings, trigger, index);
             var result = await runner.RunAsync(context, job, progress, cancellationToken);
+            hop.RecordOutcome(result.Outcome);
             return (result.Outcome == ProbeOutcome.Success, result.RoundtripTimeMs, result.Address);
         }
         catch (OperationCanceledException) { throw; }

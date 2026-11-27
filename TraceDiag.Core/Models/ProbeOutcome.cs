@@ -6,5 +6,7 @@ public enum ProbeOutcome
     TimedOut,
     TtlExpired,
     DestinationUnreachable,
+    PortUnreachable,
+    Prohibited,
     Failed
 }

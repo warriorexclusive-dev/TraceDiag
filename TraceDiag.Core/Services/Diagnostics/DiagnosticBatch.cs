@@ -10,24 +10,29 @@ internal static class DiagnosticBatch
         IReadOnlyList<HopInfo> hops, IReadOnlyCollection<int> skippedTtls, int attempts, int lossDelayMs,
         IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats,
         CancellationToken cancellationToken, IFiniteHopTask? task = null, IProbeTrigger? trigger = null,
-        IRouteStabilityController? stability = null)
+        IRouteStabilityController? stability = null, bool dontFragment = false,
+        INetworkAnomalyController? anomaly = null)
     {
         var hopTask = task ?? HopProber.Default;
         var probeTrigger = trigger ?? new DefaultProbeTrigger();
         var routeStability = stability ?? new RouteStabilityController();
+        var anomalyController = anomaly ?? new NetworkAnomalyController();
+        var blockedTtls = FindBlockedTtls(hops);
         var nonResponding = new HashSet<IPAddress>();
         foreach (var hop in hops)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await ProbeHopSizesAsync(context, nonResponding, skippedTtls, hop, hops, packetSizes,
-                attempts, lossDelayMs, hopTask, probeTrigger, routeStability, progress, stats, cancellationToken);
+                attempts, lossDelayMs, hopTask, probeTrigger, routeStability, dontFragment,
+                anomalyController, blockedTtls, progress, stats, cancellationToken);
         }
     }
 
     private static async Task ProbeHopSizesAsync(DiagnosticContext context, HashSet<IPAddress> nonResponding,
         IReadOnlyCollection<int> skippedTtls, HopInfo hop, IReadOnlyList<HopInfo> hops, IReadOnlyList<int> packetSizes,
         int attempts, int lossDelayMs, IFiniteHopTask task, IProbeTrigger trigger,
-        IRouteStabilityController stability, IProgress<string> progress,
+        IRouteStabilityController stability, bool dontFragment, INetworkAnomalyController anomaly,
+        IReadOnlyCollection<int> blockedTtls, IProgress<string> progress,
         IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         var results = new List<HopSizeResult>();
@@ -39,15 +44,17 @@ internal static class DiagnosticBatch
                 attempts, lossDelayMs, task, trigger, progress, stats, cancellationToken);
             if (result is not null) results.Add(result);
         }
-        FinishHop(context, hop, hops, results, stability, progress, stats);
+        FinishHop(context, hop, hops, results, stability, dontFragment, anomaly, blockedTtls, progress, stats);
     }
 
     private static void FinishHop(DiagnosticContext context, HopInfo hop, IReadOnlyList<HopInfo> hops,
         IReadOnlyList<HopSizeResult> results, IRouteStabilityController stability,
+        bool dontFragment, INetworkAnomalyController anomaly, IReadOnlyCollection<int> blockedTtls,
         IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats)
     {
         HopDiagnosis.Apply(hop, results);
         stability.Apply(hop);
+        anomaly.Apply(hop, results, dontFragment, blockedTtls);
         DiagnosticReporter.ReportStats(stats, hops);
         ReportDiagnosis(context, hop, progress);
     }
@@ -80,7 +87,23 @@ internal static class DiagnosticBatch
     private static HopSizeResult CreateResult(HopInfo hop, PingCounters before, int size)
     {
         var after = PingCounters.Capture(hop);
-        return new HopSizeResult(size, after.Sent - before.Sent, after.Received - before.Received);
+        var responders = after.Responders.Skip(before.Responders.Count).ToArray();
+        return new HopSizeResult(size, after.Sent - before.Sent, after.Received - before.Received, responders);
+    }
+
+    private static IReadOnlyCollection<int> FindBlockedTtls(IReadOnlyList<HopInfo> hops)
+    {
+        var blocked = new HashSet<int>();
+        var laterReply = false;
+        for (var i = hops.Count - 1; i >= 0; i--)
+        {
+            if (hops[i].IsSkipped)
+            {
+                if (laterReply) blocked.Add(hops[i].Ttl);
+            }
+            else laterReply = true;
+        }
+        return blocked;
     }
 
     private static void ReportSkipped(DiagnosticContext context, HopInfo hop, IProgress<string> progress,

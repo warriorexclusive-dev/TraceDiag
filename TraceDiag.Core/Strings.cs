@@ -98,7 +98,6 @@ internal static partial class Strings
         public const string StatsRowFormat = "{0,-3} {1,-39} {2,-20} {3,-8} {4,-8} {5,-8} {6,-8} {7,-8} {8,-8} {9,-5} {10,-5} {11,-12} {12}";
         public const string CsvStatsHeader = "kind,ttl,ip,host,avg,jitter,stddev,min,max,last,sent,recv,status,diagnosis";
     }
-
     public static class Ui
     {
         public const string RemoteHostLabel = "Remote host (IP or domain):";
@@ -145,7 +144,6 @@ internal static partial class Strings
         public const string ColumnKeyReceived = "Received";
         public const string ColumnKeyStatus = "Status";
         public const string ColumnKeyDiagnosis = "Diagnosis";
-
         public const string ColumnHostName = "Host name";
         public const string ColumnIp = "IP";
         public const string ColumnAvgPing = "Avg ping, ms";
@@ -171,6 +169,10 @@ internal static partial class Strings
         public const string RouteChange = "Route change";
         public const string EcmpBalancing = "ECMP balancing";
         public const string Separator = " + ";
+        public const string MtuBlackHole = "MTU black hole";
+        public const string RouteAsymmetry = "Route asymmetry";
+        public const string IcmpBlocked = "ICMP blocked on intermediate hop";
+        public const string PortFiltered = "Port/NAT filtering";
     }
 
     public static class Status
@@ -228,7 +230,6 @@ internal static partial class Strings
         public const string MsFormat = "{0:F1} ms";
         public const string HopFormat = "{0} ({1})";
         public const string NameSuffixFormat = " [{0}]";
-
         public const string RunStarted = "Diagnostic run started.";
         public const string LogFileFormat = "Log file: {0}";
         public const string TargetFormat = "Target: {0} ({1})";
@@ -257,7 +258,6 @@ internal static partial class Strings
         public const string MonitorExcludedFormat = "  hop {0,2} {1}: excluded from monitoring ({2}).";
         public const string RunFailed = "Diagnostic run failed.";
         public const string FatalErrorFormat = "Fatal error: {0}: {1}";
-
         public const string TracingRoute = "Tracing route (TTL increment)...";
         public const string DiscoveryRoundFormat = "Discovery round {0}";
         public const string TraceContextFormat = "trace ttl={0} attempt={1}/{2}";

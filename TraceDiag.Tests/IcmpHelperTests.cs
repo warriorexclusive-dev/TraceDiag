@@ -73,6 +73,16 @@ public sealed class IcmpHelperTests
         Assert.Equal(ProbeOutcome.DestinationUnreachable, result.Outcome);
     }
 
+    [Theory]
+    [InlineData(IPStatus.DestinationPortUnreachable, ProbeOutcome.PortUnreachable)]
+    [InlineData(IPStatus.DestinationProhibited, ProbeOutcome.Prohibited)]
+    public void Map_FilteringReplies_ProduceFilteringOutcome(IPStatus status, ProbeOutcome expected)
+    {
+        var result = IcmpReplyMapper.Map(CreateReply(status, 0), 32, 3);
+        Assert.Equal(expected, result.Outcome);
+        Assert.NotNull(result.Address);
+    }
+
     [Fact]
     public void Map_OtherStatus_ProducesFailed()
     {

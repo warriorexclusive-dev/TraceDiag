@@ -52,6 +52,15 @@ public sealed class StatsGridTests
     }
 
     [Fact]
+    public void ApplyCellStyle_UsesGrayForIcmpBlockedHop()
+    {
+        var style = new DataGridViewCellStyle();
+        StatsGridRows.ApplyCellStyle(style, CreateSnapshot(Strings.Diagnosis.IcmpBlocked),
+            Strings.Ui.ColumnKeyIp, ThemePalette.Dark);
+        Assert.Equal(ThemePalette.Dark.DisabledText, style.ForeColor);
+    }
+
+    [Fact]
     public void ApplyCellStyle_UsesGrayForLightThemeIcmpDisabledHop()
     {
         var style = new DataGridViewCellStyle();

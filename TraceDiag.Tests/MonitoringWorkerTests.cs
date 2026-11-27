@@ -36,11 +36,13 @@ public sealed class MonitoringWorkerTests
     }
 
     [Fact]
-    public void MonitorEligibility_ExcludesOnlyIcmpDisabledNodes()
+    public void MonitorEligibility_ExcludesDiagnosedNodes()
     {
         var hop = TestFactories.Hop(1, 1);
         Assert.True(MonitorEligibility.IsEligible(hop));
         hop.Diagnosis = Strings.Diagnosis.IcmpDisabled;
+        Assert.False(MonitorEligibility.IsEligible(hop));
+        hop.Diagnosis = Strings.Diagnosis.IcmpBlocked;
         Assert.False(MonitorEligibility.IsEligible(hop));
     }
 

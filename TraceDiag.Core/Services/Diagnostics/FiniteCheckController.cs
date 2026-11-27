@@ -9,9 +9,11 @@ internal sealed class FiniteCheckController(
     IProbeJobRunner runner,
     IFragmentationPrecheckController precheck,
     IFiniteHopTask hopTask,
-    IRouteStabilityController? stability = null) : IFiniteCheckController
+    IRouteStabilityController? stability = null,
+    INetworkAnomalyController? anomaly = null) : IFiniteCheckController
 {
     private readonly IRouteStabilityController _stability = stability ?? new RouteStabilityController();
+    private readonly INetworkAnomalyController _anomaly = anomaly ?? new NetworkAnomalyController();
 
     public async Task RunAsync(DiagnosticContext context, DiagnosticInput input,
         IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats,
@@ -39,7 +41,8 @@ internal sealed class FiniteCheckController(
         IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken) =>
         DiagnosticBatch.ProbeAllAsync(context, sizes, discovery.Hops, discovery.SkippedTtls,
             input.Attempts, input.LossDelayMs, progress, stats, cancellationToken,
-            hopTask, ProbeTriggers.Create(input.DontFragment), _stability);
+            hopTask, ProbeTriggers.Create(input.DontFragment), _stability,
+            input.DontFragment, _anomaly);
 
     private static void ReportFinish(DiagnosticContext context, DiagnosticInput input,
         IReadOnlyList<HopInfo> hops, IProgress<string> progress,

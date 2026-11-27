@@ -14,6 +14,7 @@ public sealed class HopInfo
     private readonly List<long> _rttSamples = new();
     private readonly List<IPAddress> _responders = new();
     private readonly List<string> _diagnoses = new() { Strings.Diagnosis.None };
+    private readonly HashSet<ProbeOutcome> _outcomes = new();
 
     public required int Ttl { get; init; }
     public required IPAddress Address { get; init; }
@@ -41,6 +42,11 @@ public sealed class HopInfo
 
     /// <summary>Source addresses of successful replies, with consecutive duplicates collapsed.</summary>
     public IReadOnlyList<IPAddress> Responders => _responders;
+
+    /// <summary>All probe outcomes observed for this hop.</summary>
+    public IReadOnlyCollection<ProbeOutcome> ObservedOutcomes => _outcomes;
+
+    public void RecordOutcome(ProbeOutcome outcome) => _outcomes.Add(outcome);
 
     /// <summary>RTT of the latest ping; null means the last request timed out.</summary>
     public long? LastPingMs { get; private set; }
@@ -114,6 +120,12 @@ public sealed class HopInfo
     {
         _diagnoses.Clear();
         _diagnoses.Add(string.IsNullOrEmpty(reason) ? Strings.Diagnosis.None : reason);
+    }
+
+    public void RemoveDiagnosis(string reason)
+    {
+        _diagnoses.Remove(reason);
+        if (_diagnoses.Count == 0) _diagnoses.Add(Strings.Diagnosis.None);
     }
 
     private void RefreshStatus() =>

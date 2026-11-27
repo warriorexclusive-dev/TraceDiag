@@ -78,7 +78,8 @@ internal static class StatsGridRows
     }
 
     private static bool IsInactive(HopStatSnapshot stat) =>
-        DiagnosisText.Contains(stat.Diagnosis, Strings.Diagnosis.IcmpDisabled);
+        DiagnosisText.Contains(stat.Diagnosis, Strings.Diagnosis.IcmpDisabled) ||
+        DiagnosisText.Contains(stat.Diagnosis, Strings.Diagnosis.IcmpBlocked);
 
     private static bool HasLossHighlight(HopStatSnapshot stat) =>
         stat.Sent > 0 && (stat.Lost > 0 || !stat.LastPingMs.HasValue);

@@ -33,6 +33,7 @@ internal sealed class MonitorHopTask(
             DiagnosticConstants.ProbeTimeoutMs,
             TextFormatter.Fmt(Strings.Diag.MonitorContextFormat, hop.Ttl, hop.Address));
         var result = await runner.RunAsync(context, job, progress, cancellationToken);
+        hop.RecordOutcome(result.Outcome);
         Apply(hop, result, context, progress, stats);
     }
 

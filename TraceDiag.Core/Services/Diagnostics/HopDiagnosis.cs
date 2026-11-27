@@ -1,8 +1,10 @@
+using System.Net;
 using TraceDiag.Models;
 
 namespace TraceDiag.Services.Diagnostics;
 
-internal sealed record HopSizeResult(int Size, int Sent, int Received);
+internal sealed record HopSizeResult(
+    int Size, int Sent, int Received, IReadOnlyList<IPAddress>? Responders = null);
 
 internal static class HopDiagnosis
 {
