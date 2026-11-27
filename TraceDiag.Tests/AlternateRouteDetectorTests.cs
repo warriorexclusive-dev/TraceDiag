@@ -21,9 +21,9 @@ public sealed class AlternateRouteDetectorTests
         var settings = RoutePrecheckSettings.Create(true, false, 3000);
 
         var first = await detector.DetectAsync(context, "example.com", [Target(2), Target(3)],
-            settings, registry, CancellationToken.None);
+            settings, registry, Progress, CancellationToken.None);
         var second = await detector.DetectAsync(context, "example.com", [Target(2), Target(3)],
-            settings, registry, CancellationToken.None);
+            settings, registry, Progress, CancellationToken.None);
 
         Assert.False(first.Fallback);
         Assert.True(first.Frozen);
@@ -44,7 +44,7 @@ public sealed class AlternateRouteDetectorTests
         var settings = RoutePrecheckSettings.Create(true, false, 3000);
 
         var tree = await detector.DetectAsync(TestFactories.Context(probe), "example.com",
-            [Target(2)], settings, new RouteRegistry(), CancellationToken.None);
+            [Target(2)], settings, new RouteRegistry(), Progress, CancellationToken.None);
 
         Assert.True(tree.Partial);
         Assert.Contains(Strings.Diag.RouteMiss, tree.Hosts[0].Routes[0].Key);
@@ -61,6 +61,8 @@ public sealed class AlternateRouteDetectorTests
         Assert.Equal(2, tree.RouteCount);
         Assert.All(tree.AllRoutes(), item => Assert.Single(item.Route.Flows));
     }
+
+    private static IProgress<string> Progress => new Progress<string>(_ => { });
 
     private static DnsAnswer Target(int last) =>
         new(TestFactories.Address(last), "resolver", false);

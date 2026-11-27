@@ -254,6 +254,11 @@
                 "External sources disabled: private/internal target": "External sources disabled: private/internal target",
                 "Network adapter: {0}": "Network adapter: {0}",
                 "Adapter binding: enabled": "Adapter binding: enabled",
-                "Adapter binding: unavailable (administrator/root required)": "Adapter binding: unavailable (administrator/root required)"
+                "Adapter binding: unavailable (administrator/root required)": "Adapter binding: unavailable (administrator/root required)",
+                "Route precheck started: host={0}, targets={1}, flows={2}, max_hops={3}, timeout_ms={4}, deadline_ms={5}": "Route precheck started: host={0}, targets={1}, flows={2}, max_hops={3}, timeout_ms={4}, deadline_ms={5}",
+                "Route precheck target {0} resolver={1}: {2} flows x {3} hops": "Route precheck target {0} resolver={1}: {2} flows x {3} hops",
+                "Route precheck {0} flow {1}/{2}: routes={3}": "Route precheck {0} flow {1}/{2}: routes={3}",
+                "Route precheck finished: routes={0}, flows={1}, elapsed_ms={2:F0}": "Route precheck finished: routes={0}, flows={1}, elapsed_ms={2:F0}",
+                "Route precheck deadline reached for {0} after {1} ms; using fallback routes": "Route precheck deadline reached for {0} after {1} ms; using fallback routes"
                 }
 }

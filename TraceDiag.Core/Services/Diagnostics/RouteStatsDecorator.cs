@@ -15,7 +15,11 @@ internal sealed class RouteStatsDecorator : IProgress<IReadOnlyList<HopStatSnaps
 
     public void Report(IReadOnlyList<HopStatSnapshot> value)
     {
-        foreach (var hop in value) _all[Key(hop)] = Stamp(hop);
+        foreach (var hop in value)
+        {
+            var stamped = Stamp(hop);
+            _all[Key(stamped)] = stamped;
+        }
         _inner.Report(All());
     }
 

@@ -254,6 +254,11 @@
                 "External sources disabled: private/internal target": "Sources externes désactivées : cible privée/interne",
                 "Network adapter: {0}": "Adaptateur réseau : {0}",
                 "Adapter binding: enabled": "Liaison de l'adaptateur : activée",
-                "Adapter binding: unavailable (administrator/root required)": "Liaison de l'adaptateur : indisponible (droits administrateur/root requis)"
+                "Adapter binding: unavailable (administrator/root required)": "Liaison de l'adaptateur : indisponible (droits administrateur/root requis)",
+                "Route precheck started: host={0}, targets={1}, flows={2}, max_hops={3}, timeout_ms={4}, deadline_ms={5}": "Précontrôle des routes démarré : hôte={0}, cibles={1}, flux={2}, max_sauts={3}, délai_ms={4}, échéance_ms={5}",
+                "Route precheck target {0} resolver={1}: {2} flows x {3} hops": "Précontrôle route {0} résolveur={1} : {2} flux x {3} sauts",
+                "Route precheck {0} flow {1}/{2}: routes={3}": "Précontrôle {0} flux {1}/{2} : routes={3}",
+                "Route precheck finished: routes={0}, flows={1}, elapsed_ms={2:F0}": "Précontrôle des routes terminé : routes={0}, flux={1}, durée_ms={2:F0}",
+                "Route precheck deadline reached for {0} after {1} ms; using fallback routes": "Échéance du précontrôle atteinte pour {0} après {1} ms ; utilisation des routes de secours"
                 }
 }

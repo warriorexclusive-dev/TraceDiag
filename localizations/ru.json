@@ -254,6 +254,11 @@
                 "External sources disabled: private/internal target": "Внешние источники отключены: приватная/внутренняя цель",
                 "Network adapter: {0}": "Сетевой адаптер: {0}",
                 "Adapter binding: enabled": "Привязка адаптера: включена",
-                "Adapter binding: unavailable (administrator/root required)": "Привязка адаптера: недоступна (требуются права администратора/root)"
+                "Adapter binding: unavailable (administrator/root required)": "Привязка адаптера: недоступна (требуются права администратора/root)",
+                "Route precheck started: host={0}, targets={1}, flows={2}, max_hops={3}, timeout_ms={4}, deadline_ms={5}": "Проверка маршрутов начата: хост={0}, целей={1}, потоков={2}, макс_переходов={3}, таймаут_мс={4}, дедлайн_мс={5}",
+                "Route precheck target {0} resolver={1}: {2} flows x {3} hops": "Проверка маршрута {0}, резолвер={1}: {2} потоков x {3} переходов",
+                "Route precheck {0} flow {1}/{2}: routes={3}": "Проверка {0}, поток {1}/{2}: маршрутов={3}",
+                "Route precheck finished: routes={0}, flows={1}, elapsed_ms={2:F0}": "Проверка маршрутов завершена: маршрутов={0}, потоков={1}, затрачено_мс={2:F0}",
+                "Route precheck deadline reached for {0} after {1} ms; using fallback routes": "Достигнут дедлайн проверки маршрутов для {0} через {1} мс; используются резервные маршруты"
                 }
 }

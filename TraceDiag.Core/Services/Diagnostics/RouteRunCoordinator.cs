@@ -59,7 +59,7 @@ internal sealed class RouteRunCoordinator(
         var registry = new RouteRegistry();
         var targets = await ResolveTargetsAsync(context, host, direct, settings, token);
         var tree = settings.Enabled
-            ? await detector.DetectAsync(context, host, targets, settings, registry, token)
+            ? await detector.DetectAsync(context, host, targets, settings, registry, text, token)
             : detector.CreateFallback(host, targets, registry);
         DiagnosticReporter.ReportRouteMeta(context, text, tree, settings, host);
         return tree;

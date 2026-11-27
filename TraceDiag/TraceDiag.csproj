@@ -9,7 +9,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>TraceDiag</AssemblyName>
     <RootNamespace>TraceDiag</RootNamespace>
-    <Version>1.9.10</Version>
+    <Version>1.9.11</Version>
     <ApplicationIcon>Resources\cable_24dp.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>

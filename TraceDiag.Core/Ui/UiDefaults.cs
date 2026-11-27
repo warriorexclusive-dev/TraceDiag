@@ -13,8 +13,8 @@ internal static class UiDefaults
     internal const int DefaultAttempts = 100;
     internal const int DefaultLossDelayMs = 1000;
     internal const int MaxLossDelayMs = 60000;
-    internal static readonly int[] IconSizes = [64, 72, 96, 128];
-    internal const int DefaultIconSizePx = 64;
+    internal static readonly int[] IconSizes = [16, 32, 64, 72, 96, 128];
+    internal const int DefaultIconSizePx = 32;
     internal const int MinColumnWidth = 40;
     internal const int MaxColumnWidth = 1000;
     internal const int MinWindowWidth = 800;

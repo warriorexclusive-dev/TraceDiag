@@ -16,28 +16,44 @@ internal sealed class AlternateRouteDetector : IAlternateRouteDetector
 
     public async Task<RouteDiscoveryResult> DetectAsync(DiagnosticContext context, string host,
         IReadOnlyList<DnsAnswer> targets, RoutePrecheckSettings settings,
-        RouteRegistry registry, CancellationToken cancellationToken)
+        RouteRegistry registry, IProgress<string> progress, CancellationToken cancellationToken)
     {
         var started = DateTimeOffset.UtcNow;
         if (!settings.Enabled) return BuildResult(FallbackHosts(host, targets, registry), true, true, started);
+        ReportStart(context, progress, host, targets.Count, settings);
         using var runCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         runCts.CancelAfter(settings.DeadlineMs);
-        var (hosts, partial) = await BuildHostsAsync(context, host, targets, settings, registry, runCts);
-        return BuildResult(hosts, partial, partial, started);
+        try { return await DetectOnceAsync(context, host, targets, settings, registry, progress, runCts, cancellationToken, started); }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        { return DeadlineResult(context, progress, host, targets, registry, settings, started); }
     }
 
-    private async Task<(List<HostRouteNode> Hosts, bool Partial)> BuildHostsAsync(
+    private static async Task<RouteDiscoveryResult> DetectOnceAsync(DiagnosticContext context, string host,
+        IReadOnlyList<DnsAnswer> targets, RoutePrecheckSettings settings, RouteRegistry registry,
+        IProgress<string> progress, CancellationTokenSource runCts, CancellationToken userToken,
+        DateTimeOffset started)
+    {
+        var (hosts, partial) = await BuildHostsAsync(context, host, targets, settings, registry, progress, runCts);
+        var result = BuildResult(hosts, partial, partial, started);
+        ReportFinish(context, progress, result, settings, started);
+        userToken.ThrowIfCancellationRequested();
+        return result;
+    }
+
+    private static async Task<(List<HostRouteNode> Hosts, bool Partial)> BuildHostsAsync(
         DiagnosticContext context, string host, IReadOnlyList<DnsAnswer> targets,
-        RoutePrecheckSettings settings, RouteRegistry registry, CancellationTokenSource runCts)
+        RoutePrecheckSettings settings, RouteRegistry registry, IProgress<string> progress,
+        CancellationTokenSource runCts)
     {
         var hosts = new List<HostRouteNode>();
         var partial = false;
         foreach (var target in targets)
         {
+            ReportTarget(context, progress, target, settings);
             var expired = runCts.IsCancellationRequested;
             var node = expired
                 ? FallbackHost(host, target, registry)
-                : await SafeHostAsync(context, host, target, settings, registry, runCts.Token);
+                : await SafeHostAsync(context, host, target, settings, registry, progress, runCts.Token);
             if (node.Routes.Count == 0 || expired) { AddFallbackRoute(node, registry); partial = true; }
             ComputeSharedPaths(node);
             hosts.Add(node);
@@ -46,28 +62,34 @@ internal sealed class AlternateRouteDetector : IAlternateRouteDetector
     }
 
     private static async Task<HostRouteNode> SafeHostAsync(DiagnosticContext context, string host,
-        DnsAnswer target, RoutePrecheckSettings settings, RouteRegistry registry, CancellationToken token)
+        DnsAnswer target, RoutePrecheckSettings settings, RouteRegistry registry,
+        IProgress<string> progress, CancellationToken token)
     {
-        try { return await BuildHostAsync(context, host, target, settings, registry, token); }
+        try { return await BuildHostAsync(context, host, target, settings, registry, progress, token); }
         catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
         catch (Exception) { return new HostRouteNode { Target = target, Host = host }; }
     }
 
     private static async Task<HostRouteNode> BuildHostAsync(DiagnosticContext context, string host,
-        DnsAnswer target, RoutePrecheckSettings settings, RouteRegistry registry, CancellationToken token)
+        DnsAnswer target, RoutePrecheckSettings settings, RouteRegistry registry,
+        IProgress<string> progress, CancellationToken token)
     {
         var node = new HostRouteNode { Target = target, Host = host };
         using var gate = new SemaphoreSlim(settings.Concurrency);
-        var slots = Slots(settings).Select(slot => ProbeAsync(context, target, slot, settings, gate, token));
-        var replies = await Task.WhenAll(slots);
-        foreach (var flow in Enumerable.Range(0, settings.FlowCount)) AddFlow(node, replies, flow, target, registry);
+        for (var flow = 0; flow < settings.FlowCount; flow++)
+        {
+            var replies = await Task.WhenAll(Slots(settings, flow)
+                .Select(slot => ProbeAsync(context, target, slot, settings, gate, token)));
+            AddFlow(node, replies, flow, target, registry);
+            ReportFlow(context, progress, target, flow, settings, node);
+            token.ThrowIfCancellationRequested();
+        }
         return node;
     }
 
-    private static IEnumerable<ProbeSlot> Slots(RoutePrecheckSettings settings)
+    private static IEnumerable<ProbeSlot> Slots(RoutePrecheckSettings settings, int flow)
     {
-        for (var flow = 0; flow < settings.FlowCount; flow++)
-            for (var ttl = 1; ttl <= settings.MaxHops; ttl++) yield return new ProbeSlot(flow, ttl);
+        for (var ttl = 1; ttl <= settings.MaxHops; ttl++) yield return new ProbeSlot(flow, ttl);
     }
 
     private static async Task<RouteReply> ProbeAsync(DiagnosticContext context, DnsAnswer target,
@@ -170,6 +192,35 @@ internal sealed class AlternateRouteDetector : IAlternateRouteDetector
         Partial = partial,
         Fallback = fallback
     };
+
+    private static void ReportStart(DiagnosticContext context, IProgress<string> progress, string host,
+        int targets, RoutePrecheckSettings settings) =>
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.RoutePrecheckStartedFormat,
+            host, targets, settings.FlowCount, settings.MaxHops, settings.ProbeTimeoutMs, settings.DeadlineMs);
+
+    private static void ReportTarget(DiagnosticContext context, IProgress<string> progress, DnsAnswer target,
+        RoutePrecheckSettings settings) =>
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.RoutePrecheckTargetFormat,
+            target.Address, target.Resolver, settings.FlowCount, settings.MaxHops);
+
+    private static void ReportFlow(DiagnosticContext context, IProgress<string> progress, DnsAnswer target,
+        int flow, RoutePrecheckSettings settings, HostRouteNode node) =>
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.RoutePrecheckFlowFormat,
+            target.Address, flow + 1, settings.FlowCount, node.Routes.Count);
+
+    private static void ReportFinish(DiagnosticContext context, IProgress<string> progress,
+        RouteDiscoveryResult result, RoutePrecheckSettings settings, DateTimeOffset started) =>
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.RoutePrecheckFinishedFormat,
+            result.RouteCount, settings.FlowCount, (DateTimeOffset.UtcNow - started).TotalMilliseconds);
+
+    private static RouteDiscoveryResult DeadlineResult(DiagnosticContext context, IProgress<string> progress,
+        string host, IReadOnlyList<DnsAnswer> targets, RouteRegistry registry,
+        RoutePrecheckSettings settings, DateTimeOffset started)
+    {
+        DiagnosticReporter.ReportFormatWarn(context, progress, Strings.Diag.RoutePrecheckDeadlineFormat,
+            host, settings.DeadlineMs);
+        return BuildResult(FallbackHosts(host, targets, registry), true, true, started);
+    }
 
     private sealed record ProbeSlot(int Flow, int Ttl);
 

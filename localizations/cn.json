@@ -254,6 +254,11 @@
                 "External sources disabled: private/internal target": "外部来源已禁用: 私有/内部目标",
                 "Network adapter: {0}": "网络适配器: {0}",
                 "Adapter binding: enabled": "适配器绑定: 已启用",
-                "Adapter binding: unavailable (administrator/root required)": "适配器绑定: 不可用 (需要管理员/root 权限)"
+                "Adapter binding: unavailable (administrator/root required)": "适配器绑定: 不可用 (需要管理员/root 权限)",
+                "Route precheck started: host={0}, targets={1}, flows={2}, max_hops={3}, timeout_ms={4}, deadline_ms={5}": "路由预检开始: 主机={0}, 目标={1}, 流={2}, 最大跳数={3}, 超时毫秒={4}, 截止毫秒={5}",
+                "Route precheck target {0} resolver={1}: {2} flows x {3} hops": "路由预检目标 {0} 解析器={1}: {2} 个流 x {3} 跳",
+                "Route precheck {0} flow {1}/{2}: routes={3}": "路由预检 {0} 流 {1}/{2}: 路由={3}",
+                "Route precheck finished: routes={0}, flows={1}, elapsed_ms={2:F0}": "路由预检完成: 路由={0}, 流={1}, 耗时毫秒={2:F0}",
+                "Route precheck deadline reached for {0} after {1} ms; using fallback routes": "路由预检在 {1} 毫秒后对 {0} 达到截止时间; 使用备用路由"
                 }
 }

@@ -14,6 +14,7 @@ internal sealed class RouteProgress(
     {
         _route = route;
         _hop = route.Hops.Count == 0 ? 0 : route.Hops[route.Hops.Count - 1].Ttl;
+        stats.Use(route);
     }
 
     public void Report(string value) =>

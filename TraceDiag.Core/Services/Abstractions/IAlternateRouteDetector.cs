@@ -7,7 +7,7 @@ internal interface IAlternateRouteDetector
 {
     Task<RouteDiscoveryResult> DetectAsync(DiagnosticContext context, string host,
         IReadOnlyList<DnsAnswer> targets, RoutePrecheckSettings settings,
-        RouteRegistry registry, CancellationToken cancellationToken);
+        RouteRegistry registry, IProgress<string> progress, CancellationToken cancellationToken);
 
     RouteDiscoveryResult CreateFallback(string host, IReadOnlyList<DnsAnswer> targets, RouteRegistry registry);
 }

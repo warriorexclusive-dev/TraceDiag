@@ -254,6 +254,11 @@
                 "External sources disabled: private/internal target": "Externe Quellen deaktiviert: privates/internes Ziel",
                 "Network adapter: {0}": "Netzwerkadapter: {0}",
                 "Adapter binding: enabled": "Adapterbindung: aktiviert",
-                "Adapter binding: unavailable (administrator/root required)": "Adapterbindung: nicht verfügbar (Administrator-/root-Rechte erforderlich)"
+                "Adapter binding: unavailable (administrator/root required)": "Adapterbindung: nicht verfügbar (Administrator-/root-Rechte erforderlich)",
+                "Route precheck started: host={0}, targets={1}, flows={2}, max_hops={3}, timeout_ms={4}, deadline_ms={5}": "Routenvorprüfung gestartet: Host={0}, Ziele={1}, Flüsse={2}, max_hops={3}, Timeout_ms={4}, Frist_ms={5}",
+                "Route precheck target {0} resolver={1}: {2} flows x {3} hops": "Routenvorprüfung Ziel {0} Resolver={1}: {2} Flüsse x {3} Hops",
+                "Route precheck {0} flow {1}/{2}: routes={3}": "Routenvorprüfung {0} Fluss {1}/{2}: Routen={3}",
+                "Route precheck finished: routes={0}, flows={1}, elapsed_ms={2:F0}": "Routenvorprüfung abgeschlossen: Routen={0}, Flüsse={1}, elapsed_ms={2:F0}",
+                "Route precheck deadline reached for {0} after {1} ms; using fallback routes": "Frist der Routenvorprüfung für {0} nach {1} ms erreicht; Ersatzrouten werden verwendet"
                 }
 }

@@ -254,6 +254,11 @@
                 "External sources disabled: private/internal target": "外部ソース無効: プライベート/内部ターゲット",
                 "Network adapter: {0}": "ネットワーク アダプター: {0}",
                 "Adapter binding: enabled": "アダプター バインド: 有効",
-                "Adapter binding: unavailable (administrator/root required)": "アダプター バインド: 利用不可 (管理者/root 権限が必要)"
+                "Adapter binding: unavailable (administrator/root required)": "アダプター バインド: 利用不可 (管理者/root 権限が必要)",
+                "Route precheck started: host={0}, targets={1}, flows={2}, max_hops={3}, timeout_ms={4}, deadline_ms={5}": "ルート事前チェック開始: ホスト={0}, ターゲット={1}, フロー={2}, 最大ホップ={3}, タイムアウト_ms={4}, 期限_ms={5}",
+                "Route precheck target {0} resolver={1}: {2} flows x {3} hops": "ルート事前チェック対象 {0} リゾルバー={1}: {2} フロー x {3} ホップ",
+                "Route precheck {0} flow {1}/{2}: routes={3}": "ルート事前チェック {0} フロー {1}/{2}: ルート={3}",
+                "Route precheck finished: routes={0}, flows={1}, elapsed_ms={2:F0}": "ルート事前チェック完了: ルート={0}, フロー={1}, 経過_ms={2:F0}",
+                "Route precheck deadline reached for {0} after {1} ms; using fallback routes": "{0} のルート事前チェックが {1} ms で期限に達しました。予備ルートを使用します"
                 }
 }

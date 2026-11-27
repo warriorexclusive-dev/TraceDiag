@@ -135,8 +135,8 @@ public sealed class FormControlsFactoryTests
     [Fact]
     public void IconSizes_UseApprovedPixelValues()
     {
-        Assert.Equal([64, 72, 96, 128], UiDefaults.IconSizes);
-        Assert.Equal(64, UiDefaults.DefaultIconSizePx);
+        Assert.Equal([16, 32, 64, 72, 96, 128], UiDefaults.IconSizes);
+        Assert.Equal(32, UiDefaults.DefaultIconSizePx);
     }
 
     [Fact]

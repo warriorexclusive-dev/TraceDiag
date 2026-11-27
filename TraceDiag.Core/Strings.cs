@@ -187,6 +187,11 @@ internal static partial class Strings
         public const string ExternalSourcesDisabled = "External sources disabled: private/internal target"; public const string AdapterFormat = "Network adapter: {0}";
         public const string AdapterBindingEnabled = "Adapter binding: enabled"; public const string AdapterBindingUnavailable = "Adapter binding: unavailable (administrator/root required)";
         public const string RouteFallbackFormat = "Route precheck incomplete for {0}: {1}"; public const string RouteDeviationFormat = "host={0} route={1} hop={2}: deviation {3}";
+        public const string RoutePrecheckStartedFormat = "Route precheck started: host={0}, targets={1}, flows={2}, max_hops={3}, timeout_ms={4}, deadline_ms={5}";
+        public const string RoutePrecheckTargetFormat = "Route precheck target {0} resolver={1}: {2} flows x {3} hops";
+        public const string RoutePrecheckFlowFormat = "Route precheck {0} flow {1}/{2}: routes={3}";
+        public const string RoutePrecheckFinishedFormat = "Route precheck finished: routes={0}, flows={1}, elapsed_ms={2:F0}";
+        public const string RoutePrecheckDeadlineFormat = "Route precheck deadline reached for {0} after {1} ms; using fallback routes";
         public const string RouteSignatureFormat = "host={0} route={1} hop={2}"; public const string NoPtrName = "(no PTR/DNS name)";
         public const string HopDnsFormat = "  hop {0,2} {1} -> {2}"; public const string ProbingFormat = "  hop {0,2} {1}{2}: probing size={3}, attempts={4}...";
         public const string ProbeContextFormat = "hop={0} addr={1} size={2} attempt={3}/{4}"; public const string ProbeErrorFormat = "Probe error at hop {0} ({1}), size={2}, attempt={3}";
