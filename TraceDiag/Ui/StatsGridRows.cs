@@ -54,7 +54,7 @@ internal static class StatsGridRows
     ];
 
     private static string HostName(HopStatSnapshot stat) =>
-        string.IsNullOrWhiteSpace(stat.HostName) ? Strings.Ui.NoDns : stat.HostName;
+        string.IsNullOrWhiteSpace(stat.HostName) ? Strings.Ui.NoDns : stat.HostName!;
 
     private static string Average(HopStatSnapshot stat) =>
         stat.Received == 0

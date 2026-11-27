@@ -3,6 +3,30 @@
 История изменений TraceDiag. Готовые сборки публикуются на страницах
 [Releases](https://github.com/warriorexclusive-dev/TraceDiag/releases).
 
+## 1.9.0
+
+- Бизнес-логика перенесена в `TraceDiag.Core` (`netstandard2.0`); WinForms-хост
+  переведён на .NET Framework 4.8 и работает на Windows 7 SP1 / Server 2008 R2 SP1.
+- Добавлен консольный хост `TraceDiag.Console` для `net48` (Windows Server 2008 R2
+  без GUI) и `net10.0` (Ubuntu 22.04+ и Windows Server 2012+). Команды `run`, `monitor`
+  и `reset`, форматы вывода `plain`, `csv` и `json`, остановка по `Ctrl+C`.
+  Ход проверки выводится построчно в консоль одновременно с построчной записью
+  в файловый лог через `AsyncLogWriter`; после завершения последней печатается
+  одна итоговая таблица `Summary:`. Поведение WinForms не изменено.
+- Неизвестные опции получили подсказку ближайшего имени и полный список опций;
+  все пользовательские и лог-строки консоли добавлены в `Strings.cs`; консоль
+  переиспользует сервисы, файловый лог и ротацию ядра.
+- Для устаревших framework-целей добавлены полифиллы и замены API (`PeriodicTimer`,
+  `TickCount64`, `Math.Clamp`, `IReadOnlySet`, `ArgumentNullException.ThrowIfNull`,
+  `Dns.GetHostAddressesAsync` с токеном).
+- Установщик Windows проверяет .NET Framework 4.8 по реестру, при отсутствии
+  требует прав администратора и берёт офлайн-установщик из локального файла или
+  альтернативного репозитория (`-Framework48InstallerPath` / `-Framework48Url`);
+  загрузка с сайта Microsoft не используется. Консоль Linux поставляется
+  self-contained tar.gz с `install-console.sh`, отдельный Runtime не нужен.
+- GUI для Linux запланирован отдельной доработкой: архитектура Core готова к
+  подключению второго UI-адаптера без изменения бизнес-логики.
+
 ## 1.8.4
 
 - Добавлен чекбокс «Не фрагментировать (DF)», выключенный по умолчанию. При включении

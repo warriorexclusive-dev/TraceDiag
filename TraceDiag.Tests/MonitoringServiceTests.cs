@@ -54,7 +54,7 @@ public sealed class MonitoringServiceTests
         public void Report(string value)
         {
             target.Report(value);
-            if (value.Contains("monitor hop", StringComparison.Ordinal)) source.Cancel();
+            if (value.IndexOf("monitor hop", StringComparison.Ordinal) >= 0) source.Cancel();
         }
     }
 }

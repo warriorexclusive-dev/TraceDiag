@@ -30,7 +30,7 @@ internal static class UiStateRestorer
     }
 
     private static decimal Clamp(decimal value, NumericUpDown input) =>
-        Math.Clamp(value, input.Minimum, input.Maximum);
+        Compat.Clamp(value, input.Minimum, input.Maximum);
 
     private static void ApplyConfig(AppConfig config, MainControls controls)
     {
@@ -44,7 +44,7 @@ internal static class UiStateRestorer
         foreach (var pair in widths)
         {
             var column = grid.Columns[pair.Key];
-            if (column is not null) column.Width = Math.Clamp(pair.Value, UiDefaults.MinColumnWidth, UiDefaults.MaxColumnWidth);
+            if (column is not null) column.Width = Compat.Clamp(pair.Value, UiDefaults.MinColumnWidth, UiDefaults.MaxColumnWidth);
         }
     }
 
@@ -64,11 +64,11 @@ internal static class UiStateRestorer
     {
         var source = bounds ?? new UiWindowBounds();
         var area = SystemInformation.VirtualScreen;
-        var width = Math.Clamp(source.X2 - source.X, UiDefaults.MinWindowWidth, Math.Max(UiDefaults.MinWindowWidth, area.Width));
-        var height = Math.Clamp(source.Y2 - source.Y, UiDefaults.MinWindowHeight, Math.Max(UiDefaults.MinWindowHeight, area.Height));
+        var width = Compat.Clamp(source.X2 - source.X, UiDefaults.MinWindowWidth, Math.Max(UiDefaults.MinWindowWidth, area.Width));
+        var height = Compat.Clamp(source.Y2 - source.Y, UiDefaults.MinWindowHeight, Math.Max(UiDefaults.MinWindowHeight, area.Height));
         return new Rectangle(
-            Math.Clamp(source.X, area.Left, Math.Max(area.Left, area.Right - width)),
-            Math.Clamp(source.Y, area.Top, Math.Max(area.Top, area.Bottom - height)),
+            Compat.Clamp(source.X, area.Left, Math.Max(area.Left, area.Right - width)),
+            Compat.Clamp(source.Y, area.Top, Math.Max(area.Top, area.Bottom - height)),
             width,
             height);
     }

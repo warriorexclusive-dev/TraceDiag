@@ -91,10 +91,20 @@ public sealed class IcmpHelperTests
 
     private static PingReply CreateReply(IPStatus status, long rtt)
     {
-        var constructor = typeof(PingReply)
-            .GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic)
-            .Single(c => c.GetParameters().Length == 5);
-        object?[] args = [IPAddress.Parse("10.0.0.1"), new PingOptions(5, false), status, rtt, new byte[64]];
-        return (PingReply)constructor.Invoke(args)!;
+        var reply = (PingReply)Activator.CreateInstance(typeof(PingReply), nonPublic: true)!;
+        Set(reply, "status", status, typeof(IPStatus));
+        Set(reply, "rtt", rtt, typeof(long), typeof(int));
+        Set(reply, "address", IPAddress.Parse("10.0.0.1"), typeof(IPAddress));
+        Set(reply, "options", new PingOptions(5, false), typeof(PingOptions));
+        Set(reply, "buffer", new byte[64], typeof(byte[]));
+        return reply;
+    }
+
+    private static void Set(PingReply reply, string hint, object value, params Type[] types)
+    {
+        var field = typeof(PingReply).GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+            .FirstOrDefault(f => types.Contains(f.FieldType) &&
+                                 f.Name.IndexOf(hint, StringComparison.OrdinalIgnoreCase) >= 0);
+        field?.SetValue(reply, value);
     }
 }

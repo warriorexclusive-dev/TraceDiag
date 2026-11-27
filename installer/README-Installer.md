@@ -1,8 +1,10 @@
-# Установка TraceDiag на чистый ПК
+# Установка TraceDiag
 
-Пакет рассчитан на Windows и не требует прав администратора.
+Пакет содержит WinForms-приложение (`net48`), консоль для Windows (`net48`) и
+self-contained консоль для Linux (`net10.0`, `linux-x64`). Загрузка с сайта Microsoft
+не используется.
 
-## 1. Подготовка архива на машине разработчика
+## 1. Подготовка архивов на машине разработчика
 
 Нужен .NET 10 SDK:
 
@@ -10,25 +12,48 @@
 .\Publish-TraceDiag.ps1
 ```
 
-Скрипт публикует приложение в `App\` и собирает `TraceDiag-install.zip` рядом с собой.
+Скрипт публикует файлы в `App\` и `ConsoleLinux\` и собирает рядом с собой:
 
-## 2. Установка на чистом ПК
+- `TraceDiag-install.zip` — Windows: GUI + консоль `net48`;
+- `TraceDiag-console-linux-x64.tar.gz` — self-contained консоль для Linux.
+
+Если положить `dotNetFx48_Full.exe` в эту папку, скрипт включит его в Windows-архив.
+
+## 2. Установка на Windows
 
 1. Скопируйте `TraceDiag-install.zip` на целевой ПК и распакуйте.
-2. Запустите `Install-TraceDiag.cmd` (двойным щелчком или из командной строки).
+2. Запустите `Install-TraceDiag.cmd`.
 
 Установщик:
-- определяет архитектуру (`x64` / `x86` / `arm64`);
-- если .NET 10 Desktop Runtime не найден — скачивает официальный
-  `dotnet-install.ps1` с `https://dot.net/v1/dotnet-install.ps1` и ставит рантайм
-  в `%LOCALAPPDATA%\Microsoft\dotnet` без прав администратора;
-- копирует приложение в `%LOCALAPPDATA%\Programs\TraceDiag`;
-- создаёт ярлык в меню «Пуск» (и на рабочем столе, если передать `-DesktopShortcut`).
 
-Для установки нужен интернет только в момент загрузки рантайма. Если рантайм уже
-установлен системно, скачивание не выполняется.
+- проверяет .NET Framework 4.8 через реестр (`Release >= 528040`);
+- если .NET Framework не найден — требует прав администратора и ищет установщик
+  `dotNetFx48_Full.exe` рядом со скриптом или в `App\`; можно задать другой путь через
+  `-Framework48InstallerPath` или URL альтернативного репозитория через `-Framework48Url`;
+- запускает найденный установщик тихо (перезагрузка может потребоваться);
+- копирует `TraceDiag.exe` и `TraceDiag.Console.exe` в `%LOCALAPPDATA%\Programs\TraceDiag`;
+- создаёт ярлык в меню «Пуск» (и на рабочем столе с `-DesktopShortcut`).
 
-## Дополнительные параметры
+## 3. Установка консоли на Linux
+
+Отдельный .NET Runtime не нужен: архив содержит self-contained сборку `net10.0`.
+
+```bash
+tar -xzf TraceDiag-console-linux-x64.tar.gz -C /tmp/tracediag
+bash /tmp/tracediag/install-console.sh
+export PATH="$HOME/.local/bin:$PATH"
+TraceDiag.Console --help
+```
+
+Скрипт копирует файлы в `~/.local/share/TraceDiag` и создаёт ссылку в `~/.local/bin`.
+Папки можно переопределить переменными `INSTALL_DIR` и `BIN_DIR`.
+
+Для ICMP от обычного пользователя может понадобиться диапазон
+`net.ipv4.ping_group_range` или capability `CAP_NET_RAW`. В минимальных образах без
+`libicu` используйте `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1` — приложение форматирует
+все значения через `InvariantCulture`.
+
+## Дополнительные параметры Windows-установщика
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\Install-TraceDiag.ps1 -DesktopShortcut
@@ -37,6 +62,8 @@ powershell -ExecutionPolicy Bypass -File .\Install-TraceDiag.ps1 -InstallDir "D:
 
 - `-InstallDir` — другая папка установки.
 - `-AppSource` — папка с опубликованными файлами (по умолчанию `.\App`).
+- `-Framework48InstallerPath` — локальный `dotNetFx48_Full.exe` из альтернативного источника.
+- `-Framework48Url` — URL альтернативного репозитория, если установщик не лежит локально.
 - `-NoShortcut` — не создавать ярлыки.
 - `-NoLaunch` — не запускать приложение после установки.
 - `-DesktopShortcut` — добавить ярлык на рабочий стол.

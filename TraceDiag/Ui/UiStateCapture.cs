@@ -51,5 +51,5 @@ internal static class UiStateCapture
     private static Dictionary<string, int> CaptureColumns(DataGridView grid) =>
         grid.Columns.Cast<DataGridViewColumn>().ToDictionary(
             column => column.Name,
-            column => Math.Clamp(column.Width, UiDefaults.MinColumnWidth, UiDefaults.MaxColumnWidth));
+            column => Compat.Clamp(column.Width, UiDefaults.MinColumnWidth, UiDefaults.MaxColumnWidth));
 }

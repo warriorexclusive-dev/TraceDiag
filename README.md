@@ -1,9 +1,14 @@
 # TraceDiag
 
-WinForms-утилита для диагностики маршрута до удалённого хоста. Собирает ICMP-трассировку,
+Утилита для диагностики маршрута до удалённого хоста. Собирает ICMP-трассировку,
 разрешает имена узлов, измеряет потери и проверяет устойчивость маршрута к разным размерам
 пакета. Все пользовательские строки вынесены в `Strings.cs`, бизнес-логика разбита на
 небольшие статические модули.
+
+Общая логика живёт в `TraceDiag.Core` (`netstandard2.0`) и не зависит от UI. Поверх неё
+работают два хоста: WinForms (`net48`) и консоль (`net48` и `net10.0`). Консоль позволяет
+использовать диагностику на Windows Server 2008 R2 без графического интерфейса и на
+Linux (Ubuntu 22.04+).
 
 ## Возможности
 
@@ -69,17 +74,45 @@ WinForms-утилита для диагностики маршрута до уд
   состояние интерфейса перед загрузкой.
 - Собственная иконка `cable_24dp.ico`, файловое логирование и сохранение настроек в JSON.
 
+## Консоль
+
+```text
+TraceDiag.Console run    --host <ip|domain> [--packet-size <n>] [--attempts <n>] [--loss-delay <ms>] [--dynamic] [--df] [--format plain|csv|json]
+TraceDiag.Console monitor --host <ip|domain> [--packet-size <n>] [--loss-delay <ms>] [--df] [--format plain|csv|json]
+TraceDiag.Console reset
+```
+
+- Значения по умолчанию: размер пакета `1024`, попыток `100`, задержка `1000` мс.
+- `--format plain` — текст, `csv` — CSV-строки, `json` — JSON Lines с полем `kind`.
+- Ход проверки выводится в консоль построчно, сразу при записи в файловый лог,
+  без накопления до конца проверки. Файл пополняется той же строкой через
+  `AsyncLogWriter`, поэтому уже записанные строки сохраняются при отмене или закрытии.
+- После завершения (в том числе после `Ctrl+C`) последней печатается одна итоговая
+  таблица `Summary:` с последними значениями по каждому TTL.
+- WinForms-приложение работает как прежде: таблица обновляется прямо в интерфейсе.
+- При опечатке в названии опции консоль подсказывает ближайшее корректное имя
+  и печатает полный список опций для сравнения.
+- `Ctrl+C` останавливает мониторинг; коды выхода: `0` успех, `1` ошибка, `2` неверные
+  аргументы, `130` отмена.
+- Консоль использует те же сервисы, логи и ротацию, что и WinForms-приложение.
+- На Linux для ICMP от обычного пользователя может понадобиться
+  `net.ipv4.ping_group_range` или capability `CAP_NET_RAW`.
+
 ## Требования
 
-- Windows 10/11.
-- Для сборки: .NET 10 SDK.
-- Для запуска готового приложения: .NET 10 Desktop Runtime (установщик ниже ставит его сам).
+- WinForms: Windows 7 SP1 / Server 2008 R2 SP1 или новее, .NET Framework 4.8.
+- Консоль `net48`: Windows 7 SP1 / Server 2008 R2 SP1 или новее, .NET Framework 4.8.
+- Консоль `net10.0`: Windows Server 2012+, Ubuntu 22.04/24.04/26.04 и другие
+  поддерживаемые .NET 10 системы; Linux-пакет self-contained, отдельный Runtime не нужен.
+- Для сборки: .NET 10 SDK. Установка .NET Framework 4.8 на legacy-Windows требует прав
+  администратора и локального установщика из альтернативного репозитория (см. ниже).
 
 ## Сборка и запуск
 
 ```powershell
 dotnet build TraceDiag.slnx -c Release
-.\TraceDiag\bin\Release\net10.0-windows\TraceDiag.exe
+.\TraceDiag\bin\Release\net48\TraceDiag.exe
+.\TraceDiag.Console\bin\Release\net10.0\TraceDiag.Console.exe --help
 ```
 
 ## Тесты
@@ -88,8 +121,9 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**161 юнит-тест** (xUnit) покрывает планировщик размеров пакета, статистику узлов,
-маппинг ICMP-ответов, конфигурацию, логирование, сохранение состояния интерфейса,
+**215 прогонов тестов** (161 WinForms + 27 консольных на `net48` и `net10.0`) покрывают
+планировщик размеров пакета, статистику узлов, маппинг ICMP-ответов, конфигурацию,
+логирование, сохранение состояния интерфейса, разбор аргументов консоли, форматы вывода,
 диагностические модули и полный цикл `TraceDiagnosticsService` с тестовыми фейками
 ICMP, DNS и логера.
 
@@ -109,41 +143,55 @@ cd installer
 .\Publish-TraceDiag.ps1
 ```
 
-Скрипт опубликует приложение в `installer\App` и соберёт `installer\TraceDiag-install.zip`.
-Перенесите архив на чистый ПК, распакуйте его и запустите `Install-TraceDiag.cmd`.
-Установщик определит архитектуру (`x64` / `x86` / `arm64`), при необходимости скачает
-и поставит .NET 10 Desktop Runtime в профиль пользователя без прав администратора,
-скопирует приложение в `%LOCALAPPDATA%\Programs\TraceDiag` и создаст ярлык в меню «Пуск».
+Скрипт публикует WinForms и консоль `net48` в `installer\App`, консоль `net10.0` для
+`linux-x64` в `installer\ConsoleLinux` и собирает два архива:
+
+- `installer\TraceDiag-install.zip` — Windows: GUI + консоль `net48` и установщик;
+- `installer\TraceDiag-console-linux-x64.tar.gz` — self-contained консоль для Linux.
+
+На Windows распакуйте первый архив и запустите `Install-TraceDiag.cmd`. Установщик
+проверяет .NET Framework 4.8 по реестру. Если его нет, положите `dotNetFx48_Full.exe`
+рядом со скриптом (скрипт публикации добавит его в архив) или передайте
+`-Framework48InstallerPath` / `-Framework48Url` для альтернативного репозитория.
+Прямая загрузка с сайта Microsoft не используется. Установщик копирует файлы в
+`%LOCALAPPDATA%\Programs\TraceDiag` и создаёт ярлык в меню «Пуск».
+
+На Linux распакуйте tar.gz и запустите `bash install-console.sh`; скрипт скопирует
+self-contained файлы в `~/.local/share/TraceDiag` и создаст символическую ссылку
+в `~/.local/bin`. Отдельный .NET Runtime скачивать не нужно.
 
 Подробности: [installer/README-Installer.md](installer/README-Installer.md).
-Скомпилированные файлы (`installer\App`, архив) в Git не попадают.
+Скомпилированные файлы (`installer\App`, `installer\ConsoleLinux`, архивы) в Git не попадают.
 
 ## Структура проекта
 
 ```text
-TraceDiag/
+TraceDiag.Core/              netstandard2.0, бизнес-логика без привязки к UI
   Models/                    данные, задания зондов и расчёт статусов узлов
   Services/                  ICMP, DNS, конфигурация, логирование
   Services/Abstractions/     контракты контроллеров, заданий и триггеров
   Services/Diagnostics/      маршрут, предпроверка DF, проверка узлов и диагноз потерь
   Services/Monitoring/       независимые таймеры узлов и запуск мониторинга
   Services/Logging/          ротация файлов и фоновая запись лога
-  Ui/                        фабрики контролов, layout, потоки запуска и политика размера
+  Compatibility/             полифиллы для netstandard2.0 и net48
   Strings.cs                 все пользовательские и лог-строки
-TraceDiag.Tests/
-  TestData/                  фейки ICMP/DNS/логера и прогресса
-  *Tests.cs                   юнит-тесты
+TraceDiag/                   net48, WinForms-хост
+  Ui/                        фабрики контролов, layout, потоки запуска и политика размера
+TraceDiag.Console/           net48 + net10.0, консольный хост
+TraceDiag.Tests/             net48, тесты WinForms и ядра
+TraceDiag.Console.Tests/     net48 + net10.0, тесты консоли и совместимости
 installer/
-  Install-TraceDiag.ps1      установка на целевом ПК
-  Publish-TraceDiag.ps1      сборка дистрибутива
+  Install-TraceDiag.ps1      установка на Windows
+  install-console.sh         установка консоли на Linux
+  Publish-TraceDiag.ps1      сборка дистрибутивов
 ```
 
 ## Данные приложения
 
-- Настройки: `%LOCALAPPDATA%\TraceDiag\settings.json`
-- Состояние интерфейса: `%LOCALAPPDATA%\TraceDiag\ui-state.json`
-- Логи: `%LOCALAPPDATA%\TraceDiag\logs\tracediag-yyyyMMdd.log`; при достижении 4 МБ
-  создаются `tracediag-yyyyMMdd-1.log`, `tracediag-yyyyMMdd-2.log` и так далее.
+- Windows: `%LOCALAPPDATA%\TraceDiag\` (`settings.json`, `ui-state.json`, `logs\`).
+- Linux: `~/.local/share/TraceDiag/` — те же файлы, создаются при первом запуске консоли.
+- Логи: `tracediag-yyyyMMdd.log`; при достижении 4 МБ создаются
+  `tracediag-yyyyMMdd-1.log`, `tracediag-yyyyMMdd-2.log` и так далее.
 
 ## Лицензия
 

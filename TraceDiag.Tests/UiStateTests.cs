@@ -208,17 +208,9 @@ public sealed class UiStateTests
 
     private static string InvalidStateJson() =>
         """
-        {
-          "remoteHost": "host",
-          "maxPacketSize": 1024,
-          "attempts": 0,
-          "lossDelayMs": 1000,
-          "outputFontSize": 9.5,
-          "dynamicPacketSize": true,
-          "darkTheme": true,
-          "windowState": "Normal",
-          "bounds": { "x": 100, "y": 100, "x2": 900, "y2": 700 },
-          "columnWidths": { "Ip": 120 }
-        }
+        {"remoteHost":"host","maxPacketSize":1024,"attempts":0,"lossDelayMs":1000,
+         "outputFontSize":9.5,"dynamicPacketSize":true,"darkTheme":true,
+         "windowState":"Normal","bounds":{"x":100,"y":100,"x2":900,"y2":700},
+         "columnWidths":{"Ip":120}}
         """;
 }

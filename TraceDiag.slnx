@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="TraceDiag.Console/TraceDiag.Console.csproj" />
+  <Project Path="TraceDiag.Console.Tests/TraceDiag.Console.Tests.csproj" />
+  <Project Path="TraceDiag.Core/TraceDiag.Core.csproj" />
   <Project Path="TraceDiag.Tests/TraceDiag.Tests.csproj" />
   <Project Path="TraceDiag/TraceDiag.csproj" />
 </Solution>
