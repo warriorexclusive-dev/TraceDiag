@@ -32,6 +32,7 @@ internal static class ThemeApplier
             case CheckBox check: ApplyCheckBox(check, palette); break;
             case Button button: ApplyButton(button, palette); break;
             case Label label: ApplyLabel(label, palette); break;
+            case SplitContainer split: ApplySplit(split, palette); break;
             case Panel panel: ApplyPanel(panel, palette); break;
         }
     }
@@ -102,5 +103,12 @@ internal static class ThemeApplier
     {
         panel.BackColor = palette.Surface;
         panel.ForeColor = palette.Text;
+    }
+
+    private static void ApplySplit(SplitContainer split, ThemePalette palette)
+    {
+        split.BackColor = palette.GridLine;
+        split.Panel1.BackColor = palette.Surface;
+        split.Panel2.BackColor = palette.Surface;
     }
 }

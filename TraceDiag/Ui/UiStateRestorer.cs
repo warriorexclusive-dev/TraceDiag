@@ -10,6 +10,7 @@ internal static class UiStateRestorer
         ApplyInputs(controls, state);
         ApplyConfig(config, controls);
         ApplyColumns(controls.Stats, state.ColumnWidths);
+        SplitterController.Apply(controls.Splitter, state.StatsHeightPercent);
         ApplyWindow(form, state);
     }
 

@@ -23,6 +23,7 @@ public sealed class UiStateTests
         using var temp = new TempDirectory();
         var store = new UiStateStore(temp.File("ui-state.json"));
         var state = CreateState();
+        state.StatsHeightPercent = 62;
         Assert.True(store.Save(state));
         var result = store.Load();
         Assert.False(result.Corrupted);
@@ -31,6 +32,7 @@ public sealed class UiStateTests
         Assert.Equal(state.MonitoringMode, result.State.MonitoringMode);
         Assert.Equal(state.DontFragment, result.State.DontFragment);
         Assert.Equal(state.ColumnWidths[Strings.Ui.ColumnKeyIp], result.State.ColumnWidths[Strings.Ui.ColumnKeyIp]);
+        Assert.Equal(62, result.State.StatsHeightPercent);
     }
 
     [Fact]
@@ -84,11 +86,15 @@ public sealed class UiStateTests
         var controls = FormControlsFactory.Create(12f);
         using var root = controls.Root;
         FillControls(controls);
+        controls.Root.Size = new Size(900, 700);
+        controls.Splitter.Size = new Size(600, 400);
         SetColumnWidth(controls.Stats, Strings.Ui.ColumnKeySent, 123);
+        SplitterController.Apply(controls.Splitter, 55);
         var state = UiStateCapture.Create(form, controls, new FullScreenState());
         AssertCapturedInputs(state);
         AssertCapturedBounds(state.Bounds);
         Assert.Equal(123, state.ColumnWidths[Strings.Ui.ColumnKeySent]);
+        Assert.Equal(55, state.StatsHeightPercent);
     }
 
     [Fact]
@@ -98,8 +104,11 @@ public sealed class UiStateTests
         var controls = FormControlsFactory.Create(12f);
         using var root = controls.Root;
         var config = new AppConfig();
+        controls.Root.Size = new Size(900, 700);
+        controls.Splitter.Size = new Size(600, 400);
         UiStateRestorer.Apply(form, controls, CreateState(), config);
         AssertRestoredInputs(controls);
+        Assert.Equal(60, SplitterController.Percent(controls.Splitter));
         Assert.Equal(222, controls.Stats.Columns[Strings.Ui.ColumnKeyIp]!.Width);
         Assert.Equal(AppTheme.Light, config.Theme);
         Assert.Equal(11.5f, config.OutputFontSize);
@@ -146,6 +155,7 @@ public sealed class UiStateTests
         DarkTheme = false,
         WindowState = nameof(FormWindowState.Normal),
         Bounds = new UiWindowBounds { X = 100, Y = 100, X2 = 900, Y2 = 700 },
+        StatsHeightPercent = 60,
         ColumnWidths = new Dictionary<string, int> { [Strings.Ui.ColumnKeyIp] = 222 }
     };
 

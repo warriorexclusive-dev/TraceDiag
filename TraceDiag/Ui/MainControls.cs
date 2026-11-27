@@ -2,6 +2,7 @@ namespace TraceDiag.Ui;
 
 internal sealed record MainControls(
     TableLayoutPanel Root,
+    SplitContainer Splitter,
     TextBox RemoteHost,
     NumericUpDown MaxPacketSize,
     NumericUpDown Attempts,

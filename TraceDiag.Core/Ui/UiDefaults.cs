@@ -17,6 +17,11 @@ internal static class UiDefaults
     internal const int MaxColumnWidth = 1000;
     internal const int MinWindowWidth = 800;
     internal const int MinWindowHeight = 600;
+    internal const int DefaultStatsPercent = 35;
+    internal const int MinStatsPercent = 20;
+    internal const int MaxStatsPercent = 80;
+    internal const int MinPaneHeight = 80;
+    internal const int SplitterWidth = 6;
     internal const string NormalWindowState = "Normal";
     internal const string MaximizedWindowState = "Maximized";
 

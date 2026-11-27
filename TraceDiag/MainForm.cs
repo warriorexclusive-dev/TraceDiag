@@ -10,6 +10,7 @@ public sealed class MainForm : Form
     private readonly FullScreenState _fullScreen = new();
     private CancellationTokenSource? _runCts;
     private float _outputFontSize;
+    private int _statsPercent = UiDefaults.DefaultStatsPercent;
     private readonly AppConfigStore _configStore;
     private readonly AppConfig _appConfig;
     private readonly FileDiagnosticLogger _logger;
@@ -50,6 +51,7 @@ public sealed class MainForm : Form
         var loadResult = _uiStateStore.Load();
         var state = loadResult.State;
         _outputFontSize = state?.OutputFontSize ?? _appConfig.OutputFontSize;
+        _statsPercent = state?.StatsHeightPercent ?? UiDefaults.DefaultStatsPercent;
         var darkTheme = state?.DarkTheme ?? _appConfig.Theme == AppTheme.Dark;
         var controls = FormControlsFactory.Create(_outputFontSize, darkTheme);
         AssignControls(controls);
@@ -120,10 +122,8 @@ public sealed class MainForm : Form
         Text = Strings.App.Title;
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.Sizable;
-        MaximizeBox = true;
-        MinimizeBox = true;
-        ClientSize = new Size(800, 600);
-        MinimumSize = new Size(800, 600);
+        MaximizeBox = MinimizeBox = true;
+        MinimumSize = ClientSize = new Size(800, 600);
         KeyPreview = true;
         Icon = AppIconLoader.Load();
     }
@@ -187,6 +187,12 @@ public sealed class MainForm : Form
     private void MainFormOnKeyDown(object? sender, KeyEventArgs e)
     {
         if (FullScreenController.HandleKey(this, e, _fullScreen)) e.Handled = true;
+    }
+
+    protected override void OnShown(EventArgs e)
+    {
+        base.OnShown(e);
+        SplitterController.Apply(_controls.Splitter, _statsPercent);
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)

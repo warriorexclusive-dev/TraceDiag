@@ -14,16 +14,22 @@ internal static class FormControlsFactory
         var monitoringMode = CreateMonitoringModeCheckBox();
         var darkThemeCheckBox = CreateDarkThemeCheckBox(darkTheme);
         var run = CreateRunButton();
-        var (stats, output, status) = CreateFooter(fontSize);
+        var (stats, output, status, splitter) = CreateFooter(fontSize);
         var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode, darkThemeCheckBox, run);
-        return new MainControls(LayoutFactory.Create(input, stats, output, status), host, packet, attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode, darkThemeCheckBox, stats, output, run, status);
+        return new MainControls(LayoutFactory.Create(input, splitter, status), splitter, host, packet,
+            attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode,
+            darkThemeCheckBox, stats, output, run, status);
     }
 
     private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment, CheckBox monitoringMode, CheckBox darkTheme, Button run) =>
         InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode, darkTheme, run);
 
-    private static (DataGridView Stats, TextBox Output, Label Status) CreateFooter(float fontSize) =>
-        (StatsGridFactory.Create(), CreateOutputTextBox(fontSize), CreateStatusLabel());
+    private static (DataGridView Stats, TextBox Output, Label Status, SplitContainer Splitter) CreateFooter(float fontSize)
+    {
+        var stats = StatsGridFactory.Create();
+        var output = CreateOutputTextBox(fontSize);
+        return (stats, output, CreateStatusLabel(), SplitViewFactory.Create(stats, output));
+    }
 
     private static TextBox CreateHostTextBox() => new()
     {

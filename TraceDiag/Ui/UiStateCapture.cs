@@ -11,6 +11,7 @@ internal static class UiStateCapture
         state.WindowState = window.State;
         state.Bounds = window.Bounds;
         state.ColumnWidths = CaptureColumns(controls.Stats);
+        state.StatsHeightPercent = SplitterController.Percent(controls.Splitter);
         return state;
     }
 
