@@ -5,4 +5,6 @@ namespace TraceDiag.Services.Diagnostics;
 internal sealed record DiagnosticContext(
     IIcmpProbeClient ProbeClient,
     IDnsResolverService DnsResolver,
-    IDiagnosticLogger? Logger);
+    IDiagnosticLogger? Logger,
+    bool RipeLookupEnabled = true,
+    IRipeOwnerService? RipeOwner = null);

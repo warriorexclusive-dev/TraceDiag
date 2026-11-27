@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>TraceDiag.Console</AssemblyName>
     <RootNamespace>TraceDiag.Console</RootNamespace>
-    <Version>1.9.4</Version>
+    <Version>1.9.5</Version>
   </PropertyGroup>
 
   <ItemGroup>

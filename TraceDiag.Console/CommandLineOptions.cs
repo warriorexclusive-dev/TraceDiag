@@ -15,7 +15,8 @@ internal sealed record Invocation(
     string Format,
     Language Language,
     bool Reset,
-    bool Help);
+    bool Help,
+    bool RipeLookup = true);
 
 internal sealed class CommandLineException(string message, string? details = null) : Exception(message)
 {
@@ -43,4 +44,5 @@ internal sealed class OptionsBag
     internal string Format { get; set; } = ConsoleDefaults.Format;
     internal Language Language { get; set; } = ConsoleDefaults.Language;
     internal bool Reset { get; set; }
+    internal bool RipeLookup { get; set; } = true;
 }

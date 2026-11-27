@@ -26,6 +26,7 @@ internal static class UiStateRestorer
         controls.FontSize.Value = Clamp((decimal)state.OutputFontSize, controls.FontSize);
         controls.DynamicPacketSize.Checked = state.DynamicPacketSize && !state.DontFragment;
         controls.MonitoringMode.Checked = state.MonitoringMode;
+        controls.RipeLookup.Checked = state.RipeLookup;
         controls.DarkTheme.Checked = state.DarkTheme;
         controls.IpFamily.SelectedIndex = Compat.Clamp(state.IpFamily, 0, 2);
         policy.ApplyDontFragment();

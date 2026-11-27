@@ -25,6 +25,7 @@ internal static class UiStateCapture
         DynamicPacketSize = controls.DynamicPacketSize.Checked,
         DontFragment = controls.DontFragment.Checked,
         MonitoringMode = controls.MonitoringMode.Checked,
+        RipeLookup = controls.RipeLookup.Checked,
         DarkTheme = controls.DarkTheme.Checked,
         IpFamily = controls.IpFamily.SelectedIndex
     };

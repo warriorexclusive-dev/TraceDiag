@@ -72,6 +72,6 @@ internal static class RunFlow
             ? input.Host
             : TextFormatter.Fmt(Strings.Ui.HostLabelFormat, input.Host, address);
         return new DiagnosticInput(address, hostLabel, input.MaxPacketSize, input.Attempts,
-            input.LossDelayMs, input.DynamicPacketSize, input.DontFragment);
+            input.LossDelayMs, input.DynamicPacketSize, input.DontFragment, input.RipeLookup);
     }
 }

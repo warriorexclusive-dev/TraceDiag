@@ -14,6 +14,14 @@ public sealed class CommandLineParserTests
         Assert.Equal(ConsoleDefaults.Attempts, options.Attempts);
         Assert.False(options.Dynamic);
         Assert.Equal(IpFamily.Auto, options.Family);
+        Assert.True(options.RipeLookup);
+    }
+
+    [Fact]
+    public void Parse_Run_AppliesNoRipe()
+    {
+        var options = CommandLineParser.Parse(["run", "--host", "example.com", "--no-ripe"]);
+        Assert.False(options.RipeLookup);
     }
 
     [Theory]

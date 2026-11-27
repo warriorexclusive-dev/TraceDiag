@@ -1,6 +1,5 @@
 using TraceDiag.Localization;
 namespace TraceDiag;
-
 /// <summary>All user-facing and log text used by the application.</summary>
 internal static partial class Strings
 {
@@ -53,6 +52,7 @@ internal static partial class Strings
         public const string HelpLossDelay = "  --loss-delay <ms> - delay after packet loss";
         public const string HelpDynamic = "  --dynamic - scan increasing packet sizes";
         public const string HelpDontFragment = "  --df - do not fragment packets";
+        public const string HelpNoRipe = "  --no-ripe - disable RIPE owner fallback";
         public const string HelpIpv4 = "  --ipv4 - resolve and probe IPv4 only";
         public const string HelpIpv6 = "  --ipv6 - resolve and probe IPv6 only";
         public const string HelpFormat = "  --format <plain|csv|json> - output format";
@@ -112,6 +112,7 @@ internal static partial class Strings
         public const string DontFragmentLabel = "Don't fragment (DF)";
         public const string DarkThemeLabel = "Dark theme";
         public const string MonitoringModeLabel = "Continuous monitoring mode";
+        public const string RipeLookupLabel = "RIPE owner";
         public const string RunButton = "Run";
         public const string StopButton = "Stop";
         public const string Stopping = "Stopping...";
@@ -162,7 +163,6 @@ internal static partial class Strings
         internal static readonly string[] LanguageNames =
             ["English", "Chinese", "French", "German", "Russian", "Japanese"];
     }
-
     public static class Diagnosis
     {
         public const string None = "—";
@@ -177,7 +177,6 @@ internal static partial class Strings
         public const string IcmpBlocked = "ICMP blocked on intermediate hop";
         public const string PortFiltered = "Port/NAT filtering";
     }
-
     public static class Status
     {
         public const string Pending = "pending";
@@ -274,6 +273,7 @@ internal static partial class Strings
         public const string DnsResolveFailedFormat = "DNS resolve failed for {0}";
         public const string DnsErrorFormat = "  hop {0,2} {1} -> DNS error: {2}";
         public const string SlowDnsFormat = "Slow DNS resolve for {0}: {1} ms";
+        public const string RipeLookupFailedFormat = "RIPE owner lookup failed for {0}: {1}";
         public const string NoPtrName = "(no PTR/DNS name)";
         public const string HopDnsFormat = "  hop {0,2} {1} -> {2}";
         public const string ProbingFormat = "  hop {0,2} {1}{2}: probing size={3}, attempts={4}...";

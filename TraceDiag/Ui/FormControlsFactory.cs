@@ -14,23 +14,24 @@ internal static class FormControlsFactory
         var dynamicPacketSize = CreateDynamicPacketSizeCheckBox();
         var dontFragment = CreateDontFragmentCheckBox();
         var monitoringMode = CreateMonitoringModeCheckBox();
+        var ripeLookup = CreateRipeLookupCheckBox();
         var darkThemeCheckBox = CreateDarkThemeCheckBox(darkTheme);
         var ipFamily = CreateIpFamilyInput();
         var language = CreateLanguageInput();
         var run = CreateRunButton();
         var (stats, output, status, splitter) = CreateFooter(fontSize);
         var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize,
-            dontFragment, monitoringMode, darkThemeCheckBox, ipFamily, language, run);
+            dontFragment, monitoringMode, ripeLookup, darkThemeCheckBox, ipFamily, language, run);
         return new MainControls(LayoutFactory.Create(input, splitter, status), splitter, host, packet,
             attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode,
-            darkThemeCheckBox, ipFamily, language, stats, output, run, status);
+            ripeLookup, darkThemeCheckBox, ipFamily, language, stats, output, run, status);
     }
 
     private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts,
         NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment,
-        CheckBox monitoringMode, CheckBox darkTheme, ComboBox ipFamily, ComboBox language, Button run) =>
+        CheckBox monitoringMode, CheckBox ripeLookup, CheckBox darkTheme, ComboBox ipFamily, ComboBox language, Button run) =>
         InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize,
-            dontFragment, monitoringMode, darkTheme, ipFamily, language, run);
+            dontFragment, monitoringMode, ripeLookup, darkTheme, ipFamily, language, run);
 
     private static (DataGridView Stats, TextBox Output, Label Status, SplitContainer Splitter) CreateFooter(float fontSize)
     {
@@ -93,6 +94,9 @@ internal static class FormControlsFactory
 
     private static CheckBox CreateMonitoringModeCheckBox() =>
         CreateCheck(Strings.Ui.MonitoringModeLabel, false, Padding.Empty);
+
+    private static CheckBox CreateRipeLookupCheckBox() =>
+        CreateCheck(Strings.Ui.RipeLookupLabel, true, Padding.Empty);
 
     private static CheckBox CreateDarkThemeCheckBox(bool darkTheme) =>
         CreateCheck(Strings.Ui.DarkThemeLabel, darkTheme, new Padding(8, 6, 0, 0));

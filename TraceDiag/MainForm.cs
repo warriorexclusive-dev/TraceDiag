@@ -30,6 +30,7 @@ public sealed partial class MainForm : Form
     private CheckBox _dynamicPacketSizeInput = null!;
     private CheckBox _dontFragmentInput = null!;
     private CheckBox _monitoringModeInput = null!;
+    private CheckBox _ripeLookupInput = null!;
     private CheckBox _darkThemeInput = null!;
     private ComboBox _ipFamilyInput = null!;
     private DataGridView _statsGridView = null!;
@@ -93,6 +94,7 @@ public sealed partial class MainForm : Form
         _dynamicPacketSizeInput = controls.DynamicPacketSize;
         _dontFragmentInput = controls.DontFragment;
         _monitoringModeInput = controls.MonitoringMode;
+        _ripeLookupInput = controls.RipeLookup;
         _darkThemeInput = controls.DarkTheme;
         _ipFamilyInput = controls.IpFamily;
     }
@@ -246,13 +248,15 @@ public sealed partial class MainForm : Form
 
     internal Task ExecuteServiceAsync(DiagnosticInput input, IProgress<string> text, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken token)
     {
-        var service = new TraceDiagnosticsService(new IcmpProbeClient(), new DnsResolverService(), _logger);
+        var service = new TraceDiagnosticsService(new IcmpProbeClient(), new DnsResolverService(),
+            _logger, new RipeOwnerService());
         return service.RunAsync(input, text, stats, token);
     }
 
     internal Task ExecuteMonitorAsync(MonitoringInput input, IProgress<string> text, IProgress<HopStatSnapshot> stats, CancellationToken token)
     {
-        var service = new MonitoringService(new IcmpProbeClient(), new DnsResolverService(), _logger);
+        var service = new MonitoringService(new IcmpProbeClient(), new DnsResolverService(),
+            _logger, new RipeOwnerService());
         return service.RunAsync(input, text, stats, token);
     }
 

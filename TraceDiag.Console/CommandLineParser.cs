@@ -55,6 +55,7 @@ internal static class CommandLineParser
         {
             case ConsoleOptions.Dynamic: bag.Dynamic = true; return;
             case ConsoleOptions.DontFragment: bag.DontFragment = true; return;
+            case ConsoleOptions.NoRipe: bag.RipeLookup = false; return;
             case ConsoleOptions.Ipv4: bag.Family = IpFamily.IPv4; return;
             case ConsoleOptions.Ipv6: bag.Family = IpFamily.IPv6; return;
             case ConsoleOptions.Reset: bag.Reset = true; return;
@@ -120,5 +121,5 @@ internal static class CommandLineParser
 
     private static Invocation Build(string command, OptionsBag bag) =>
         new(command, bag.Host, bag.PacketSize, bag.Attempts, bag.LossDelayMs,
-            bag.Dynamic, bag.DontFragment, bag.Family, bag.Format, bag.Language, bag.Reset, false);
+            bag.Dynamic, bag.DontFragment, bag.Family, bag.Format, bag.Language, bag.Reset, false, bag.RipeLookup);
 }

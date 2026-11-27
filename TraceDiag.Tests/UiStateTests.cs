@@ -161,6 +161,7 @@ public sealed class UiStateTests
         DynamicPacketSize = false,
         DontFragment = true,
         MonitoringMode = true,
+        RipeLookup = false,
         DarkTheme = false,
         IpFamily = 2,
         WindowState = nameof(FormWindowState.Normal),
@@ -185,6 +186,7 @@ public sealed class UiStateTests
         controls.DynamicPacketSize.Checked = false;
         controls.DontFragment.Checked = true;
         controls.MonitoringMode.Checked = true;
+        controls.RipeLookup.Checked = false;
         controls.DarkTheme.Checked = false;
         controls.IpFamily.SelectedIndex = 2;
     }
@@ -202,6 +204,7 @@ public sealed class UiStateTests
         Assert.False(state.DynamicPacketSize);
         Assert.True(state.DontFragment);
         Assert.True(state.MonitoringMode);
+        Assert.False(state.RipeLookup);
         Assert.False(state.DarkTheme);
         Assert.Equal(2, state.IpFamily);
         Assert.Equal(nameof(FormWindowState.Normal), state.WindowState);
@@ -225,6 +228,7 @@ public sealed class UiStateTests
         Assert.False(controls.DynamicPacketSize.Checked);
         Assert.True(controls.DontFragment.Checked);
         Assert.True(controls.MonitoringMode.Checked);
+        Assert.False(controls.RipeLookup.Checked);
         Assert.False(controls.DarkTheme.Checked);
         Assert.Equal(2, controls.IpFamily.SelectedIndex);
     }

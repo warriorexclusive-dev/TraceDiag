@@ -9,4 +9,5 @@ public sealed record DiagnosticInput(
     int Attempts,
     int LossDelayMs,
     bool DynamicPacketSize,
-    bool DontFragment = false);
+    bool DontFragment = false,
+    bool RipeLookup = true);

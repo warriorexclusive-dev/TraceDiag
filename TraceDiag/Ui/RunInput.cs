@@ -9,4 +9,5 @@ internal sealed record RunInput(
     int LossDelayMs,
     bool DynamicPacketSize,
     bool DontFragment = false,
-    IpFamily Family = IpFamily.Auto);
+    IpFamily Family = IpFamily.Auto,
+    bool RipeLookup = true);

@@ -20,6 +20,18 @@ public sealed class HopNameResolverTests
     }
 
     [Fact]
+    public async Task ResolveAsync_UsesRipeOwnerWhenNoPtr()
+    {
+        var dns = new FakeDnsResolver(_ => null);
+        var ripe = new FakeRipeOwnerService(_ => "Example Network");
+        var context = new DiagnosticContext(new FakeProbeClient(call => TestFactories.Success(call)),
+            dns, null, true, ripe);
+        var hops = new[] { TestFactories.Hop(1, 1) };
+        await HopNameResolver.ResolveAsync(context, hops.ToList(), TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Equal("Example Network", hops[0].HostName);
+    }
+
+    [Fact]
     public async Task ResolveAsync_AssignsAsn()
     {
         var dns = new FakeDnsResolver(_ => "host", address => "AS" + address.GetAddressBytes()[3]);

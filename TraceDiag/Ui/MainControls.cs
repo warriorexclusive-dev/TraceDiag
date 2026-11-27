@@ -11,6 +11,7 @@ internal sealed record MainControls(
     CheckBox DynamicPacketSize,
     CheckBox DontFragment,
     CheckBox MonitoringMode,
+    CheckBox RipeLookup,
     CheckBox DarkTheme,
     ComboBox IpFamily,
     ComboBox Language,

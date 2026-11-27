@@ -8,18 +8,22 @@ public sealed class TraceDiagnosticsService : ITraceDiagnosticsService
 {
     private readonly DiagnosticContext _context;
     private readonly IFiniteCheckController _controller;
+    private readonly IRipeOwnerService? _ripeOwner;
 
-    public TraceDiagnosticsService(IIcmpProbeClient probeClient, IDnsResolverService dnsResolver, IDiagnosticLogger? logger = null)
+    public TraceDiagnosticsService(IIcmpProbeClient probeClient, IDnsResolverService dnsResolver,
+        IDiagnosticLogger? logger = null, IRipeOwnerService? ripeOwner = null)
     {
         _context = new DiagnosticContext(probeClient, dnsResolver, logger);
         _controller = CreateController();
+        _ripeOwner = ripeOwner;
     }
 
     public async Task RunAsync(DiagnosticInput input, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> statsProgress, CancellationToken cancellationToken)
     {
         Validate(input, progress, statsProgress);
         ReportStart(progress);
-        try { await _controller.RunAsync(_context, input, progress, statsProgress, cancellationToken); }
+        var context = _context with { RipeLookupEnabled = input.RipeLookup, RipeOwner = _ripeOwner };
+        try { await _controller.RunAsync(context, input, progress, statsProgress, cancellationToken); }
         catch (OperationCanceledException) { _context.Logger.WarnFmt(Strings.Diag.RunCancelled); throw; }
         catch (Exception ex) { ReportFailure(progress, ex); throw; }
     }

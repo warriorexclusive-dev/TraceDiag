@@ -8,11 +8,14 @@ public sealed class MonitoringService : IMonitoringService
 {
     private readonly DiagnosticContext _context;
     private readonly IMonitorController _controller;
+    private readonly IRipeOwnerService? _ripeOwner;
 
-    public MonitoringService(IIcmpProbeClient probeClient, IDnsResolverService dnsResolver, IDiagnosticLogger? logger = null)
+    public MonitoringService(IIcmpProbeClient probeClient, IDnsResolverService dnsResolver,
+        IDiagnosticLogger? logger = null, IRipeOwnerService? ripeOwner = null)
     {
         _context = new DiagnosticContext(probeClient, dnsResolver, logger);
         _controller = CreateController();
+        _ripeOwner = ripeOwner;
     }
 
     public async Task RunAsync(MonitoringInput input, IProgress<string> progress,
@@ -20,7 +23,8 @@ public sealed class MonitoringService : IMonitoringService
     {
         Validate(input, progress, stats);
         ReportStart(progress);
-        try { await _controller.RunAsync(_context, input, progress, stats, cancellationToken); }
+        var context = _context with { RipeLookupEnabled = input.RipeLookup, RipeOwner = _ripeOwner };
+        try { await _controller.RunAsync(context, input, progress, stats, cancellationToken); }
         catch (OperationCanceledException) { ReportCancelled(progress); throw; }
         catch (Exception ex) { ReportFailure(progress, ex); throw; }
     }

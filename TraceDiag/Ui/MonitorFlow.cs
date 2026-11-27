@@ -56,6 +56,7 @@ internal static class MonitorFlow
         var label = input.Host.Equals(address.ToString(), StringComparison.OrdinalIgnoreCase)
             ? input.Host
             : TextFormatter.Fmt(Strings.Ui.HostLabelFormat, input.Host, address);
-        return new MonitoringInput(address, label, input.PacketSize, input.LossDelayMs, input.DontFragment);
+        return new MonitoringInput(address, label, input.PacketSize, input.LossDelayMs,
+            input.DontFragment, input.RipeLookup);
     }
 }

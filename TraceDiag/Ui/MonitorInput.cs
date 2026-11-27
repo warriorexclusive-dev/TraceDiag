@@ -8,4 +8,5 @@ internal sealed record MonitorInput(
     int PacketSize,
     int LossDelayMs,
     bool DontFragment = false,
-    IpFamily Family = IpFamily.Auto);
+    IpFamily Family = IpFamily.Auto,
+    bool RipeLookup = true);

@@ -8,4 +8,5 @@ public sealed record MonitoringInput(
     string RemoteHostLabel,
     int PacketSize,
     int LossDelayMs,
-    bool DontFragment = false);
+    bool DontFragment = false,
+    bool RipeLookup = true);

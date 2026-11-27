@@ -13,6 +13,7 @@ internal sealed class UiState
     public bool DynamicPacketSize { get; set; } = true;
     public bool DontFragment { get; set; }
     public bool MonitoringMode { get; set; }
+    public bool RipeLookup { get; set; } = true;
     public bool DarkTheme { get; set; } = true;
     public int IpFamily { get; set; }
     public int StatsHeightPercent { get; set; } = UiDefaults.DefaultStatsPercent;
