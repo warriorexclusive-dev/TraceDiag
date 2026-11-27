@@ -66,6 +66,9 @@ ui-state.json
 .nuget/
 packages/
 
+# Private planning notes (not published)
+plan-notes.local.md
+
 # Runtime data and OS files
 *.log
 *.tmp
