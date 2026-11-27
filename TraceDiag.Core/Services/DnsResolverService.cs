@@ -15,4 +15,15 @@ public sealed class DnsResolverService : IDnsResolverService
         catch (OperationCanceledException) { throw; }
         catch (Exception ex) when (DnsLookup.IsExpectedFailure(ex)) { return null; }
     }
+
+    public async Task<string?> ResolveAsnAsync(IPAddress address, CancellationToken cancellationToken)
+    {
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return await AsnLookup.ResolveAsync(address, cancellationToken);
+        }
+        catch (OperationCanceledException) { throw; }
+        catch (Exception ex) when (DnsLookup.IsExpectedFailure(ex)) { return null; }
+    }
 }

@@ -19,6 +19,7 @@ public sealed class HopInfo
     public required int Ttl { get; init; }
     public required IPAddress Address { get; init; }
     public string? HostName { get; set; }
+    public string Asn { get; set; } = string.Empty;
 
     public int Sent { get; private set; }
     public int Received { get; private set; }

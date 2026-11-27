@@ -66,6 +66,7 @@ internal static partial class Strings
         public const string KindStats = "stats";
         public const string ColumnTtl = "ttl";
         public const string ColumnIp = "ip";
+        public const string ColumnAsn = "asn";
         public const string ColumnHost = "host";
         public const string ColumnAvg = "avg";
         public const string ColumnJitter = "jitter";
@@ -94,9 +95,9 @@ internal static partial class Strings
         public const string ErrorPrefix = "Error: {0}";
         public const string Cancelled = "Cancelled.";
         public const string SummaryTitle = "Summary:";
-        public const string StatsHeader = "ttl  ip  host  avg  jitter  stddev  min  max  last  sent  recv  status  diagnosis";
-        public const string StatsRowFormat = "{0,-3} {1,-39} {2,-20} {3,-8} {4,-8} {5,-8} {6,-8} {7,-8} {8,-8} {9,-5} {10,-5} {11,-12} {12}";
-        public const string CsvStatsHeader = "kind,ttl,ip,host,avg,jitter,stddev,min,max,last,sent,recv,status,diagnosis";
+        public const string StatsHeader = "ttl  ip  asn  host  avg  jitter  stddev  min  max  last  sent  recv  status  diagnosis";
+        public const string StatsRowFormat = "{0,-3} {1,-39} {2,-10} {3,-20} {4,-8} {5,-8} {6,-8} {7,-8} {8,-8} {9,-8} {10,-5} {11,-5} {12,-12} {13}";
+        public const string CsvStatsHeader = "kind,ttl,ip,asn,host,avg,jitter,stddev,min,max,last,sent,recv,status,diagnosis";
     }
     public static class Ui
     {
@@ -134,6 +135,7 @@ internal static partial class Strings
         public const string AvgPingFormat = "F1";
         public const string ColumnKeyHostName = "HostName";
         public const string ColumnKeyIp = "Ip";
+        public const string ColumnKeyAsn = "Asn";
         public const string ColumnKeyAvgPing = "AvgPing";
         public const string ColumnKeyJitter = "Jitter";
         public const string ColumnKeyStdDev = "StdDev";
@@ -146,6 +148,7 @@ internal static partial class Strings
         public const string ColumnKeyDiagnosis = "Diagnosis";
         public const string ColumnHostName = "Host name";
         public const string ColumnIp = "IP";
+        public const string ColumnAsn = "ASN";
         public const string ColumnAvgPing = "Avg ping, ms";
         public const string ColumnJitter = "Jitter, ms";
         public const string ColumnStdDev = "StdDev, ms";

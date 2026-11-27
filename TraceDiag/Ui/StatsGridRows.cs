@@ -16,6 +16,7 @@ internal static class StatsGridRows
     {
         Strings.Ui.ColumnKeyHostName => HostName(stat),
         Strings.Ui.ColumnKeyIp => stat.Address.ToString(),
+        Strings.Ui.ColumnKeyAsn => string.IsNullOrWhiteSpace(stat.Asn) ? Strings.Ui.Dash : stat.Asn,
         Strings.Ui.ColumnKeyAvgPing => Average(stat),
         Strings.Ui.ColumnKeyJitter => Metric(stat, stat.JitterMs),
         Strings.Ui.ColumnKeyStdDev => Metric(stat, stat.StdDevMs),
@@ -46,6 +47,7 @@ internal static class StatsGridRows
     [
         Strings.Ui.ColumnKeyHostName,
         Strings.Ui.ColumnKeyIp,
+        Strings.Ui.ColumnKeyAsn,
         Strings.Ui.ColumnKeyAvgPing,
         Strings.Ui.ColumnKeyJitter,
         Strings.Ui.ColumnKeyStdDev,

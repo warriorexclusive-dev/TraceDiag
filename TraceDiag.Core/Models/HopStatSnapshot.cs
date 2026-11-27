@@ -16,7 +16,8 @@ public sealed record HopStatSnapshot(
     string Status,
     string Diagnosis,
     double JitterMs = 0,
-    double StdDevMs = 0)
+    double StdDevMs = 0,
+    string Asn = "")
 {
     public int Lost => Math.Max(0, Sent - Received);
 }

@@ -28,6 +28,7 @@ internal static class StatsGridFactory
     {
         AddColumn(grid, Strings.Ui.ColumnKeyHostName, Strings.Ui.ColumnHostName);
         AddColumn(grid, Strings.Ui.ColumnKeyIp, Strings.Ui.ColumnIp);
+        AddColumn(grid, Strings.Ui.ColumnKeyAsn, Strings.Ui.ColumnAsn);
         AddColumn(grid, Strings.Ui.ColumnKeyAvgPing, Strings.Ui.ColumnAvgPing);
         AddColumn(grid, Strings.Ui.ColumnKeyJitter, Strings.Ui.ColumnJitter);
         AddColumn(grid, Strings.Ui.ColumnKeyStdDev, Strings.Ui.ColumnStdDev);
@@ -51,6 +52,7 @@ internal static class StatsGridFactory
     {
         grid.Columns[Strings.Ui.ColumnKeyHostName]!.FillWeight = 150;
         grid.Columns[Strings.Ui.ColumnKeyIp]!.FillWeight = 95;
+        grid.Columns[Strings.Ui.ColumnKeyAsn]!.FillWeight = 70;
         grid.Columns[Strings.Ui.ColumnKeyAvgPing]!.FillWeight = 85;
         grid.Columns[Strings.Ui.ColumnKeyJitter]!.FillWeight = 75;
         grid.Columns[Strings.Ui.ColumnKeyStdDev]!.FillWeight = 75;

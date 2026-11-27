@@ -99,6 +99,33 @@ public sealed class OutputWriterTests
     }
 
     [Fact]
+    public void Plain_SummaryIncludesAsn()
+    {
+        using var text = new StringWriter();
+        var writer = new OutputWriter(Strings.Console.FormatPlain, text);
+        writer.Stats([Snapshot() with { Asn = "64512" }]);
+        writer.WriteSummary();
+        Assert.Contains("asn  host", text.ToString());
+        Assert.Contains("64512", text.ToString());
+    }
+
+    [Fact]
+    public void CsvAndJson_IncludeAsn()
+    {
+        using var csvText = new StringWriter();
+        var csv = new OutputWriter(Strings.Console.FormatCsv, csvText);
+        csv.Stats([Snapshot() with { Asn = "64512" }]);
+        csv.WriteSummary();
+        Assert.Contains(",ip,asn,host,", csvText.ToString());
+        Assert.Contains("\"64512\"", csvText.ToString());
+        using var jsonText = new StringWriter();
+        var json = new OutputWriter(Strings.Console.FormatJson, jsonText);
+        json.Stats([Snapshot() with { Asn = "64512" }]);
+        json.WriteSummary();
+        Assert.Contains("\"asn\":\"64512\"", jsonText.ToString());
+    }
+
+    [Fact]
     public void WriteSummary_PrintsEveryDiagnosis()
     {
         using var text = new StringWriter();

@@ -79,5 +79,6 @@ internal static class DiagnosticReporter
         hop.Status,
         hop.Diagnosis,
         hop.JitterMs,
-        hop.StdDevMs);
+        hop.StdDevMs,
+        hop.Asn);
 }

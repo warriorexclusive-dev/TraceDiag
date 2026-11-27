@@ -15,6 +15,21 @@ public sealed class StatsGridTests
     }
 
     [Fact]
+    public void Create_AddsAsnColumn()
+    {
+        using var grid = StatsGridFactory.Create();
+        Assert.True(grid.Columns.Contains(Strings.Ui.ColumnKeyAsn));
+    }
+
+    [Fact]
+    public void AddRow_WritesAsnCell()
+    {
+        using var grid = StatsGridFactory.Create();
+        StatsGridRows.AddRow(grid, CreateSnapshot() with { Asn = "64512" });
+        Assert.Equal("64512", grid.Rows[0].Cells[Strings.Ui.ColumnKeyAsn].Value);
+    }
+
+    [Fact]
     public void AddRow_WritesDiagnosisCell()
     {
         using var grid = StatsGridFactory.Create();

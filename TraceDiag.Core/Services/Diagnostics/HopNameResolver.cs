@@ -20,7 +20,9 @@ internal static class HopNameResolver
     private static async Task ResolveOneAsync(DiagnosticContext context, HopInfo hop, IReadOnlyList<HopInfo> hops, Stopwatch sw, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         try { hop.HostName = await context.DnsResolver.ResolveHostNameAsync(hop.Address, cancellationToken); }
-        catch (Exception ex) when (ex is not OperationCanceledException) { ReportDnsError(context, hop, ex, progress); return; }
+        catch (Exception ex) when (ex is not OperationCanceledException) { ReportDnsError(context, hop, ex, progress); }
+        try { hop.Asn = await context.DnsResolver.ResolveAsnAsync(hop.Address, cancellationToken) ?? string.Empty; }
+        catch (Exception ex) when (ex is not OperationCanceledException) { ReportDnsError(context, hop, ex, progress); }
         finally { DiagnosticReporter.ReportStats(stats, hops); }
         ReportSlowDns(context, hop, sw);
         ReportResolved(context, hop, progress);

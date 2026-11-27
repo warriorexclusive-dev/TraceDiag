@@ -20,6 +20,16 @@ public sealed class HopNameResolverTests
     }
 
     [Fact]
+    public async Task ResolveAsync_AssignsAsn()
+    {
+        var dns = new FakeDnsResolver(_ => "host", address => "AS" + address.GetAddressBytes()[3]);
+        var context = new DiagnosticContext(new FakeProbeClient(call => TestFactories.Success(call)), dns, null);
+        var hops = new[] { TestFactories.Hop(1, 1) };
+        await HopNameResolver.ResolveAsync(context, hops.ToList(), TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Equal("AS1", hops[0].Asn);
+    }
+
+    [Fact]
     public async Task ResolveAsync_OnDnsFailure_KeepsNameEmptyAndLogsError()
     {
         var dns = new FakeDnsResolver(_ => throw new SocketException());

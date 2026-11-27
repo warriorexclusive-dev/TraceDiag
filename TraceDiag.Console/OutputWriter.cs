@@ -42,7 +42,7 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
         output.WriteLine(Strings.T(Strings.Console.SummaryTitle));
         output.WriteLine(Strings.T(Strings.Console.StatsHeader));
         foreach (var hop in hops) output.WriteLine(TextFormatter.Fmt(Strings.Console.StatsRowFormat,
-            hop.Ttl, hop.Address, Host(hop), Average(hop), Metric(hop, hop.JitterMs),
+            hop.Ttl, hop.Address, Asn(hop), Host(hop), Average(hop), Metric(hop, hop.JitterMs),
             Metric(hop, hop.StdDevMs), Text(hop.MinPingMs), Text(hop.MaxPingMs),
             Text(hop.LastPingMs), hop.Sent, hop.Received, Status(hop), Diagnosis(hop)));
     }
@@ -51,7 +51,7 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
     {
         output.WriteLine(Strings.Console.CsvStatsHeader);
         foreach (var hop in hops) output.WriteLine(Csv(Strings.Console.KindStats, hop.Ttl, hop.Address,
-            Host(hop), Average(hop), Metric(hop, hop.JitterMs), Metric(hop, hop.StdDevMs),
+            Asn(hop), Host(hop), Average(hop), Metric(hop, hop.JitterMs), Metric(hop, hop.StdDevMs),
             Text(hop.MinPingMs), Text(hop.MaxPingMs), Text(hop.LastPingMs),
             hop.Sent, hop.Received, Status(hop), Diagnosis(hop)));
     }
@@ -74,6 +74,7 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
     {
         [Strings.Console.ColumnTtl] = hop.Ttl,
         [Strings.Console.ColumnIp] = hop.Address.ToString(),
+        [Strings.Console.ColumnAsn] = Asn(hop),
         [Strings.Console.ColumnHost] = Host(hop),
         [Strings.Console.ColumnAvg] = Average(hop),
         [Strings.Console.ColumnJitter] = Metric(hop, hop.JitterMs),
@@ -89,6 +90,9 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
 
     private static string Csv(params object?[] values) =>
         string.Join(",", values.Select(value => "\"" + (value?.ToString() ?? string.Empty).Replace("\"", "\"\"") + "\""));
+
+    private static string Asn(HopStatSnapshot hop) =>
+        string.IsNullOrWhiteSpace(hop.Asn) ? Strings.Ui.Dash : hop.Asn;
 
     private static string Host(HopStatSnapshot hop) =>
         string.IsNullOrWhiteSpace(hop.HostName) ? Strings.T(Strings.Ui.NoDns) : hop.HostName!;
