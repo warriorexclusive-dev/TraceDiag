@@ -20,7 +20,7 @@ public sealed class TraceDiagnosticsService : ITraceDiagnosticsService
         Validate(input, progress, statsProgress);
         ReportStart(progress);
         try { await _controller.RunAsync(_context, input, progress, statsProgress, cancellationToken); }
-        catch (OperationCanceledException) { _context.Logger?.Warn(Strings.Diag.RunCancelled); throw; }
+        catch (OperationCanceledException) { _context.Logger.WarnFmt(Strings.Diag.RunCancelled); throw; }
         catch (Exception ex) { ReportFailure(progress, ex); throw; }
     }
 
@@ -44,7 +44,7 @@ public sealed class TraceDiagnosticsService : ITraceDiagnosticsService
     {
         DiagnosticReporter.Report(_context, progress, Strings.Diag.RunStarted);
         if (_context.Logger is null) return;
-        DiagnosticReporter.Report(_context, progress, TextFormatter.Fmt(Strings.Diag.LogFileFormat, GetLogPathHint()));
+        DiagnosticReporter.ReportFormat(_context, progress, Strings.Diag.LogFileFormat, GetLogPathHint());
     }
 
     private string GetLogPathHint() =>
@@ -52,7 +52,8 @@ public sealed class TraceDiagnosticsService : ITraceDiagnosticsService
 
     private void ReportFailure(IProgress<string> progress, Exception ex)
     {
-        _context.Logger?.Error(Strings.Diag.RunFailed, ex);
-        DiagnosticReporter.Report(_context, progress, TextFormatter.Fmt(Strings.Diag.FatalErrorFormat, ex.GetType().Name, ex.Message));
+        _context.Logger.ErrorFmt(Strings.Diag.RunFailed, ex);
+        DiagnosticReporter.ReportFormat(_context, progress, Strings.Diag.FatalErrorFormat,
+            ex.GetType().Name, ex.Message);
     }
 }

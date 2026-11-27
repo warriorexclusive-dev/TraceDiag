@@ -3,7 +3,7 @@ using TraceDiag.Services.Logging;
 
 namespace TraceDiag.Services;
 
-public sealed class FileDiagnosticLogger : IDiagnosticLogger, ILogPathProvider, IDisposable
+public sealed class FileDiagnosticLogger : IStructuredDiagnosticLogger, ILogPathProvider, IDisposable
 {
     private readonly AsyncLogWriter _writer;
 
@@ -16,6 +16,15 @@ public sealed class FileDiagnosticLogger : IDiagnosticLogger, ILogPathProvider, 
     public void Warn(string message) => Write(Strings.LogLevel.Warn, message, null);
 
     public void Error(string message, Exception? exception = null) => Write(Strings.LogLevel.Error, message, exception);
+
+    public void InfoStructured(string canonical, object?[] args) =>
+        Write(Strings.LogLevel.Info, TextFormatter.Fmt(canonical, args), null);
+
+    public void WarnStructured(string canonical, object?[] args) =>
+        Write(Strings.LogLevel.Warn, TextFormatter.Fmt(canonical, args), null);
+
+    public void ErrorStructured(string canonical, object?[] args, Exception? exception) =>
+        Write(Strings.LogLevel.Error, TextFormatter.Fmt(canonical, args), exception);
 
     public void Flush() => _writer.Flush();
 

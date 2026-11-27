@@ -32,7 +32,7 @@ internal static class DiagnosticBatch
         foreach (var size in packetSizes)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.PacketSizeHeaderFormat, size));
+            DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.PacketSizeHeaderFormat, size);
             var result = await ProbeHopAsync(context, nonResponding, skippedTtls, hop, hops, size,
                 attempts, lossDelayMs, task, trigger, progress, stats, cancellationToken);
             if (result is not null) results.Add(result);
@@ -52,8 +52,8 @@ internal static class DiagnosticBatch
     private static void ReportDiagnosis(DiagnosticContext context, HopInfo hop, IProgress<string> progress)
     {
         if (hop.Diagnosis == Strings.Diagnosis.None) return;
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(
-            Strings.Diag.DiagnosisFormat, hop.Ttl, hop.Address, hop.Diagnosis), isWarn: true);
+        DiagnosticReporter.ReportFormatWarn(context, progress, Strings.Diag.DiagnosisFormat,
+            hop.Ttl, hop.Address, LocalizedArg.Of(hop.Diagnosis));
     }
 
     private static async Task<HopSizeResult?> ProbeHopAsync(DiagnosticContext context,
@@ -85,7 +85,7 @@ internal static class DiagnosticBatch
     {
         hop.Status = Strings.Status.NoAnswer;
         DiagnosticReporter.ReportStats(stats, hops);
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(
-            Strings.Diag.SkipHopFormat, hop.Ttl, hop.Address), isWarn: true);
+        DiagnosticReporter.ReportFormatWarn(context, progress, Strings.Diag.SkipHopFormat,
+            hop.Ttl, hop.Address);
     }
 }

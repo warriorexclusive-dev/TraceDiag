@@ -45,11 +45,12 @@ public sealed class MonitoringService : IMonitoringService
         DiagnosticReporter.Report(_context, progress, Strings.Diag.MonitorStarted);
 
     private void ReportCancelled(IProgress<string> progress) =>
-        DiagnosticReporter.Report(_context, progress, Strings.Diag.MonitorCancelled, isWarn: true);
+        DiagnosticReporter.ReportFormatWarn(_context, progress, Strings.Diag.MonitorCancelled);
 
     private void ReportFailure(IProgress<string> progress, Exception ex)
     {
-        _context.Logger?.Error(Strings.Diag.RunFailed, ex);
-        DiagnosticReporter.Report(_context, progress, TextFormatter.Fmt(Strings.Diag.FatalErrorFormat, ex.GetType().Name, ex.Message));
+        _context.Logger.ErrorFmt(Strings.Diag.RunFailed, ex);
+        DiagnosticReporter.ReportFormat(_context, progress, Strings.Diag.FatalErrorFormat,
+            ex.GetType().Name, ex.Message);
     }
 }

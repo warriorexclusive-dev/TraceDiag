@@ -27,4 +27,8 @@
     <EmbeddedResource Include="Resources\cable_24dp.ico" LogicalName="TraceDiag.Resources.cable_24dp.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\localizations\*.json" Link="localizations\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

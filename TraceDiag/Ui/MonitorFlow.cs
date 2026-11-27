@@ -31,11 +31,11 @@ internal static class MonitorFlow
 
     private static async Task ExecuteAsync(MonitorFlowContext context, MonitorInput input, IPAddress address)
     {
-        context.Status.Text = Strings.Ui.Monitoring;
+        UiText.Set(context.Status, Strings.Ui.Monitoring);
         var text = new Progress<string>(context.AppendLine);
         var stats = new Progress<HopStatSnapshot>(context.AppendStat);
         await context.ExecuteMonitor(CreateInput(input, address), text, stats, context.Token);
-        context.Status.Text = Strings.Ui.MonitoringCompleted;
+        UiText.Set(context.Status, Strings.Ui.MonitoringCompleted);
         context.Logger.Info(Strings.Log.MonitorCompleted);
     }
 
@@ -48,7 +48,7 @@ internal static class MonitorFlow
         var message = TextFormatter.Fmt(Strings.Log.FailedToResolveFormat, input.Host);
         context.Logger.Warn(message);
         context.AppendLine(TextFormatter.Fmt(Strings.Log.ConsoleFailedResolveFormat, TextFormatter.Now(), message));
-        context.Status.Text = Strings.Ui.ResolveError;
+        UiText.Set(context.Status, Strings.Ui.ResolveError);
     }
 
     private static MonitoringInput CreateInput(MonitorInput input, IPAddress address)

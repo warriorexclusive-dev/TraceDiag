@@ -29,7 +29,7 @@ internal static class RouteDiscovery
 
     private static HostDiscoveryResult ReportNoRoute(DiagnosticContext context, IProgress<string> progress, HostDiscoveryResult result)
     {
-        DiagnosticReporter.Report(context, progress, Strings.Diag.NoRouteHops, isWarn: true);
+        DiagnosticReporter.ReportFormatWarn(context, progress, Strings.Diag.NoRouteHops);
         return result;
     }
 }

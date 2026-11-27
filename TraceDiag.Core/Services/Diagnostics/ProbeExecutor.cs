@@ -23,16 +23,15 @@ internal static class ProbeExecutor
 
     private static ProbeResult HandleTimeout(DiagnosticContext context, ProbeRequest request, IProgress<string> progress)
     {
-        var message = TextFormatter.Fmt(Strings.Diag.WatchdogFormat, request.Context);
-        context.Logger?.Warn(message);
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.ConsoleWarningFormat, message), isWarn: true);
+        DiagnosticReporter.ReportFormatWarn(context, progress, Strings.Diag.WatchdogFormat, request.Context);
         return TimedOut(request);
     }
 
     private static ProbeResult HandleFailure(DiagnosticContext context, ProbeRequest request, IProgress<string> progress, Exception ex)
     {
-        context.Logger?.Error(TextFormatter.Fmt(Strings.Diag.ProbeSendFailedFormat, request.Context), ex);
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.ProbeSendFailedConsoleFormat, request.Context, ex.Message), isError: true, ex: ex);
+        context.Logger.ErrorFmt(Strings.Diag.ProbeSendFailedFormat, ex, request.Context);
+        DiagnosticReporter.ReportFormatError(context, progress, Strings.Diag.ProbeSendFailedConsoleFormat,
+            ex, request.Context, ex.Message);
         return Failed(request);
     }
 

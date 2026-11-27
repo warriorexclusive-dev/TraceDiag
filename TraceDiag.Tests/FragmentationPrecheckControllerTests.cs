@@ -30,7 +30,7 @@ public sealed class FragmentationPrecheckControllerTests
         await CreateController().RunAsync(TestFactories.Context(probe, logger), hops,
             progress, CancellationToken.None);
         Assert.Equal(5, logger.Warnings.Count);
-        Assert.Contains(progress.Values, value => value.Contains("нет ответа"));
+        Assert.Contains(progress.Values, value => value.Contains(Strings.Diag.NoAnswer));
     }
 
     private static FragmentationPrecheckController CreateController() =>

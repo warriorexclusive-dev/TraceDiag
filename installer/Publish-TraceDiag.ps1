@@ -21,6 +21,11 @@ if ($LASTEXITCODE -ne 0) { throw 'Публикация консоли (net48) з
 dotnet publish (Join-Path $repoRoot 'TraceDiag.Console\TraceDiag.Console.csproj') -c $Configuration -f net10.0 -r linux-x64 --self-contained true -o $linuxDir
 if ($LASTEXITCODE -ne 0) { throw 'Публикация консоли (linux-x64) завершилась с ошибкой.' }
 
+$localizations = Join-Path $repoRoot 'localizations'
+foreach ($dir in @($windowsDir, $linuxDir)) {
+    Copy-Item -LiteralPath $localizations -Destination $dir -Recurse -Force
+}
+
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'install-console.sh') -Destination $linuxDir
 
 if (Test-Path -LiteralPath $zipPath) { Remove-Item -LiteralPath $zipPath -Force }

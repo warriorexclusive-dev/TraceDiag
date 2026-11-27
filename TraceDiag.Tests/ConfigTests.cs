@@ -1,3 +1,4 @@
+using TraceDiag.Localization;
 using TraceDiag.Models;
 using TraceDiag.Services;
 using TraceDiag.Tests.TestData;
@@ -33,6 +34,24 @@ public sealed class ConfigTests
         var path = temp.File("settings.json");
         ConfigFileIO.Save(path, new AppConfig { OutputFontSize = 100f });
         Assert.Equal(24f, ConfigFileIO.Load(path).OutputFontSize);
+    }
+
+    [Fact]
+    public void SaveThenLoad_PreservesLanguage()
+    {
+        using var temp = new TempDirectory();
+        var path = temp.File("settings.json");
+        ConfigFileIO.Save(path, new AppConfig { Language = Language.Jp });
+        Assert.Equal(Language.Jp, ConfigFileIO.Load(path).Language);
+    }
+
+    [Fact]
+    public void Load_InvalidLanguageFallsBackToEnglish()
+    {
+        using var temp = new TempDirectory();
+        var path = temp.File("settings.json");
+        File.WriteAllText(path, "{\"language\":99}");
+        Assert.Equal(Language.En, ConfigFileIO.Load(path).Language);
     }
 
     [Fact]

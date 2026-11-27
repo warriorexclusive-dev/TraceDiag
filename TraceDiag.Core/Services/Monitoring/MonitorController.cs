@@ -51,8 +51,8 @@ internal sealed class MonitorController(
     private static void ReportExcluded(DiagnosticContext context, IReadOnlyList<HopInfo> hops, IProgress<string> progress)
     {
         foreach (var hop in hops.Where(hop => !MonitorEligibility.IsEligible(hop)))
-            DiagnosticReporter.Report(context, progress,
-                TextFormatter.Fmt(Strings.Diag.MonitorExcludedFormat, hop.Ttl, DiagnosticText.Hop(hop), hop.Diagnosis));
+            DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.MonitorExcludedFormat,
+                hop.Ttl, DiagnosticText.HopArg(hop), LocalizedArg.Of(hop.Diagnosis));
     }
 
     private static MonitoringInput Normalize(MonitoringInput input) =>

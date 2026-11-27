@@ -1,3 +1,5 @@
+using TraceDiag.Localization;
+
 namespace TraceDiag.Ui;
 
 internal static class FormControlsFactory
@@ -13,16 +15,21 @@ internal static class FormControlsFactory
         var dontFragment = CreateDontFragmentCheckBox();
         var monitoringMode = CreateMonitoringModeCheckBox();
         var darkThemeCheckBox = CreateDarkThemeCheckBox(darkTheme);
+        var language = CreateLanguageInput();
         var run = CreateRunButton();
         var (stats, output, status, splitter) = CreateFooter(fontSize);
-        var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode, darkThemeCheckBox, run);
+        var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize,
+            dontFragment, monitoringMode, darkThemeCheckBox, language, run);
         return new MainControls(LayoutFactory.Create(input, splitter, status), splitter, host, packet,
             attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode,
-            darkThemeCheckBox, stats, output, run, status);
+            darkThemeCheckBox, language, stats, output, run, status);
     }
 
-    private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment, CheckBox monitoringMode, CheckBox darkTheme, Button run) =>
-        InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode, darkTheme, run);
+    private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts,
+        NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment,
+        CheckBox monitoringMode, CheckBox darkTheme, ComboBox language, Button run) =>
+        InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize,
+            dontFragment, monitoringMode, darkTheme, language, run);
 
     private static (DataGridView Stats, TextBox Output, Label Status, SplitContainer Splitter) CreateFooter(float fontSize)
     {
@@ -77,52 +84,57 @@ internal static class FormControlsFactory
         Anchor = AnchorStyles.Right
     };
 
-    private static CheckBox CreateDynamicPacketSizeCheckBox() => new()
-    {
-        Text = Strings.Ui.DynamicPacketSizeLabel,
-        AutoSize = true,
-        Checked = true,
-        Anchor = AnchorStyles.Top | AnchorStyles.Left,
-        Dock = DockStyle.None,
-        Margin = new Padding(8, 6, 0, 0)
-    };
+    private static CheckBox CreateDynamicPacketSizeCheckBox() =>
+        CreateCheck(Strings.Ui.DynamicPacketSizeLabel, true, new Padding(8, 6, 0, 0));
 
-    private static CheckBox CreateDontFragmentCheckBox() => new()
-    {
-        Text = Strings.Ui.DontFragmentLabel,
-        AutoSize = true,
-        Checked = false,
-        Dock = DockStyle.None,
-        Anchor = AnchorStyles.Top | AnchorStyles.Left
-    };
+    private static CheckBox CreateDontFragmentCheckBox() =>
+        CreateCheck(Strings.Ui.DontFragmentLabel, false, Padding.Empty);
 
-    private static CheckBox CreateMonitoringModeCheckBox() => new()
-    {
-        Text = Strings.Ui.MonitoringModeLabel,
-        AutoSize = true,
-        Checked = false,
-        Dock = DockStyle.None,
-        Anchor = AnchorStyles.Top | AnchorStyles.Left
-    };
+    private static CheckBox CreateMonitoringModeCheckBox() =>
+        CreateCheck(Strings.Ui.MonitoringModeLabel, false, Padding.Empty);
 
-    private static CheckBox CreateDarkThemeCheckBox(bool darkTheme) => new()
-    {
-        Text = Strings.Ui.DarkThemeLabel,
-        AutoSize = true,
-        Checked = darkTheme,
-        Anchor = AnchorStyles.Top | AnchorStyles.Left,
-        Dock = DockStyle.None,
-        Margin = new Padding(8, 6, 0, 0)
-    };
+    private static CheckBox CreateDarkThemeCheckBox(bool darkTheme) =>
+        CreateCheck(Strings.Ui.DarkThemeLabel, darkTheme, new Padding(8, 6, 0, 0));
 
-    private static Button CreateRunButton() => new()
+    private static CheckBox CreateCheck(string canonical, bool checkedState, Padding margin)
     {
-        Text = Strings.Ui.RunButton,
-        Size = new Size(240, 64),
-        Font = new Font(Strings.Ui.GridFontFamily, 16f, FontStyle.Bold),
-        Anchor = AnchorStyles.Top | AnchorStyles.Right,
-        Margin = new Padding(0, 6, 0, 0)
-    };
+        var box = new CheckBox
+        {
+            AutoSize = true,
+            Checked = checkedState,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left,
+            Dock = DockStyle.None,
+            Margin = margin
+        };
+        UiText.Set(box, canonical);
+        return box;
+    }
+
+    private static ComboBox CreateLanguageInput()
+    {
+        var combo = new ComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            Width = 120,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
+        };
+        combo.Items.AddRange(Strings.Ui.LanguageNames.Select(Strings.T).ToArray());
+        combo.SelectedIndex = (int)Translator.Current;
+        return combo;
+    }
+
+    private static Button CreateRunButton()
+    {
+        var run = new Button
+        {
+            Size = new Size(240, 64),
+            Font = new Font(Strings.Ui.GridFontFamily, 16f, FontStyle.Bold),
+            Anchor = AnchorStyles.Top | AnchorStyles.Right,
+            Margin = new Padding(0, 6, 0, 0)
+        };
+        UiText.Set(run, Strings.Ui.RunButton);
+        return run;
+    }
 
     private static TextBox CreateOutputTextBox(float fontSize) => new()
     {
@@ -135,11 +147,15 @@ internal static class FormControlsFactory
         BackColor = Color.White
     };
 
-    private static Label CreateStatusLabel() => new()
+    private static Label CreateStatusLabel()
     {
-        Dock = DockStyle.Fill,
-        AutoSize = true,
-        Text = Strings.Ui.Ready,
-        Padding = new Padding(0, 6, 0, 0)
-    };
+        var status = new Label
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            Padding = new Padding(0, 6, 0, 0)
+        };
+        UiText.Set(status, Strings.Ui.Ready);
+        return status;
+    }
 }

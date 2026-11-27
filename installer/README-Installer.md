@@ -12,7 +12,8 @@ self-contained консоль для Linux (`net10.0`, `linux-x64`). Загру�
 .\Publish-TraceDiag.ps1
 ```
 
-Скрипт публикует файлы в `App\` и `ConsoleLinux\` и собирает рядом с собой:
+Скрипт публикует файлы в `App\` и `ConsoleLinux\`, копирует в обе папки каталог
+`localizations\` и собирает рядом с собой:
 
 - `TraceDiag-install.zip` — Windows: GUI + консоль `net48`;
 - `TraceDiag-console-linux-x64.tar.gz` — self-contained консоль для Linux.
@@ -31,8 +32,13 @@ self-contained консоль для Linux (`net10.0`, `linux-x64`). Загру�
   `dotNetFx48_Full.exe` рядом со скриптом или в `App\`; можно задать другой путь через
   `-Framework48InstallerPath` или URL альтернативного репозитория через `-Framework48Url`;
 - запускает найденный установщик тихо (перезагрузка может потребоваться);
-- копирует `TraceDiag.exe` и `TraceDiag.Console.exe` в `%LOCALAPPDATA%\Programs\TraceDiag`;
+- копирует `TraceDiag.exe`, `TraceDiag.Console.exe` и папку `localizations` в
+  `%LOCALAPPDATA%\Programs\TraceDiag`;
 - создаёт ярлык в меню «Пуск» (и на рабочем столе с `-DesktopShortcut`).
+
+Файлы `localizations\*.json` можно править после установки: приложение читает их при
+запуске, пересборка не нужна. Ключ — каноничный английский текст, поле `language` — код
+языка (`en`, `cn`, `fr`, `de`, `ru`, `jp`).
 
 ## 3. Установка консоли на Linux
 

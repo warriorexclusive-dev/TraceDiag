@@ -10,22 +10,24 @@ internal static class ConsoleOptions
     internal const string Dynamic = "--dynamic";
     internal const string DontFragment = "--df";
     internal const string Format = "--format";
+    internal const string Language = "--language";
     internal const string Reset = "--reset";
     internal const string Help = "--help";
 
     internal static readonly string[] Names =
-        [Host, PacketSize, Attempts, LossDelay, Dynamic, DontFragment, Format, Reset, Help];
+        [Host, PacketSize, Attempts, LossDelay, Dynamic, DontFragment, Format, Language, Reset, Help];
 
     internal static readonly string[] Usage =
     [
-        Strings.Console.OptionHost,
-        Strings.Console.OptionPacketSize,
-        Strings.Console.OptionAttempts,
-        Strings.Console.OptionLossDelay,
-        Strings.Console.OptionDynamic,
-        Strings.Console.OptionDontFragment,
-        Strings.Console.OptionFormat,
-        Strings.Console.OptionReset,
-        Strings.Console.OptionHelp
+        Strings.Console.HelpHost,
+        Strings.Console.HelpPacketSize,
+        Strings.Console.HelpAttempts,
+        Strings.Console.HelpLossDelay,
+        Strings.Console.HelpDynamic,
+        Strings.Console.HelpDontFragment,
+        Strings.Console.HelpFormat,
+        Strings.Console.OptionLanguage,
+        Strings.Console.OptionResetHelp,
+        Strings.Console.HelpHelp
     ];
 }

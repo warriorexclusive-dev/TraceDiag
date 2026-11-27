@@ -1,3 +1,4 @@
+using TraceDiag.Localization;
 using TraceDiag.Models;
 
 namespace TraceDiag.Console;
@@ -11,6 +12,7 @@ internal sealed record Invocation(
     bool Dynamic,
     bool DontFragment,
     string Format,
+    Language Language,
     bool Reset,
     bool Help);
 
@@ -25,6 +27,7 @@ internal static class ConsoleDefaults
     internal const int LossDelayMs = 1000;
     internal static int PacketSize => ProbeLimits.DontFragmentPacketSize;
     internal const string Format = Strings.Console.FormatPlain;
+    internal const Language Language = TraceDiag.Localization.Language.En;
 }
 
 internal sealed class OptionsBag
@@ -36,5 +39,6 @@ internal sealed class OptionsBag
     internal bool Dynamic { get; set; }
     internal bool DontFragment { get; set; }
     internal string Format { get; set; } = ConsoleDefaults.Format;
+    internal Language Language { get; set; } = ConsoleDefaults.Language;
     internal bool Reset { get; set; }
 }

@@ -38,11 +38,11 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
 
     private void PlainStats(IReadOnlyList<HopStatSnapshot> hops)
     {
-        output.WriteLine(Strings.Console.SummaryTitle);
-        output.WriteLine(Strings.Console.StatsHeader);
+        output.WriteLine(Strings.T(Strings.Console.SummaryTitle));
+        output.WriteLine(Strings.T(Strings.Console.StatsHeader));
         foreach (var hop in hops) output.WriteLine(TextFormatter.Fmt(Strings.Console.StatsRowFormat,
             hop.Ttl, hop.Address, Host(hop), Average(hop), Text(hop.MinPingMs), Text(hop.MaxPingMs),
-            Text(hop.LastPingMs), hop.Sent, hop.Received, hop.Status, hop.Diagnosis));
+            Text(hop.LastPingMs), hop.Sent, hop.Received, Status(hop), Diagnosis(hop)));
     }
 
     private void CsvStats(IReadOnlyList<HopStatSnapshot> hops)
@@ -50,7 +50,7 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
         output.WriteLine(Strings.Console.CsvStatsHeader);
         foreach (var hop in hops) output.WriteLine(Csv(Strings.Console.KindStats, hop.Ttl, hop.Address,
             Host(hop), Average(hop), Text(hop.MinPingMs), Text(hop.MaxPingMs), Text(hop.LastPingMs),
-            hop.Sent, hop.Received, hop.Status, hop.Diagnosis));
+            hop.Sent, hop.Received, Status(hop), Diagnosis(hop)));
     }
 
     private string JsonMessage(string value) =>
@@ -78,15 +78,19 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
         [Strings.Console.ColumnLast] = Text(hop.LastPingMs),
         [Strings.Console.ColumnSent] = hop.Sent,
         [Strings.Console.ColumnReceived] = hop.Received,
-        [Strings.Console.ColumnStatus] = hop.Status,
-        [Strings.Console.ColumnDiagnosis] = hop.Diagnosis
+        [Strings.Console.ColumnStatus] = Status(hop),
+        [Strings.Console.ColumnDiagnosis] = Diagnosis(hop)
     };
 
     private static string Csv(params object?[] values) =>
         string.Join(",", values.Select(value => "\"" + (value?.ToString() ?? string.Empty).Replace("\"", "\"\"") + "\""));
 
     private static string Host(HopStatSnapshot hop) =>
-        string.IsNullOrWhiteSpace(hop.HostName) ? Strings.Ui.NoDns : hop.HostName!;
+        string.IsNullOrWhiteSpace(hop.HostName) ? Strings.T(Strings.Ui.NoDns) : hop.HostName!;
+
+    private static string Status(HopStatSnapshot hop) => Strings.T(hop.Status);
+
+    private static string Diagnosis(HopStatSnapshot hop) => Strings.T(hop.Diagnosis);
 
     private static string Average(HopStatSnapshot hop) =>
         hop.Received == 0 ? Strings.Ui.Dash

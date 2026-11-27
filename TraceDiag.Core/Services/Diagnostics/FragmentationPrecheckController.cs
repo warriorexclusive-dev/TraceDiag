@@ -23,9 +23,8 @@ internal sealed class FragmentationPrecheckController(
     }
 
     private void ReportHeader(DiagnosticContext context, IProgress<string> progress) =>
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(
-            Strings.Diag.PrecheckHeaderFormat,
-            string.Join(Strings.Diag.PacketSizeListSeparator, ProbeLimits.PrecheckPacketSizes)));
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.PrecheckHeaderFormat,
+            string.Join(Strings.Diag.PacketSizeListSeparator, ProbeLimits.PrecheckPacketSizes));
 
     private async Task CheckAsync(DiagnosticContext context, HopInfo hop, int size,
         IProgress<string> progress, CancellationToken cancellationToken)
@@ -42,11 +41,13 @@ internal sealed class FragmentationPrecheckController(
     private static void Report(DiagnosticContext context, HopInfo hop, int size,
         ProbeResult result, IProgress<string> progress)
     {
-        var message = result.Outcome == ProbeOutcome.Success
-            ? TextFormatter.Fmt(Strings.Diag.PrecheckSuccessFormat, hop.Ttl, DiagnosticText.Hop(hop), size,
-                TextFormatter.Fmt(Strings.Diag.MsFormat, result.RoundtripTimeMs))
-            : TextFormatter.Fmt(Strings.Diag.PrecheckFailureFormat, hop.Ttl, DiagnosticText.Hop(hop), size,
-                Strings.Diag.NoAnswer);
-        DiagnosticReporter.Report(context, progress, message, isWarn: result.Outcome != ProbeOutcome.Success);
+        var success = result.Outcome == ProbeOutcome.Success;
+        var rtt = success
+            ? DiagnosticText.MsArg(result.RoundtripTimeMs)
+            : LocalizedArg.Of(Strings.Diag.NoAnswer);
+        var canonical = success ? Strings.Diag.PrecheckSuccessFormat : Strings.Diag.PrecheckFailureFormat;
+        var args = new object?[] { hop.Ttl, DiagnosticText.HopArg(hop), size, rtt };
+        if (success) DiagnosticReporter.ReportFormat(context, progress, canonical, args);
+        else DiagnosticReporter.ReportFormatWarn(context, progress, canonical, args);
     }
 }

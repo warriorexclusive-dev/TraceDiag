@@ -1,3 +1,4 @@
+using TraceDiag.Localization;
 using TraceDiag.Models;
 using TraceDiag.Services.Diagnostics;
 using TraceDiag.Tests.TestData;
@@ -39,6 +40,18 @@ public sealed class DiagnosticTextAndReporterTests
         Assert.Single(progress.Values);
         Assert.Contains("message", progress.Values[0]);
         Assert.Single(logger.Warnings);
+    }
+
+    [Fact]
+    public void ReportFormat_LocalizesProgressButKeepsCanonicalLog()
+    {
+        using var localization = new LocalizationDirectory().Add("de", ("Attempts: {0}", "Versuche: {0}"));
+        localization.Activate();
+        var logger = new FakeDiagnosticLogger();
+        var progress = TestFactories.TextProgress();
+        DiagnosticReporter.ReportFormat(CreateContext(logger), progress, "Attempts: {0}", 3);
+        Assert.Contains("Versuche: 3", progress.Values[0]);
+        Assert.Equal("Attempts: 3", Assert.Single(logger.Infos));
     }
 
     [Fact]

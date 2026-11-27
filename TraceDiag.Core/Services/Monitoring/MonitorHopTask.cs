@@ -45,10 +45,11 @@ internal sealed class MonitorHopTask(
     private static void Report(DiagnosticContext context, HopInfo hop, ProbeResult result, bool success,
         IProgress<string> progress)
     {
-        var rtt = success ? TextFormatter.Fmt(Strings.Diag.MsFormat, result.RoundtripTimeMs) : Strings.Diag.NoAnswer;
-        DiagnosticReporter.Report(context, progress,
-            TextFormatter.Fmt(Strings.Diag.MonitorCycleFormat, hop.Ttl, DiagnosticText.Hop(hop),
-                result.BufferSize, rtt, hop.Sent, hop.Received),
-            isWarn: !success);
+        var rtt = success
+            ? DiagnosticText.MsArg(result.RoundtripTimeMs)
+            : LocalizedArg.Of(Strings.Diag.NoAnswer);
+        var args = new object?[] { hop.Ttl, DiagnosticText.HopArg(hop), result.BufferSize, rtt, hop.Sent, hop.Received };
+        if (success) DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.MonitorCycleFormat, args);
+        else DiagnosticReporter.ReportFormatWarn(context, progress, Strings.Diag.MonitorCycleFormat, args);
     }
 }

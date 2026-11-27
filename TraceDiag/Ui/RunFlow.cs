@@ -53,16 +53,16 @@ internal static class RunFlow
         var message = TextFormatter.Fmt(Strings.Log.FailedToResolveFormat, input.Host);
         context.Logger.Warn(message);
         context.AppendLine(TextFormatter.Fmt(Strings.Log.ConsoleFailedResolveFormat, TextFormatter.Now(), message));
-        context.Status.Text = Strings.Ui.ResolveError;
+        UiText.Set(context.Status, Strings.Ui.ResolveError);
     }
 
     private static async Task RunServiceAsync(RunFlowContext context, RunInput input, IPAddress address, CancellationToken token)
     {
-        context.Status.Text = Strings.Ui.Running;
+        UiText.Set(context.Status, Strings.Ui.Running);
         var text = new Progress<string>(context.AppendLine);
         var stats = new Progress<IReadOnlyList<HopStatSnapshot>>(context.ApplyStats);
         await context.ExecuteService(CreateDiagnosticInput(input, address), text, stats, token);
-        context.Status.Text = Strings.Ui.Completed;
+        UiText.Set(context.Status, Strings.Ui.Completed);
         context.Logger.Info(Strings.Log.RunCompleted);
     }
 

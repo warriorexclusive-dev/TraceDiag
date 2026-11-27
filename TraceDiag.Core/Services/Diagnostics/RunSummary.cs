@@ -23,7 +23,7 @@ internal static class RunSummary
             return;
         }
         if (targetHop is not null) targetHop.Status = Strings.Status.NoAnswer;
-        DiagnosticReporter.Report(context, progress, Strings.Diag.RemoteNotResponse, isWarn: true);
+        DiagnosticReporter.ReportFormatWarn(context, progress, Strings.Diag.RemoteNotResponse);
     }
 
     private static bool IsRespondingTarget(HopInfo? hop, IPAddress target) =>
@@ -40,6 +40,7 @@ internal static class RunSummary
         DiagnosticReporter.Separator(context, progress);
         DiagnosticReporter.Report(context, progress, Strings.Diag.Summary);
         foreach (var hop in hops)
-            DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.SummaryRowFormat, hop.Ttl, DiagnosticText.Hop(hop), hop.Sent, hop.Received, hop.Lost, hop.LossPercent));
+            DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.SummaryRowFormat,
+                hop.Ttl, DiagnosticText.HopArg(hop), hop.Sent, hop.Received, hop.Lost, hop.LossPercent);
     }
 }

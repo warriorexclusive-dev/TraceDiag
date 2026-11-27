@@ -63,7 +63,7 @@ public sealed class DiagnosticBatchTests
         Assert.DoesNotContain(probe.Calls, call => call.BufferSize == 256);
         Assert.Equal(Strings.Status.NoAnswer, hop.Status);
         Assert.Equal(Strings.Diagnosis.PacketSizeLimit, hop.Diagnosis);
-        Assert.Contains(progress.Values, value => value.Contains("пропуск"));
+        Assert.Contains(progress.Values, value => value.Contains("skipped"));
     }
 
     [Fact]

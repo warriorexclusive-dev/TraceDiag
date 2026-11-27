@@ -75,6 +75,6 @@ public sealed class HopProberTests
             TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
         Assert.Equal(4, hop.Sent);
         Assert.Equal(2, hop.Received);
-        Assert.Contains("потеря пакетов", hop.Status);
+        Assert.Equal(TextFormatter.Fmt(Strings.Status.PacketLossFormat, 50), hop.Status);
     }
 }

@@ -19,14 +19,14 @@ internal static class RunErrorPresenter
             Strings.App.TimestampedMessageFormat,
             TextFormatter.Now(),
             Strings.Log.ConsoleOperationCancelled));
-        status.Text = Strings.Ui.Cancelled;
+        UiText.Set(status, Strings.Ui.Cancelled);
     }
 
     private static void PresentSocket(SocketException ex, Label status, Action<string> append, FileDiagnosticLogger logger)
     {
         logger.Error(Strings.Log.DnsNetworkError, ex);
         append(TextFormatter.Fmt(Strings.Log.ConsoleDnsNetworkErrorFormat, TextFormatter.Now(), ex.Message));
-        status.Text = Strings.Ui.ResolveError;
+        UiText.Set(status, Strings.Ui.ResolveError);
     }
 
     private static void PresentGeneral(Exception ex, Label status, Action<string> append, FileDiagnosticLogger logger)
@@ -37,6 +37,6 @@ internal static class RunErrorPresenter
             TextFormatter.Now(),
             ex.GetType().Name,
             ex.Message));
-        status.Text = Strings.Ui.Error;
+        UiText.Set(status, Strings.Ui.Error);
     }
 }

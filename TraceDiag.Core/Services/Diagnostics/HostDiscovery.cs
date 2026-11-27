@@ -40,7 +40,7 @@ internal static class HostDiscovery
         IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats,
         CancellationToken cancellationToken)
     {
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.DiscoveryRoundFormat, round));
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.DiscoveryRoundFormat, round);
         for (var ttl = 1; ttl <= DiagnosticConstants.MaxHops && !state.Reached; ttl++)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -81,7 +81,7 @@ internal static class HostDiscovery
     {
         var added = state.MarkNoResponse(ttl);
         DiagnosticReporter.ReportStats(stats, state.Hops);
-        if (added) DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.NoResponseHopFormat, ttl));
+        if (added) DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.NoResponseHopFormat, ttl);
     }
 
     private static void ApplyResolved(DiagnosticContext context, DiscoveryState state, IPAddress target,
@@ -105,13 +105,15 @@ internal static class HostDiscovery
 
     private static void ReportDiscovered(DiagnosticContext context, IPAddress target, HopInfo hop, IProgress<string> progress)
     {
-        var marker = hop.Address.Equals(target) ? Strings.Diag.TargetMarker : string.Empty;
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.HopDiscoveredFormat, hop.Ttl, hop.Address, marker));
+        var marker = hop.Address.Equals(target)
+            ? LocalizedArg.Of(Strings.Diag.TargetMarker)
+            : LocalizedArg.Create(string.Empty, string.Empty);
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.HopDiscoveredFormat, hop.Ttl, hop.Address, marker);
     }
 
     private static void ReportLimit(DiagnosticContext context, DiscoveryState state, DiscoverySettings settings, IProgress<string> progress)
     {
         if (state.Reached || settings.RoundLimit <= 0) return;
-        DiagnosticReporter.Report(context, progress, Strings.Diag.TraceRoundLimit, isWarn: true);
+        DiagnosticReporter.ReportFormatWarn(context, progress, Strings.Diag.TraceRoundLimit);
     }
 }

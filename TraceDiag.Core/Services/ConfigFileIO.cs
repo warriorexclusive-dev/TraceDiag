@@ -1,11 +1,17 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using TraceDiag.Localization;
 using TraceDiag.Models;
 
 namespace TraceDiag.Services;
 
 internal static class ConfigFileIO
 {
-    private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions Options = new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() }
+    };
 
     internal static AppConfig Load(string path)
     {
@@ -34,6 +40,7 @@ internal static class ConfigFileIO
     private static AppConfig Normalize(AppConfig config)
     {
         config.OutputFontSize = Compat.Clamp(config.OutputFontSize, 8f, 24f);
+        if (!Enum.IsDefined(typeof(Language), config.Language)) config.Language = Language.En;
         return config;
     }
 }

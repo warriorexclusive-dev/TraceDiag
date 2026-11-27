@@ -22,9 +22,11 @@ internal static class OptionSuggestions
     internal static string List(string? suggestion)
     {
         var lines = new List<string>();
-        if (suggestion is not null) lines.Add(TextFormatter.Fmt(Strings.Console.DidYouMeanFormat, suggestion));
-        lines.Add(Strings.Console.OptionsTitle);
-        lines.AddRange(ConsoleOptions.Usage.Select(usage => TextFormatter.Fmt(Strings.Console.OptionLineFormat, usage)));
+        if (suggestion is not null)
+            lines.Add(TextFormatter.Fmt(Strings.T(Strings.Console.DidYouMeanFormat), suggestion));
+        lines.Add(Strings.T(Strings.Console.OptionsTitle));
+        lines.AddRange(ConsoleOptions.Usage.Select(usage =>
+            TextFormatter.Fmt(Strings.Console.OptionLineFormat, Strings.T(usage))));
         return string.Join(Environment.NewLine, lines);
     }
 

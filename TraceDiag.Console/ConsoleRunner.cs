@@ -18,8 +18,8 @@ internal sealed class ConsoleRunner(Invocation options, OutputWriter writer, Con
                 ? await MonitorAsync(address, token)
                 : await FiniteAsync(address, token);
         }
-        catch (OperationCanceledException) { logger.Info(Strings.Console.Cancelled); return 130; }
-        catch (Exception ex) { logger.Error(Strings.Diag.RunFailed, ex); return 1; }
+        catch (OperationCanceledException) { logger.InfoFmt(Strings.Console.Cancelled); return 130; }
+        catch (Exception ex) { logger.ErrorFmt(Strings.Diag.RunFailed, ex); return 1; }
         finally
         {
             logger.Flush();
@@ -35,26 +35,26 @@ internal sealed class ConsoleRunner(Invocation options, OutputWriter writer, Con
         var service = new TraceDiagnosticsService(new IcmpProbeClient(), new DnsResolverService(), logger);
         var stats = new SyncProgress<IReadOnlyList<HopStatSnapshot>>(writer.Stats);
         await service.RunAsync(input, writer, stats, token);
-        logger.Info(Strings.Log.RunCompleted);
+        logger.InfoFmt(Strings.Log.RunCompleted);
         return 0;
     }
 
     private async Task<int> MonitorAsync(IPAddress address, CancellationToken token)
     {
-        logger.Info(TextFormatter.Fmt(Strings.Log.MonitorRequestedFormat, options.Host,
-            options.PacketSize, options.LossDelayMs, options.DontFragment));
+        logger.InfoFmt(Strings.Log.MonitorRequestedFormat, options.Host,
+            options.PacketSize, options.LossDelayMs, options.DontFragment);
         var input = new MonitoringInput(address, Label(address), options.PacketSize,
             options.LossDelayMs, options.DontFragment);
         var service = new MonitoringService(new IcmpProbeClient(), new DnsResolverService(), logger);
         var stats = new SyncProgress<HopStatSnapshot>(writer.Stats);
         await service.RunAsync(input, writer, stats, token);
-        logger.Info(Strings.Log.MonitorCompleted);
+        logger.InfoFmt(Strings.Log.MonitorCompleted);
         return 0;
     }
 
     private void LogRequest() =>
-        logger.Info(TextFormatter.Fmt(Strings.Log.RunRequestedFormat, options.Host,
-            options.PacketSize, options.Attempts, options.Dynamic, options.LossDelayMs, options.DontFragment));
+        logger.InfoFmt(Strings.Log.RunRequestedFormat, options.Host, options.PacketSize,
+            options.Attempts, options.Dynamic, options.LossDelayMs, options.DontFragment);
 
     private string Label(IPAddress address) =>
         options.Host.Equals(address.ToString(), StringComparison.OrdinalIgnoreCase)
@@ -63,8 +63,7 @@ internal sealed class ConsoleRunner(Invocation options, OutputWriter writer, Con
 
     private int ReportUnresolved()
     {
-        var message = TextFormatter.Fmt(Strings.Log.FailedToResolveFormat, options.Host);
-        logger.Warn(message);
+        logger.WarnFmt(Strings.Log.FailedToResolveFormat, options.Host);
         return 1;
     }
 }

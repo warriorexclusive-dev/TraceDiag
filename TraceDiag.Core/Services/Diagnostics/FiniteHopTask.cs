@@ -25,8 +25,8 @@ internal sealed class FiniteHopTask(
 
     private static void ReportStart(DiagnosticContext context, HopInfo hop, ProbeState state,
         ProbeSettings settings, IProgress<string> progress) =>
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(
-            Strings.Diag.ProbingFormat, hop.Ttl, hop.Address, state.NameSuffix, settings.PacketSize, settings.Attempts));
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.ProbingFormat,
+            hop.Ttl, hop.Address, state.NameSuffix, settings.PacketSize, settings.Attempts);
 
     private async Task<bool> ProcessAttemptAsync(DiagnosticContext context, HopInfo hop,
         IReadOnlyList<HopInfo> allHops, ProbeState state, ProbeSettings settings, IProbeTrigger trigger,
@@ -66,17 +66,19 @@ internal sealed class FiniteHopTask(
     private static void ReportAttemptError(DiagnosticContext context, HopInfo hop, ProbeSettings settings,
         int index, Exception ex, IProgress<string> progress)
     {
-        context.Logger?.Error(TextFormatter.Fmt(Strings.Diag.ProbeErrorFormat, hop.Ttl, hop.Address, settings.PacketSize, index + 1), ex);
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.ProbeErrorConsoleFormat, index + 1, settings.Attempts, ex.Message), isError: true, ex: ex);
+        var args = new object?[] { hop.Ttl, hop.Address, settings.PacketSize, index + 1 };
+        context.Logger.ErrorFmt(Strings.Diag.ProbeErrorFormat, ex, args);
+        DiagnosticReporter.ReportFormatError(context, progress, Strings.Diag.ProbeErrorConsoleFormat,
+            ex, index + 1, settings.Attempts, ex.Message);
     }
 
     private static void ReportProgress(DiagnosticContext context, HopInfo hop, ProbeState state, int index,
         int attempts, IProgress<string> progress)
     {
         if ((index + 1) % state.ProgressStep != 0 || index + 1 >= attempts) return;
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.ProgressFormat,
-            index + 1, attempts, DiagnosticText.Last(hop), hop.AvgPingMs,
-            DiagnosticText.Min(hop), DiagnosticText.Max(hop), hop.Received, hop.Lost));
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.ProgressFormat,
+            index + 1, attempts, DiagnosticText.LastArg(hop), hop.AvgPingMs,
+            DiagnosticText.MinArg(hop), DiagnosticText.MaxArg(hop), hop.Received, hop.Lost);
     }
 
     private static bool StopOnLoss(DiagnosticContext context, HopInfo hop, IReadOnlyList<HopInfo> allHops,
@@ -85,8 +87,8 @@ internal sealed class FiniteHopTask(
     {
         if (state.ConsecutiveLoss < DiagnosticConstants.MaxLostPingsBeforeSkip) return false;
         MarkStopped(hop, allHops, stats);
-        var warning = TextFormatter.Fmt(Strings.Diag.StopWarningFirstFormat, hop.Ttl, hop.Address, settings.PacketSize, index + 1);
-        ReportWarning(context, warning, progress);
+        ReportWarning(context, Strings.Diag.StopWarningFirstFormat,
+            [hop.Ttl, hop.Address, settings.PacketSize, index + 1], progress);
         return true;
     }
 
@@ -97,11 +99,9 @@ internal sealed class FiniteHopTask(
         DiagnosticReporter.ReportStats(stats, allHops);
     }
 
-    private static void ReportWarning(DiagnosticContext context, string warning, IProgress<string> progress)
-    {
-        context.Logger?.Warn(warning);
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.ConsoleWarningFormat, warning), isWarn: true);
-    }
+    private static void ReportWarning(DiagnosticContext context, string canonical,
+        object?[] args, IProgress<string> progress) =>
+        DiagnosticReporter.ReportFormatWarn(context, progress, canonical, args);
 
     private static bool Complete(DiagnosticContext context, HopInfo hop, IReadOnlyList<HopInfo> allHops,
         ProbeState state, ProbeSettings settings, IProgress<string> progress,
@@ -112,8 +112,8 @@ internal sealed class FiniteHopTask(
         if (received == 0 && sent > 0)
         {
             MarkStopped(hop, allHops, stats);
-            var warning = TextFormatter.Fmt(Strings.Diag.StopWarningAllFormat, hop.Ttl, hop.Address, settings.PacketSize, sent);
-            ReportWarning(context, warning, progress);
+            ReportWarning(context, Strings.Diag.StopWarningAllFormat,
+                [hop.Ttl, hop.Address, settings.PacketSize, sent], progress);
             return true;
         }
         ReportSummary(context, hop, state, settings, sent, received, progress);
@@ -126,10 +126,9 @@ internal sealed class FiniteHopTask(
         var lost = sent - received;
         var percent = sent == 0 ? 0 : lost * 100.0 / sent;
         var avg = received == 0
-            ? Strings.Diag.Dash
-            : DiagnosticText.Ms((double)(hop.TotalRttMs - state.RttBefore) / received);
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(
-            Strings.Diag.HopSummaryFormat, hop.Ttl, hop.Address, state.NameSuffix,
-            settings.PacketSize, sent, received, lost, percent, avg));
+            ? LocalizedArg.Of(Strings.Diag.Dash)
+            : DiagnosticText.MsArg((double)(hop.TotalRttMs - state.RttBefore) / received);
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.HopSummaryFormat,
+            hop.Ttl, hop.Address, state.NameSuffix, settings.PacketSize, sent, received, lost, percent, avg);
     }
 }

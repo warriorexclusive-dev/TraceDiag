@@ -21,8 +21,8 @@ internal static class StatsGridRows
         Strings.Ui.ColumnKeyLastPing => FormatPing(stat.LastPingMs, stat.Sent),
         Strings.Ui.ColumnKeySent => Counter(stat.Sent),
         Strings.Ui.ColumnKeyReceived => Counter(stat.Received),
-        Strings.Ui.ColumnKeyStatus => stat.Status,
-        Strings.Ui.ColumnKeyDiagnosis => stat.Diagnosis,
+        Strings.Ui.ColumnKeyStatus => Strings.T(stat.Status),
+        Strings.Ui.ColumnKeyDiagnosis => Strings.T(stat.Diagnosis),
         _ => string.Empty
     };
 
@@ -54,7 +54,7 @@ internal static class StatsGridRows
     ];
 
     private static string HostName(HopStatSnapshot stat) =>
-        string.IsNullOrWhiteSpace(stat.HostName) ? Strings.Ui.NoDns : stat.HostName!;
+        string.IsNullOrWhiteSpace(stat.HostName) ? Strings.T(Strings.Ui.NoDns) : stat.HostName!;
 
     private static string Average(HopStatSnapshot stat) =>
         stat.Received == 0
@@ -82,5 +82,5 @@ internal static class StatsGridRows
     private static string FormatPing(long? value, int sent) =>
         value.HasValue
             ? value.Value.ToString(CultureInfo.InvariantCulture)
-            : (sent == 0 ? Strings.Ui.Dash : Strings.Ui.NoAnswer);
+            : (sent == 0 ? Strings.Ui.Dash : Strings.T(Strings.Ui.NoAnswer));
 }

@@ -1,3 +1,4 @@
+using System.Text;
 using TraceDiag.Services;
 
 namespace TraceDiag.Console;
@@ -6,6 +7,7 @@ internal static class Program
 {
     private static int Main(string[] args)
     {
+        System.Console.OutputEncoding = new UTF8Encoding(false);
         if (!TryParse(args, out var options, out var code)) return code;
         if (options!.Help) { Help(); return 0; }
         using var cancellation = new CancellationTokenSource();
@@ -46,23 +48,24 @@ internal static class Program
 
     private static int Reset()
     {
-        System.Console.Out.WriteLine(Strings.Console.ResetDone);
+        System.Console.Out.WriteLine(Strings.T(Strings.Console.ResetDone));
         return 0;
     }
 
     private static void WriteStartup(ConsoleLogger logger, FileDiagnosticLogger file)
     {
-        logger.Info(Strings.Log.ApplicationStarted);
-        if (Environment.OSVersion.Platform == PlatformID.Unix) logger.Info(Strings.Console.LinuxIcmpHint);
-        logger.Info(TextFormatter.Fmt(Strings.Console.LogStartedFormat, file.LogFilePath));
+        logger.InfoFmt(Strings.Log.ApplicationStarted);
+        if (Environment.OSVersion.Platform == PlatformID.Unix)
+            logger.InfoFmt(Strings.Console.LinuxIcmpHint);
+        logger.InfoFmt(Strings.Console.LogStartedFormat, file.LogFilePath);
     }
 
     private static void Help()
     {
-        System.Console.Out.WriteLine(Strings.Console.Usage);
-        System.Console.Out.WriteLine(Strings.Console.HelpRun);
-        System.Console.Out.WriteLine(Strings.Console.HelpMonitor);
-        System.Console.Out.WriteLine(Strings.Console.HelpReset);
+        System.Console.Out.WriteLine(Strings.T(Strings.Console.Usage));
+        System.Console.Out.WriteLine(Strings.T(Strings.Console.HelpRun));
+        System.Console.Out.WriteLine(Strings.T(Strings.Console.HelpMonitor));
+        System.Console.Out.WriteLine(Strings.T(Strings.Console.HelpReset));
         OptionSuggestions.Write(System.Console.Out, null);
     }
 }

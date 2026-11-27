@@ -26,16 +26,23 @@ internal static class StatsGridFactory
 
     private static void AddColumns(DataGridView grid)
     {
-        grid.Columns.Add(Strings.Ui.ColumnKeyHostName, Strings.Ui.ColumnHostName);
-        grid.Columns.Add(Strings.Ui.ColumnKeyIp, Strings.Ui.ColumnIp);
-        grid.Columns.Add(Strings.Ui.ColumnKeyAvgPing, Strings.Ui.ColumnAvgPing);
-        grid.Columns.Add(Strings.Ui.ColumnKeyMinPing, Strings.Ui.ColumnMinPing);
-        grid.Columns.Add(Strings.Ui.ColumnKeyMaxPing, Strings.Ui.ColumnMaxPing);
-        grid.Columns.Add(Strings.Ui.ColumnKeyLastPing, Strings.Ui.ColumnLastPing);
-        grid.Columns.Add(Strings.Ui.ColumnKeySent, Strings.Ui.ColumnSent);
-        grid.Columns.Add(Strings.Ui.ColumnKeyReceived, Strings.Ui.ColumnReceived);
-        grid.Columns.Add(Strings.Ui.ColumnKeyStatus, Strings.Ui.ColumnStatus);
-        grid.Columns.Add(Strings.Ui.ColumnKeyDiagnosis, Strings.Ui.ColumnDiagnosis);
+        AddColumn(grid, Strings.Ui.ColumnKeyHostName, Strings.Ui.ColumnHostName);
+        AddColumn(grid, Strings.Ui.ColumnKeyIp, Strings.Ui.ColumnIp);
+        AddColumn(grid, Strings.Ui.ColumnKeyAvgPing, Strings.Ui.ColumnAvgPing);
+        AddColumn(grid, Strings.Ui.ColumnKeyMinPing, Strings.Ui.ColumnMinPing);
+        AddColumn(grid, Strings.Ui.ColumnKeyMaxPing, Strings.Ui.ColumnMaxPing);
+        AddColumn(grid, Strings.Ui.ColumnKeyLastPing, Strings.Ui.ColumnLastPing);
+        AddColumn(grid, Strings.Ui.ColumnKeySent, Strings.Ui.ColumnSent);
+        AddColumn(grid, Strings.Ui.ColumnKeyReceived, Strings.Ui.ColumnReceived);
+        AddColumn(grid, Strings.Ui.ColumnKeyStatus, Strings.Ui.ColumnStatus);
+        AddColumn(grid, Strings.Ui.ColumnKeyDiagnosis, Strings.Ui.ColumnDiagnosis);
+    }
+
+    private static void AddColumn(DataGridView grid, string name, string canonical)
+    {
+        var column = new DataGridViewTextBoxColumn { Name = name };
+        UiText.Set(column, canonical);
+        grid.Columns.Add(column);
     }
 
     private static void SetWeights(DataGridView grid)

@@ -5,7 +5,7 @@ using TraceDiag.Ui;
 
 namespace TraceDiag;
 
-public sealed class MainForm : Form
+public sealed partial class MainForm : Form
 {
     private readonly FullScreenState _fullScreen = new();
     private CancellationTokenSource? _runCts;
@@ -46,6 +46,7 @@ public sealed class MainForm : Form
     internal MainForm(bool resetUiState, UiStateStore? uiStateStore)
     {
         (_configStore, _appConfig, _logger, _uiStateStore) = CreateServices(resetUiState, uiStateStore);
+        Translator.SetLanguage(_appConfig.Language);
         _resetRequested = resetUiState;
         _statistics = new StatisticsController(publish: RenderStats);
         var loadResult = _uiStateStore.Load();
@@ -99,6 +100,7 @@ public sealed class MainForm : Form
         SubscribeEvents();
         _packetPolicy.Refresh();
         Controls.Add(controls.Root);
+        InitializeLanguage();
         ApplyTheme();
         LogStartup(loadResult);
     }
@@ -130,6 +132,7 @@ public sealed class MainForm : Form
 
     private void SubscribeEvents()
     {
+        SubscribeLanguage();
         _fontSizeInput.ValueChanged += FontSizeInputOnValueChanged;
         _darkThemeInput.CheckedChanged += DarkThemeInputOnCheckedChanged;
         _monitoringModeInput.CheckedChanged += MonitoringModeOnCheckedChanged;
@@ -218,35 +221,9 @@ public sealed class MainForm : Form
     {
         if (_runCts is null) return false;
         _runCts.Cancel();
-        _statusLabel.Text = Strings.Ui.Stopping;
+        UiText.Set(_statusLabel, Strings.Ui.Stopping);
         RunButtonState.Stopping(_runButton);
         return true;
-    }
-
-    internal RunInput? ReadRunInput()
-    {
-        var host = ReadHost();
-        if (host is null) return null;
-        return new RunInput(host, (int)_maxPacketSizeInput.Value, (int)_attemptsInput.Value,
-            (int)_lossDelayInput.Value, _dynamicPacketSizeInput.Checked, _dontFragmentInput.Checked);
-    }
-
-    internal MonitorInput? ReadMonitorInput()
-    {
-        var host = ReadHost();
-        if (host is null) return null;
-        return new MonitorInput(host, (int)_maxPacketSizeInput.Value, (int)_lossDelayInput.Value,
-            _dontFragmentInput.Checked);
-    }
-
-    private string? ReadHost()
-    {
-        var host = _remoteHostTextBox.Text.Trim();
-        _remoteHostTextBox.Text = host;
-        if (!string.IsNullOrWhiteSpace(host)) return host;
-        MessageBox.Show(this, Strings.Ui.RemoteHostRequired, Strings.Ui.ValidationTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        _remoteHostTextBox.Focus();
-        return null;
     }
 
     internal void BeginRun() => Begin(Strings.Ui.ResolvingHost);
@@ -260,7 +237,7 @@ public sealed class MainForm : Form
         _statistics.Clear();
         _statsGrid.Render(Array.Empty<HopStatSnapshot>());
         AppendOutputLine(TextFormatter.Fmt(Strings.App.ConsoleLogFileFormat, TextFormatter.Now(), _logger.LogFilePath));
-        _statusLabel.Text = status;
+        UiText.Set(_statusLabel, status);
         RunButtonState.Begin(_runButton);
         ApplyInputsEnabled();
     }

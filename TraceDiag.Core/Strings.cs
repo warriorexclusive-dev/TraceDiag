@@ -1,8 +1,13 @@
+using TraceDiag.Localization;
+
 namespace TraceDiag;
 
 /// <summary>All user-facing and log text used by the application.</summary>
-internal static class Strings
+internal static partial class Strings
 {
+    /// <summary>Translates canonical text into the selected interface language.</summary>
+    internal static string T(string english) => Translator.Text(english);
+
     public static class App
     {
         public const string Title = "TraceDiag - Traceroute Diagnostic";
@@ -41,9 +46,19 @@ internal static class Strings
         public const string OptionDynamic = "--dynamic";
         public const string OptionDontFragment = "--df";
         public const string OptionFormat = "--format <plain|csv|json>";
+        public const string OptionLanguage = "  --language <en|cn|fr|de|ru|jp> - interface language";
         public const string OptionReset = "--reset";
         public const string OptionHelp = "--help";
         public const string HelpShort = "-?";
+        public const string HelpHost = "  --host <ip|domain> - remote host IP or domain";
+        public const string HelpPacketSize = "  --packet-size <n> - maximum packet size";
+        public const string HelpAttempts = "  --attempts <n> - attempts per hop";
+        public const string HelpLossDelay = "  --loss-delay <ms> - delay after packet loss";
+        public const string HelpDynamic = "  --dynamic - scan increasing packet sizes";
+        public const string HelpDontFragment = "  --df - do not fragment packets";
+        public const string HelpFormat = "  --format <plain|csv|json> - output format";
+        public const string OptionResetHelp = "  --reset - remove saved UI state";
+        public const string HelpHelp = "  --help - show this help";
         public const string DidYouMeanFormat = "Did you mean: {0}?";
         public const string FormatPlain = "plain";
         public const string FormatCsv = "csv";
@@ -71,6 +86,7 @@ internal static class Strings
         public const string HostRequired = "--host is required for run and monitor.";
         public const string InvalidCommandFormat = "Unknown command: {0}";
         public const string InvalidFormat = "--format must be plain, csv or json.";
+        public const string InvalidLanguageFormat = "Unknown language: {0}";
         public const string LinuxIcmpHint = "Note: ICMP probes on Linux may require net.ipv4.ping_group_range or CAP_NET_RAW.";
         public const string ResetDone = "Saved UI state removed.";
         public const string LogStartedFormat = "Log file: {0}";
@@ -86,22 +102,23 @@ internal static class Strings
     {
         public const string RemoteHostLabel = "Remote host (IP or domain):";
         public const string PacketSizeLabelFormat = "Packet max size ({0}-{1}):";
-        public const string AttemptsLabel = "Количество попыток (1-1000):";
-        public const string LossDelayLabel = "Задержка при потере, мс:";
-        public const string FontSizeLabel = "Размер шрифта:";
-        public const string DynamicPacketSizeLabel = "Динамический размер пакета";
-        public const string DontFragmentLabel = "Не фрагментировать (DF)";
-        public const string DarkThemeLabel = "Тёмная тема";
-        public const string MonitoringModeLabel = "Режим постоянного мониторинга";
+        public const string AttemptsLabel = "Attempts (1-1000):";
+        public const string LossDelayLabel = "Loss delay, ms:";
+        public const string FontSizeLabel = "Font size:";
+        public const string LanguageLabel = "Language:";
+        public const string DynamicPacketSizeLabel = "Dynamic packet size";
+        public const string DontFragmentLabel = "Don't fragment (DF)";
+        public const string DarkThemeLabel = "Dark theme";
+        public const string MonitoringModeLabel = "Continuous monitoring mode";
         public const string RunButton = "Run";
         public const string StopButton = "Stop";
         public const string Stopping = "Stopping...";
         public const string Ready = "Ready";
         public const string ResolvingHost = "Resolving host...";
         public const string Running = "Running...";
-        public const string Monitoring = "Мониторинг...";
+        public const string Monitoring = "Monitoring...";
         public const string Completed = "Completed";
-        public const string MonitoringCompleted = "Мониторинг остановлен";
+        public const string MonitoringCompleted = "Monitoring stopped";
         public const string Cancelled = "Cancelled";
         public const string ResolveError = "Resolve error";
         public const string Error = "Error";
@@ -110,7 +127,7 @@ internal static class Strings
         public const string LogFontFamily = "Consolas";
         public const string GridFontFamily = "Segoe UI";
         public const string NoDns = "(no DNS)";
-        public const string NoAnswer = "нет ответа";
+        public const string NoAnswer = "no answer";
         public const string Dash = "-";
         public const string HostLabelFormat = "{0} [{1}]";
         public const string AvgPingFormat = "F1";
@@ -126,34 +143,37 @@ internal static class Strings
         public const string ColumnKeyStatus = "Status";
         public const string ColumnKeyDiagnosis = "Diagnosis";
 
-        public const string ColumnHostName = "Имя узла";
+        public const string ColumnHostName = "Host name";
         public const string ColumnIp = "IP";
-        public const string ColumnAvgPing = "Пинг среднее, мс";
-        public const string ColumnMinPing = "Мин пинг, мс";
-        public const string ColumnMaxPing = "Макс пинг, мс";
-        public const string ColumnLastPing = "Последний пинг, мс";
-        public const string ColumnSent = "Отправлено";
-        public const string ColumnReceived = "Получено";
-        public const string ColumnStatus = "Состояние";
-        public const string ColumnDiagnosis = "Диагноз";
+        public const string ColumnAvgPing = "Avg ping, ms";
+        public const string ColumnMinPing = "Min ping, ms";
+        public const string ColumnMaxPing = "Max ping, ms";
+        public const string ColumnLastPing = "Last ping, ms";
+        public const string ColumnSent = "Sent";
+        public const string ColumnReceived = "Received";
+        public const string ColumnStatus = "Status";
+        public const string ColumnDiagnosis = "Diagnosis";
+
+        internal static readonly string[] LanguageNames =
+            ["English", "Chinese", "French", "German", "Russian", "Japanese"];
     }
 
     public static class Diagnosis
     {
         public const string None = "—";
-        public const string IcmpDisabled = "ICMP отключён";
-        public const string PacketSizeLimit = "Обрезка размера ICMP";
-        public const string AntiFlood = "Антифлуд ICMP";
+        public const string IcmpDisabled = "ICMP disabled";
+        public const string PacketSizeLimit = "ICMP size truncation";
+        public const string AntiFlood = "ICMP anti-flood";
     }
 
     public static class Status
     {
-        public const string Pending = "ожидание";
-        public const string NoAnswer = "не отвечает";
-        public const string Normal = "норма";
-        public const string Target = "цель";
-        public const string Responds = "отвечает";
-        public const string PacketLossFormat = "потеря пакетов ({0:F0}%)";
+        public const string Pending = "pending";
+        public const string NoAnswer = "no answer";
+        public const string Normal = "normal";
+        public const string Target = "target";
+        public const string Responds = "responds";
+        public const string PacketLossFormat = "packet loss ({0:F0}%)";
     }
 
     public static class LogLevel
@@ -168,6 +188,7 @@ internal static class Strings
         public const string ApplicationStarted = "Application started.";
         public const string SettingsSavedFormat = "Settings saved: OutputFontSize={0:0.0}";
         public const string ThemeChangedFormat = "Settings saved: Theme={0}";
+        public const string LanguageChangedFormat = "Settings saved: Language={0}";
         public const string UiStateLoaded = "UI state loaded.";
         public const string UiStateReset = "UI state reset by launch argument.";
         public const string UiStateCorruptedReset = "UI state file was invalid and has been removed.";
@@ -195,7 +216,7 @@ internal static class Strings
         public const char SeparatorChar = '-';
         public const string PacketSizeListSeparator = ", ";
         public const string Dash = "-";
-        public const string NoAnswer = "нет ответа";
+        public const string NoAnswer = "no answer";
         public const string NoDns = "no-dns";
         public const string MsFormat = "{0:F1} ms";
         public const string HopFormat = "{0} ({1})";
@@ -218,7 +239,7 @@ internal static class Strings
         public const string PrecheckFailureFormat = "  df-precheck hop {0,2} {1}: size={2}, {3}";
         public const string NoRouteHops = "Status: not response (no route hops discovered)";
         public const string PacketSizeHeaderFormat = "[Packet size {0} bytes]";
-        public const string SkipHopFormat = "  hop {0,2} {1}: пропуск (100% потерь, ICMP запрещён или ограничение размера).";
+        public const string SkipHopFormat = "  hop {0,2} {1}: skipped (100% loss, ICMP banned or size restriction).";
         public const string RunFinished = "Diagnostic run finished.";
         public const string RunCancelled = "Diagnostic run cancelled.";
         public const string MonitorStarted = "Continuous monitoring started.";
@@ -256,7 +277,7 @@ internal static class Strings
         public const string StopWarningAllFormat = "hop {0} ({1}) size={2}: 100% loss ({3}/{3}). Possible ICMP echo ban or packet size restriction; further checks for this node are skipped.";
         public const string ConsoleWarningFormat = "  ! {0}";
         public const string HopSummaryFormat = "  hop {0,2} {1}{2}: size={3}, sent={4}, recv={5}, lost={6} ({7:F0}%), avg={8}";
-        public const string DiagnosisFormat = "  hop {0,2} {1}: диагноз — {2}";
+        public const string DiagnosisFormat = "  hop {0,2} {1}: diagnosis — {2}";
 
         public const string RemoteNotResponse = "Status: remote host not response";
         public const string RemoteResponds = "Status: remote host responds";

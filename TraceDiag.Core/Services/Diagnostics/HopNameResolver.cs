@@ -28,19 +28,22 @@ internal static class HopNameResolver
 
     private static void ReportDnsError(DiagnosticContext context, HopInfo hop, Exception ex, IProgress<string> progress)
     {
-        context.Logger?.Error(TextFormatter.Fmt(Strings.Diag.DnsResolveFailedFormat, hop.Address), ex);
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.DnsErrorFormat, hop.Ttl, hop.Address, ex.Message), isWarn: true, ex: ex);
+        context.Logger.ErrorFmt(Strings.Diag.DnsResolveFailedFormat, ex, hop.Address);
+        DiagnosticReporter.ReportFormatWarn(context, progress, Strings.Diag.DnsErrorFormat,
+            hop.Ttl, hop.Address, ex.Message);
     }
 
     private static void ReportSlowDns(DiagnosticContext context, HopInfo hop, Stopwatch sw)
     {
         if (sw.ElapsedMilliseconds <= DiagnosticConstants.SlowDnsThresholdMs) return;
-        context.Logger?.Warn(TextFormatter.Fmt(Strings.Diag.SlowDnsFormat, hop.Address, sw.ElapsedMilliseconds));
+        context.Logger.WarnFmt(Strings.Diag.SlowDnsFormat, hop.Address, sw.ElapsedMilliseconds);
     }
 
     private static void ReportResolved(DiagnosticContext context, HopInfo hop, IProgress<string> progress)
     {
-        var name = string.IsNullOrWhiteSpace(hop.HostName) ? Strings.Diag.NoPtrName : hop.HostName;
-        DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.HopDnsFormat, hop.Ttl, hop.Address, name));
+        var name = string.IsNullOrWhiteSpace(hop.HostName)
+            ? LocalizedArg.Of(Strings.Diag.NoPtrName)
+            : LocalizedArg.Create(hop.HostName!, hop.HostName!);
+        DiagnosticReporter.ReportFormat(context, progress, Strings.Diag.HopDnsFormat, hop.Ttl, hop.Address, name);
     }
 }

@@ -20,6 +20,6 @@ public sealed class HopStatusCalculatorTests
     public void Calculate_WithLoss_FormatsPercent()
     {
         var status = HopStatusCalculator.Calculate(3, 1, 25);
-        Assert.Equal("потеря пакетов (25%)", status);
+        Assert.Equal(TextFormatter.Fmt(Strings.Status.PacketLossFormat, 25), status);
     }
 }

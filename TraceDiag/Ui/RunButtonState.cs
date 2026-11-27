@@ -10,7 +10,7 @@ internal static class RunButtonState
 
     private static void Apply(Button button, string text, bool enabled)
     {
-        button.Text = text;
+        UiText.Set(button, text);
         button.Enabled = enabled;
     }
 }
