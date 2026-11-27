@@ -70,6 +70,35 @@ public sealed class OutputWriterTests
     }
 
     [Fact]
+    public void Plain_SummaryIncludesVariabilityColumns()
+    {
+        using var text = new StringWriter();
+        var writer = new OutputWriter(Strings.Console.FormatPlain, text);
+        writer.Stats([Snapshot() with { JitterMs = 3.5, StdDevMs = 1.7 }]);
+        writer.WriteSummary();
+        var value = text.ToString();
+        Assert.Contains("jitter  stddev", value);
+        Assert.Contains("3.5", value);
+        Assert.Contains("1.7", value);
+    }
+
+    [Fact]
+    public void CsvAndJson_IncludeVariabilityColumns()
+    {
+        using var csvText = new StringWriter();
+        var csv = new OutputWriter(Strings.Console.FormatCsv, csvText);
+        csv.Stats([Snapshot() with { JitterMs = 3.5, StdDevMs = 1.7 }]);
+        csv.WriteSummary();
+        Assert.Contains(",jitter,stddev,", csvText.ToString());
+        Assert.Contains("\"3.5\",\"1.7\"", csvText.ToString());
+        using var jsonText = new StringWriter();
+        var json = new OutputWriter(Strings.Console.FormatJson, jsonText);
+        json.Stats([Snapshot() with { JitterMs = 3.5, StdDevMs = 1.7 }]);
+        json.WriteSummary();
+        Assert.Contains("\"jitter\":\"3.5\",\"stddev\":\"1.7\"", jsonText.ToString());
+    }
+
+    [Fact]
     public void WriteSummary_WithoutStats_DoesNothing()
     {
         using var text = new StringWriter();

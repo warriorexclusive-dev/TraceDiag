@@ -41,7 +41,8 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
         output.WriteLine(Strings.T(Strings.Console.SummaryTitle));
         output.WriteLine(Strings.T(Strings.Console.StatsHeader));
         foreach (var hop in hops) output.WriteLine(TextFormatter.Fmt(Strings.Console.StatsRowFormat,
-            hop.Ttl, hop.Address, Host(hop), Average(hop), Text(hop.MinPingMs), Text(hop.MaxPingMs),
+            hop.Ttl, hop.Address, Host(hop), Average(hop), Metric(hop, hop.JitterMs),
+            Metric(hop, hop.StdDevMs), Text(hop.MinPingMs), Text(hop.MaxPingMs),
             Text(hop.LastPingMs), hop.Sent, hop.Received, Status(hop), Diagnosis(hop)));
     }
 
@@ -49,7 +50,8 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
     {
         output.WriteLine(Strings.Console.CsvStatsHeader);
         foreach (var hop in hops) output.WriteLine(Csv(Strings.Console.KindStats, hop.Ttl, hop.Address,
-            Host(hop), Average(hop), Text(hop.MinPingMs), Text(hop.MaxPingMs), Text(hop.LastPingMs),
+            Host(hop), Average(hop), Metric(hop, hop.JitterMs), Metric(hop, hop.StdDevMs),
+            Text(hop.MinPingMs), Text(hop.MaxPingMs), Text(hop.LastPingMs),
             hop.Sent, hop.Received, Status(hop), Diagnosis(hop)));
     }
 
@@ -73,6 +75,8 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
         [Strings.Console.ColumnIp] = hop.Address.ToString(),
         [Strings.Console.ColumnHost] = Host(hop),
         [Strings.Console.ColumnAvg] = Average(hop),
+        [Strings.Console.ColumnJitter] = Metric(hop, hop.JitterMs),
+        [Strings.Console.ColumnStdDev] = Metric(hop, hop.StdDevMs),
         [Strings.Console.ColumnMin] = Text(hop.MinPingMs),
         [Strings.Console.ColumnMax] = Text(hop.MaxPingMs),
         [Strings.Console.ColumnLast] = Text(hop.LastPingMs),
@@ -92,9 +96,11 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
 
     private static string Diagnosis(HopStatSnapshot hop) => Strings.T(hop.Diagnosis);
 
-    private static string Average(HopStatSnapshot hop) =>
+    private static string Average(HopStatSnapshot hop) => Metric(hop, hop.AvgPingMs);
+
+    private static string Metric(HopStatSnapshot hop, double value) =>
         hop.Received == 0 ? Strings.Ui.Dash
-            : hop.AvgPingMs.ToString(Strings.Ui.AvgPingFormat, CultureInfo.InvariantCulture);
+            : value.ToString(Strings.Ui.AvgPingFormat, CultureInfo.InvariantCulture);
 
     private static string Text(long? value) =>
         value?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;

@@ -1,4 +1,5 @@
 using System.Net;
+using TraceDiag.Services.Diagnostics;
 
 namespace TraceDiag.Models;
 
@@ -49,6 +50,12 @@ public sealed class HopInfo
 
     public long? MinPingMs => _rttSamples.Count == 0 ? null : _rttSamples.Min();
     public long? MaxPingMs => _rttSamples.Count == 0 ? null : _rttSamples.Max();
+
+    /// <summary>Mean absolute change between consecutive successful RTT samples.</summary>
+    public double JitterMs => RttMath.Jitter(_rttSamples);
+
+    /// <summary>Population standard deviation of all successful RTT samples.</summary>
+    public double StdDevMs => RttMath.StdDev(_rttSamples);
 
     public bool HasLoss => Lost > 0;
     public bool Responded => Received > 0;

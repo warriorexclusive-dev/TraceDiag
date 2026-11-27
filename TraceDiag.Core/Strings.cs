@@ -69,6 +69,8 @@ internal static partial class Strings
         public const string ColumnIp = "ip";
         public const string ColumnHost = "host";
         public const string ColumnAvg = "avg";
+        public const string ColumnJitter = "jitter";
+        public const string ColumnStdDev = "stddev";
         public const string ColumnMin = "min";
         public const string ColumnMax = "max";
         public const string ColumnLast = "last";
@@ -93,9 +95,9 @@ internal static partial class Strings
         public const string ErrorPrefix = "Error: {0}";
         public const string Cancelled = "Cancelled.";
         public const string SummaryTitle = "Summary:";
-        public const string StatsHeader = "ttl  ip  host  avg  min  max  last  sent  recv  status  diagnosis";
-        public const string StatsRowFormat = "{0,-3} {1,-15} {2,-20} {3,-8} {4,-8} {5,-8} {6,-8} {7,-5} {8,-5} {9,-12} {10}";
-        public const string CsvStatsHeader = "kind,ttl,ip,host,avg,min,max,last,sent,recv,status,diagnosis";
+        public const string StatsHeader = "ttl  ip  host  avg  jitter  stddev  min  max  last  sent  recv  status  diagnosis";
+        public const string StatsRowFormat = "{0,-3} {1,-15} {2,-20} {3,-8} {4,-8} {5,-8} {6,-8} {7,-8} {8,-8} {9,-5} {10,-5} {11,-12} {12}";
+        public const string CsvStatsHeader = "kind,ttl,ip,host,avg,jitter,stddev,min,max,last,sent,recv,status,diagnosis";
     }
 
     public static class Ui
@@ -135,6 +137,8 @@ internal static partial class Strings
         public const string ColumnKeyHostName = "HostName";
         public const string ColumnKeyIp = "Ip";
         public const string ColumnKeyAvgPing = "AvgPing";
+        public const string ColumnKeyJitter = "Jitter";
+        public const string ColumnKeyStdDev = "StdDev";
         public const string ColumnKeyMinPing = "MinPing";
         public const string ColumnKeyMaxPing = "MaxPing";
         public const string ColumnKeyLastPing = "LastPing";
@@ -146,6 +150,8 @@ internal static partial class Strings
         public const string ColumnHostName = "Host name";
         public const string ColumnIp = "IP";
         public const string ColumnAvgPing = "Avg ping, ms";
+        public const string ColumnJitter = "Jitter, ms";
+        public const string ColumnStdDev = "StdDev, ms";
         public const string ColumnMinPing = "Min ping, ms";
         public const string ColumnMaxPing = "Max ping, ms";
         public const string ColumnLastPing = "Last ping, ms";

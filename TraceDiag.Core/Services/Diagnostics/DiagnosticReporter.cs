@@ -77,5 +77,7 @@ internal static class DiagnosticReporter
         hop.MaxPingMs,
         hop.LastPingMs,
         hop.Status,
-        hop.Diagnosis);
+        hop.Diagnosis,
+        hop.JitterMs,
+        hop.StdDevMs);
 }

@@ -16,6 +16,8 @@ internal static class StatsGridRows
         Strings.Ui.ColumnKeyHostName => HostName(stat),
         Strings.Ui.ColumnKeyIp => stat.Address.ToString(),
         Strings.Ui.ColumnKeyAvgPing => Average(stat),
+        Strings.Ui.ColumnKeyJitter => Metric(stat, stat.JitterMs),
+        Strings.Ui.ColumnKeyStdDev => Metric(stat, stat.StdDevMs),
         Strings.Ui.ColumnKeyMinPing => FormatPing(stat.MinPingMs, stat.Sent),
         Strings.Ui.ColumnKeyMaxPing => FormatPing(stat.MaxPingMs, stat.Sent),
         Strings.Ui.ColumnKeyLastPing => FormatPing(stat.LastPingMs, stat.Sent),
@@ -44,6 +46,8 @@ internal static class StatsGridRows
         Strings.Ui.ColumnKeyHostName,
         Strings.Ui.ColumnKeyIp,
         Strings.Ui.ColumnKeyAvgPing,
+        Strings.Ui.ColumnKeyJitter,
+        Strings.Ui.ColumnKeyStdDev,
         Strings.Ui.ColumnKeyMinPing,
         Strings.Ui.ColumnKeyMaxPing,
         Strings.Ui.ColumnKeyLastPing,
@@ -56,10 +60,12 @@ internal static class StatsGridRows
     private static string HostName(HopStatSnapshot stat) =>
         string.IsNullOrWhiteSpace(stat.HostName) ? Strings.T(Strings.Ui.NoDns) : stat.HostName!;
 
-    private static string Average(HopStatSnapshot stat) =>
+    private static string Average(HopStatSnapshot stat) => Metric(stat, stat.AvgPingMs);
+
+    private static string Metric(HopStatSnapshot stat, double value) =>
         stat.Received == 0
             ? Strings.Ui.Dash
-            : stat.AvgPingMs.ToString(Strings.Ui.AvgPingFormat, CultureInfo.InvariantCulture);
+            : value.ToString(Strings.Ui.AvgPingFormat, CultureInfo.InvariantCulture);
 
     private static string Counter(int value) => value.ToString(CultureInfo.InvariantCulture);
 
