@@ -12,10 +12,12 @@ public sealed class MonitoringService : IMonitoringService
     private readonly IRipeOwnerService? _ripeOwner;
 
     public MonitoringService(IIcmpProbeClient probeClient, IDnsResolverService dnsResolver,
-        IDiagnosticLogger? logger = null, IRipeOwnerService? ripeOwner = null)
+        IDiagnosticLogger? logger = null, IRipeOwnerService? ripeOwner = null,
+        string? adapterId = null, string? dnsFilePath = null)
     {
         _context = new DiagnosticContext(probeClient, dnsResolver, logger,
-            DnsAnswers: new DnsAnswerService());
+            DnsAnswers: new DnsAnswerService(adapterId, dnsFilePath),
+            AdapterId: adapterId, DnsFilePath: dnsFilePath);
         _controller = CreateController();
         _routes = new RouteRunCoordinator(null!, _controller, new AlternateRouteDetector());
         _ripeOwner = ripeOwner;
@@ -26,10 +28,25 @@ public sealed class MonitoringService : IMonitoringService
     {
         Validate(input, progress, stats);
         ReportStart(progress);
-        var context = _context with { RipeLookupEnabled = input.RipeLookup, RipeOwner = _ripeOwner };
+        var context = RunContext(input, progress);
         try { await _routes.RunMonitorAsync(context, input, progress, stats, cancellationToken); }
         catch (OperationCanceledException) { ReportCancelled(progress); throw; }
         catch (Exception ex) { ReportFailure(progress, ex); throw; }
+    }
+
+    private DiagnosticContext RunContext(MonitoringInput input, IProgress<string> progress)
+    {
+        var external = !NetworkAddressPolicy.IsPrivateTarget(input.RemoteAddress);
+        if (!external) DiagnosticReporter.Report(_context, progress, Strings.Diag.ExternalSourcesDisabled);
+        return _context with
+        {
+            RipeLookupEnabled = input.RipeLookup && external,
+            AsnLookupEnabled = input.AsnLookup && external,
+            ExternalSourcesEnabled = external,
+            AdapterId = input.AdapterId ?? _context.AdapterId,
+            DnsFilePath = input.DnsFilePath ?? _context.DnsFilePath,
+            RipeOwner = _ripeOwner
+        };
     }
 
     private static IMonitorController CreateController()

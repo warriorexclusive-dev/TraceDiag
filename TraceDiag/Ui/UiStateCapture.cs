@@ -29,6 +29,9 @@ internal static class UiStateCapture
         RoutePrecheck = controls.RoutePrecheck.Checked,
         DeepRoutes = controls.DeepRoutes.Checked,
         AlternativeDns = controls.AlternativeDns.Checked,
+        AsnLookup = controls.AsnLookup.Checked,
+        ProbeTimeoutMs = (int)controls.ProbeTimeout.Value,
+        AdapterId = AdapterList.SelectedId(controls.Adapter) ?? string.Empty,
         DarkTheme = controls.DarkTheme.Checked,
         IpFamily = controls.IpFamily.SelectedIndex
     };

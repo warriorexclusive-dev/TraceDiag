@@ -32,9 +32,11 @@ internal sealed class ConsoleRunner(Invocation options, OutputWriter writer, Con
         LogRequest();
         var input = new DiagnosticInput(address, Label(address), options.PacketSize, options.Attempts,
             options.LossDelayMs, options.Dynamic, options.DontFragment, options.RipeLookup,
-            options.RoutePrecheck, options.DeepRoutes, options.ProbeTimeoutMs, options.AlternativeDns);
-        var service = new TraceDiagnosticsService(new IcmpProbeClient(), new DnsResolverService(),
-            logger, new RipeOwnerService());
+            options.RoutePrecheck, options.DeepRoutes, options.ProbeTimeoutMs, options.AlternativeDns,
+            options.AsnLookup, options.AdapterId, options.DnsFilePath ?? DnsPathPolicy.Default());
+        var service = new TraceDiagnosticsService(IcmpProbeClientFactory.Create(options.AdapterId),
+            new DnsResolverService(options.AdapterId), logger, new RipeOwnerService(),
+            options.AdapterId, options.DnsFilePath ?? DnsPathPolicy.Default());
         var stats = new SyncProgress<IReadOnlyList<HopStatSnapshot>>(writer.Stats);
         await service.RunAsync(input, writer, stats, token);
         logger.InfoFmt(Strings.Log.RunCompleted);
@@ -47,9 +49,11 @@ internal sealed class ConsoleRunner(Invocation options, OutputWriter writer, Con
             options.PacketSize, options.LossDelayMs, options.DontFragment);
         var input = new MonitoringInput(address, Label(address), options.PacketSize,
             options.LossDelayMs, options.DontFragment, options.RipeLookup,
-            options.RoutePrecheck, options.DeepRoutes, options.ProbeTimeoutMs, options.AlternativeDns);
-        var service = new MonitoringService(new IcmpProbeClient(), new DnsResolverService(),
-            logger, new RipeOwnerService());
+            options.RoutePrecheck, options.DeepRoutes, options.ProbeTimeoutMs, options.AlternativeDns,
+            options.AsnLookup, options.AdapterId, options.DnsFilePath ?? DnsPathPolicy.Default());
+        var service = new MonitoringService(IcmpProbeClientFactory.Create(options.AdapterId),
+            new DnsResolverService(options.AdapterId), logger, new RipeOwnerService(),
+            options.AdapterId, options.DnsFilePath ?? DnsPathPolicy.Default());
         var stats = new SyncProgress<HopStatSnapshot>(writer.Stats);
         await service.RunAsync(input, writer, stats, token);
         logger.InfoFmt(Strings.Log.MonitorCompleted);

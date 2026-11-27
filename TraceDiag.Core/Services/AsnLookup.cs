@@ -9,23 +9,25 @@ internal static class AsnLookup
     private const int DnsPort = 53;
     private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(2);
 
-    internal static async Task<string?> ResolveAsync(IPAddress address, CancellationToken cancellationToken)
+    internal static async Task<string?> ResolveAsync(IPAddress address, CancellationToken cancellationToken,
+        string? adapterId = null)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var query = DnsQuery.AsText(AsnName.For(address));
-        foreach (var server in DnsServers.Get())
+        foreach (var server in DnsServers.Get(adapterId))
         {
-            var answer = await QueryAsync(server, query, cancellationToken);
+            var answer = await QueryAsync(server, query, adapterId, cancellationToken);
             if (answer is not null) return answer;
         }
         return null;
     }
 
-    private static async Task<string?> QueryAsync(IPAddress server, byte[] query, CancellationToken token)
+    private static async Task<string?> QueryAsync(IPAddress server, byte[] query, string? adapterId, CancellationToken token)
     {
         try
         {
-            using var udp = new UdpClient(server.AddressFamily);
+            using var udp = UdpSocketFactory.Create(server.AddressFamily,
+                NetworkAdapterCatalog.Source(adapterId));
             await udp.SendAsync(query, query.Length, new IPEndPoint(server, DnsPort));
             return await ReadAsync(udp, query, token);
         }

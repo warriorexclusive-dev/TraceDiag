@@ -6,10 +6,8 @@ namespace TraceDiag.Services;
 /// <summary>Returns the system DNS servers, best-effort.</summary>
 internal static class DnsServers
 {
-    internal static IReadOnlyList<IPAddress> Get()
-    {
-        return Collect();
-    }
+    internal static IReadOnlyList<IPAddress> Get(string? adapterId = null) =>
+        string.IsNullOrWhiteSpace(adapterId) ? Collect() : NetworkAdapterCatalog.Dns(adapterId);
 
     private static List<IPAddress> Collect()
     {

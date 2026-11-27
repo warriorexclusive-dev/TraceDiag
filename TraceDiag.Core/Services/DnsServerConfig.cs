@@ -3,29 +3,53 @@ using System.Text.Json;
 
 namespace TraceDiag.Services;
 
-/// <summary>Loads the resolver list from dns-servers.json with a safe fallback.</summary>
+/// <summary>Loads the resolver list from a JSON file with a safe fallback.</summary>
 internal static class DnsServerConfig
 {
-    private const string FileName = "dns-servers.json";
+    internal const string FileName = "dns-servers.json";
 
-    internal static IReadOnlyList<IPAddress> Load()
+    internal static string DefaultPath() =>
+        Path.Combine(AppFiles.GetAppDataDirectory(), FileName);
+
+    internal static IReadOnlyList<IPAddress> Load(string? path = null)
     {
-        var path = FindFile();
-        if (path is null) return DnsServers.Get();
+        var file = string.IsNullOrWhiteSpace(path) ? FindFile() : path;
+        if (file is null || !File.Exists(file)) return DnsServers.Get();
+        try
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(file));
+            if (!document.RootElement.TryGetProperty("resolvers", out var list)) return DnsServers.Get();
+            var servers = Collect(list);
+            return servers.Count == 0 ? DnsServers.Get() : servers;
+        }
+        catch (Exception) { return DnsServers.Get(); }
+    }
+
+    internal static IReadOnlyList<IPAddress> Read(string path)
+    {
+        if (!File.Exists(path)) return [];
         try
         {
             using var document = JsonDocument.Parse(File.ReadAllText(path));
-            if (!document.RootElement.TryGetProperty("resolvers", out var list)) return DnsServers.Get();
-            return Collect(list);
+            return document.RootElement.TryGetProperty("resolvers", out var list) ? Collect(list) : [];
         }
-        catch (Exception) { return DnsServers.Get(); }
+        catch (Exception) { return []; }
+    }
+
+    internal static void Save(string path, IEnumerable<IPAddress> servers)
+    {
+        var directory = Path.GetDirectoryName(path);
+        if (!string.IsNullOrWhiteSpace(directory)) Directory.CreateDirectory(directory);
+        var items = servers.Select(server => $"\"{server}\"");
+        File.WriteAllText(path, "{\n  \"resolvers\": [\n    " +
+            string.Join(",\n    ", items) + "\n  ]\n}\n");
     }
 
     private static IReadOnlyList<IPAddress> Collect(JsonElement list)
     {
         var result = new List<IPAddress>();
         foreach (var item in list.EnumerateArray()) Add(result, item.GetString());
-        return result.Count == 0 ? DnsServers.Get() : result;
+        return result;
     }
 
     private static void Add(List<IPAddress> result, string? text)
@@ -35,12 +59,9 @@ internal static class DnsServerConfig
 
     private static string? FindFile()
     {
-        var candidates = new[] { AppContext.BaseDirectory, Directory.GetCurrentDirectory() };
-        foreach (var directory in candidates)
-        {
-            var path = Path.Combine(directory, FileName);
+        var candidates = new[] { AppContext.BaseDirectory, Directory.GetCurrentDirectory(), DefaultPath() };
+        foreach (var path in candidates)
             if (File.Exists(path)) return path;
-        }
         return null;
     }
 }

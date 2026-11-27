@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using TraceDiag.Localization;
 using TraceDiag.Models;
+using TraceDiag.Ui;
 
 namespace TraceDiag.Services;
 
@@ -41,6 +42,7 @@ internal static class ConfigFileIO
     {
         config.OutputFontSize = Compat.Clamp(config.OutputFontSize, 8f, 24f);
         if (!Enum.IsDefined(typeof(Language), config.Language)) config.Language = Language.En;
+        if (!UiDefaults.IconSizes.Contains(config.IconSizePx)) config.IconSizePx = UiDefaults.DefaultIconSizePx;
         return config;
     }
 }

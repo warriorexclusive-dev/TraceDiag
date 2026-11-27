@@ -1,4 +1,5 @@
 using TraceDiag.Models;
+using TraceDiag.Services.Diagnostics;
 using TraceDiag.Ui;
 
 namespace TraceDiag.Services;
@@ -15,7 +16,8 @@ internal static class UiStateValidator
         state.Attempts >= 1 && state.Attempts <= 1000 &&
         state.LossDelayMs >= 0 && state.LossDelayMs <= UiDefaults.MaxLossDelayMs &&
         state.OutputFontSize >= UiDefaults.MinFontSize && state.OutputFontSize <= UiDefaults.MaxFontSize &&
-        state.IpFamily >= 0 && state.IpFamily <= 2;
+        state.IpFamily >= 0 && state.IpFamily <= 2 &&
+        state.ProbeTimeoutMs >= 100 && state.ProbeTimeoutMs <= DiagnosticConstants.ProbeTimeoutMs;
 
     private static bool IsValidWindow(string windowState, UiWindowBounds? bounds) =>
         windowState is UiDefaults.NormalWindowState or UiDefaults.MaximizedWindowState &&

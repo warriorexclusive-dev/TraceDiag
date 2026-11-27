@@ -27,7 +27,7 @@ public sealed partial class MainForm
         Translator.SetLanguage(language);
         _appConfig.Language = language;
         _configStore.Save(_appConfig);
-        LocalizationApplier.Apply(this, _controls);
+        LocalizationApplier.Apply(this, _controls, _settings);
         _logger.Info(TextFormatter.Fmt(Strings.Log.LanguageChangedFormat, language));
     }
 }

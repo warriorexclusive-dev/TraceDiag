@@ -30,6 +30,9 @@ internal static class UiStateRestorer
         controls.RoutePrecheck.Checked = state.RoutePrecheck;
         controls.DeepRoutes.Checked = state.DeepRoutes;
         controls.AlternativeDns.Checked = state.AlternativeDns;
+        controls.AsnLookup.Checked = state.AsnLookup;
+        controls.ProbeTimeout.Value = Clamp(state.ProbeTimeoutMs, controls.ProbeTimeout);
+        AdapterList.Select(controls.Adapter, state.AdapterId);
         controls.DarkTheme.Checked = state.DarkTheme;
         controls.IpFamily.SelectedIndex = Compat.Clamp(state.IpFamily, 0, 2);
         policy.ApplyDontFragment();

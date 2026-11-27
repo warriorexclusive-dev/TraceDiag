@@ -1,3 +1,4 @@
+using System.Drawing;
 using TraceDiag.Ui;
 
 namespace TraceDiag.Tests;
@@ -28,6 +29,7 @@ public sealed class FormControlsFactoryTests
         Assert.Equal(typeof(CheckBox), controls.MonitoringMode.GetType());
         Assert.Equal(typeof(CheckBox), controls.DarkTheme.GetType());
         Assert.Equal(typeof(CheckBox), controls.AlternativeDns.GetType());
+        Assert.Equal(typeof(CheckBox), controls.AsnLookup.GetType());
     }
 
     [Fact]
@@ -36,6 +38,14 @@ public sealed class FormControlsFactoryTests
         var controls = FormControlsFactory.Create(12f);
         Assert.True(controls.AlternativeDns.Checked);
         Assert.Equal(Strings.Ui.AltDnsLabel, controls.AlternativeDns.Text);
+    }
+
+    [Fact]
+    public void Create_StartsWithAsnLookupEnabled()
+    {
+        var controls = FormControlsFactory.Create(12f);
+        Assert.True(controls.AsnLookup.Checked);
+        Assert.Equal(Strings.Ui.AsnLookupLabel, controls.AsnLookup.Text);
     }
 
     [Fact]
@@ -58,8 +68,8 @@ public sealed class FormControlsFactoryTests
     public void Create_UsesSafePacketSizeBoundsAndFormattedLabel()
     {
         var controls = FormControlsFactory.Create(12f);
-        using var root = controls.Root;
-        var label = FindLabel(root, TextFormatter.Fmt(Strings.Ui.PacketSizeLabelFormat,
+        using var settings = new SettingsForm(controls);
+        var label = FindLabel(settings, TextFormatter.Fmt(Strings.Ui.PacketSizeLabelFormat,
             UiDefaults.MinPacketSize, UiDefaults.MaxPacketSize));
         Assert.Equal(UiDefaults.MinPacketSize, (int)controls.MaxPacketSize.Minimum);
         Assert.Equal(UiDefaults.MaxPacketSize, (int)controls.MaxPacketSize.Maximum);
@@ -79,45 +89,73 @@ public sealed class FormControlsFactoryTests
     [InlineData(2400, 900)]
     public void AttemptsLabel_StaysAlignedWithInput(int width, int height)
     {
-        using var form = new Form { ClientSize = new Size(width, height) };
         var controls = FormControlsFactory.Create(12f);
-        using var root = controls.Root;
-        form.Controls.Add(root);
-        form.CreateControl();
-        var label = FindLabel(root, Strings.Ui.AttemptsLabel);
+        using var settings = new SettingsForm(controls) { ClientSize = new Size(width, height) };
+        settings.Show();
+        settings.Hide();
+        var label = FindLabel(settings, Strings.Ui.AttemptsLabel);
         Assert.NotNull(label);
-        Assert.InRange(Math.Abs(label!.PointToScreen(Point.Empty).Y - controls.Attempts.PointToScreen(Point.Empty).Y), 0, 8);
+        Assert.InRange(Math.Abs(label!.PointToScreen(Point.Empty).Y -
+            controls.Attempts.PointToScreen(Point.Empty).Y), 0, 8);
     }
 
-    [Theory]
-    [InlineData(800, 600)]
-    [InlineData(2400, 900)]
-    public void Checkboxes_AreLeftOfRunButton(int width, int height)
+    [Fact]
+    public void MainToolbar_HoldsOnlyHostAndThreeIcons()
     {
-        using var form = new Form { ClientSize = new Size(width, height) };
         var controls = FormControlsFactory.Create(12f);
-        using var root = controls.Root;
-        form.Controls.Add(root);
-        form.Show();
-        form.Hide();
-        var runX = controls.Run.PointToScreen(Point.Empty).X;
-        AssertLeftOfRun(controls.DynamicPacketSize, runX);
-        AssertLeftOfRun(controls.DontFragment, runX);
-        AssertLeftOfRun(controls.MonitoringMode, runX);
-        AssertLeftOfRun(controls.DarkTheme, runX);
+        Assert.Contains(controls.RemoteHost, Flatten(controls.Root));
+        Assert.Contains(controls.Play, Flatten(controls.Root));
+        Assert.Contains(controls.Stop, Flatten(controls.Root));
+        Assert.Contains(controls.Settings, Flatten(controls.Root));
+        Assert.DoesNotContain(controls.MaxPacketSize, Flatten(controls.Root));
+        Assert.DoesNotContain(controls.DarkTheme, Flatten(controls.Root));
     }
 
-    private static void AssertLeftOfRun(Control control, int runX) =>
-        Assert.True(control.PointToScreen(Point.Empty).X < runX, $"{control.Text}: x={control.PointToScreen(Point.Empty).X}, runX={runX}");
+    [Fact]
+    public void SettingsForm_HoldsFiveGroups()
+    {
+        var controls = FormControlsFactory.Create(12f);
+        using var settings = new SettingsForm(controls);
+        var tabs = Assert.IsType<TabControl>(settings.Controls.OfType<TabControl>().Single());
+        Assert.Equal(5, tabs.TabPages.Count);
+        Assert.Equal(
+            [
+                Strings.Ui.ConnectionGroup,
+                Strings.Ui.SourcesGroup,
+                Strings.Ui.ModesGroup,
+                Strings.Ui.InterfaceGroup,
+                Strings.Ui.CheckOptionsGroup
+            ],
+            tabs.TabPages.Cast<TabPage>().Select(page => page.Text).ToArray());
+        Assert.Contains(controls.Adapter, Flatten(settings));
+        Assert.Contains(controls.DnsFilePath, Flatten(settings));
+        Assert.Contains(controls.ProbeTimeout, Flatten(settings));
+    }
 
-    private static Label? FindLabel(Control parent, string text)
+    [Fact]
+    public void IconSizes_UseApprovedPixelValues()
+    {
+        Assert.Equal([64, 72, 96, 128], UiDefaults.IconSizes);
+        Assert.Equal(64, UiDefaults.DefaultIconSizePx);
+    }
+
+    [Fact]
+    public void SvgIconLoader_RendersRequestedPixelSize()
+    {
+        using var image = SvgIconLoader.Load("play", 72, Color.Red);
+        Assert.Equal(72, image.Width);
+        Assert.Equal(72, image.Height);
+    }
+
+    private static IEnumerable<Control> Flatten(Control parent)
     {
         foreach (Control child in parent.Controls)
         {
-            if (child is Label label && label.Text == text) return label;
-            var nested = FindLabel(child, text);
-            if (nested is not null) return nested;
+            yield return child;
+            foreach (var nested in Flatten(child)) yield return nested;
         }
-        return null;
     }
+
+    private static Label? FindLabel(Control parent, string text) =>
+        Flatten(parent).OfType<Label>().FirstOrDefault(label => label.Text == text);
 }

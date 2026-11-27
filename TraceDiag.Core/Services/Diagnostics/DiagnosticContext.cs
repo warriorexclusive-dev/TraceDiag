@@ -8,4 +8,8 @@ internal sealed record DiagnosticContext(
     IDiagnosticLogger? Logger,
     bool RipeLookupEnabled = true,
     IRipeOwnerService? RipeOwner = null,
-    IDnsAnswerService? DnsAnswers = null);
+    IDnsAnswerService? DnsAnswers = null,
+    bool AsnLookupEnabled = true,
+    bool ExternalSourcesEnabled = true,
+    string? AdapterId = null,
+    string? DnsFilePath = null);

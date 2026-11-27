@@ -20,7 +20,10 @@ internal sealed record Invocation(
     bool RoutePrecheck = true,
     bool DeepRoutes = false,
     int ProbeTimeoutMs = 3000,
-    bool AlternativeDns = true);
+    bool AlternativeDns = true,
+    bool AsnLookup = true,
+    string? AdapterId = null,
+    string? DnsFilePath = null);
 
 internal sealed class CommandLineException(string message, string? details = null) : Exception(message)
 {
@@ -53,4 +56,7 @@ internal sealed class OptionsBag
     internal bool DeepRoutes { get; set; }
     internal int ProbeTimeoutMs { get; set; } = 3000;
     internal bool AlternativeDns { get; set; } = true;
+    internal bool AsnLookup { get; set; } = true;
+    internal string? AdapterId { get; set; }
+    internal string? DnsFilePath { get; set; }
 }

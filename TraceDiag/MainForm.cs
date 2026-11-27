@@ -1,6 +1,6 @@
+using TraceDiag.Localization;
 using TraceDiag.Models;
 using TraceDiag.Services;
-using TraceDiag.Services.Monitoring;
 using TraceDiag.Ui;
 
 namespace TraceDiag;
@@ -18,9 +18,11 @@ public sealed partial class MainForm : Form
     private readonly StatisticsController _statistics;
     private readonly IPacketSizePolicy _packetPolicy;
     private readonly OutputBufferController _outputBuffer = new();
+    private readonly ToolTip _tooltips = new();
     private readonly bool _resetRequested;
     private MainControls _controls = null!;
     private StatsGridController _statsGrid = null!;
+    private SettingsForm? _settings;
 
     private TextBox _remoteHostTextBox = null!;
     private NumericUpDown _maxPacketSizeInput = null!;
@@ -34,11 +36,15 @@ public sealed partial class MainForm : Form
     private CheckBox _routePrecheckInput = null!;
     private CheckBox _deepRoutesInput = null!;
     private CheckBox _altDnsInput = null!;
+    private CheckBox _asnLookupInput = null!;
+    private NumericUpDown _probeTimeoutInput = null!;
     private CheckBox _darkThemeInput = null!;
     private ComboBox _ipFamilyInput = null!;
     private DataGridView _statsGridView = null!;
     private TextBox _outputTextBox = null!;
-    private Button _runButton = null!;
+    private PictureBox _playIcon = null!;
+    private PictureBox _stopIcon = null!;
+    private PictureBox _settingsIcon = null!;
     private Label _statusLabel = null!;
 
     internal FileDiagnosticLogger Logger => _logger;
@@ -64,6 +70,9 @@ public sealed partial class MainForm : Form
         _packetPolicy = new PacketSizePolicyController(controls, () => _runCts is null);
         ConfigureWindow();
         ApplyLoadedState(loadResult);
+        _settings = new SettingsForm(controls);
+        _settings.ApplyConfig(_appConfig);
+        _settings.FormClosed += SettingsOnFormClosed;
         FinishInitialization(controls, loadResult);
     }
 
@@ -83,7 +92,9 @@ public sealed partial class MainForm : Form
         _statsGridView = controls.Stats;
         _statsGrid = new StatsGridController(_statsGridView);
         _outputTextBox = controls.Output;
-        _runButton = controls.Run;
+        _playIcon = controls.Play;
+        _stopIcon = controls.Stop;
+        _settingsIcon = controls.Settings;
         _statusLabel = controls.Status;
     }
 
@@ -101,6 +112,8 @@ public sealed partial class MainForm : Form
         _routePrecheckInput = controls.RoutePrecheck;
         _deepRoutesInput = controls.DeepRoutes;
         _altDnsInput = controls.AlternativeDns;
+        _asnLookupInput = controls.AsnLookup;
+        _probeTimeoutInput = controls.ProbeTimeout;
         _darkThemeInput = controls.DarkTheme;
         _ipFamilyInput = controls.IpFamily;
     }
@@ -112,6 +125,7 @@ public sealed partial class MainForm : Form
         Controls.Add(controls.Root);
         InitializeLanguage();
         ApplyTheme();
+        ApplyAdapterNote();
         LogStartup(loadResult);
     }
 
@@ -147,8 +161,47 @@ public sealed partial class MainForm : Form
         _darkThemeInput.CheckedChanged += DarkThemeInputOnCheckedChanged;
         _monitoringModeInput.CheckedChanged += MonitoringModeOnCheckedChanged;
         _dontFragmentInput.CheckedChanged += DontFragmentOnCheckedChanged;
-        _runButton.Click += RunButtonOnClick;
+        _playIcon.Click += RunButtonOnClick;
+        _stopIcon.Click += StopIconOnClick;
+        _settingsIcon.Click += SettingsIconOnClick;
+        SetIconTooltips();
         KeyDown += MainFormOnKeyDown;
+    }
+
+    private void SetIconTooltips()
+    {
+        _tooltips.SetToolTip(_playIcon, Strings.T(Strings.Ui.PlayTooltip));
+        _tooltips.SetToolTip(_stopIcon, Strings.T(Strings.Ui.StopTooltip));
+        _tooltips.SetToolTip(_settingsIcon, Strings.T(Strings.Ui.SettingsLabel));
+    }
+
+    private void StopIconOnClick(object? sender, EventArgs e) => RequestStop();
+
+    private void SettingsIconOnClick(object? sender, EventArgs e) => _settings?.ShowDialog(this);
+
+    private void SettingsOnFormClosed(object? sender, FormClosedEventArgs e)
+    {
+        if (_settings is null) return;
+        ApplySettings();
+        SaveUiState();
+    }
+
+    private void ApplySettings()
+    {
+        if (_settings is null) return;
+        _settings.UpdateConfig(_appConfig);
+        _configStore.Save(_appConfig);
+        ApplyOutputFontSize((float)_controls.FontSize.Value);
+        ApplyLanguage((Language)_controls.Language.SelectedIndex);
+        ApplyTheme();
+        ApplyAdapterNote();
+    }
+
+    private void ApplyAdapterNote()
+    {
+        var enabled = RawSocketCapability.CanUse();
+        _controls.Adapter.Enabled = enabled;
+        _controls.AdapterNote.Visible = !enabled;
     }
 
     private void LogStartup(UiStateLoadResult loadResult)
@@ -182,6 +235,8 @@ public sealed partial class MainForm : Form
     {
         var palette = ThemeApplier.Palette(_appConfig.Theme);
         ThemeApplier.Apply(this, palette);
+        if (_settings is not null) ThemeApplier.Apply(_settings, palette);
+        IconThemeController.Apply(_controls, palette, _appConfig.IconSizePx);
         CaptionThemeController.Apply(this, _appConfig.Theme);
         _statsGrid.SetPalette(palette);
     }
@@ -226,70 +281,4 @@ public sealed partial class MainForm : Form
         base.OnFormClosing(e);
     }
 
-    private async void RunButtonOnClick(object? sender, EventArgs e)
-    {
-        if (RequestStop()) return;
-        _runCts = new CancellationTokenSource();
-        if (_monitoringModeInput.Checked) await MonitorFlow.StartAsync(new MonitorFlowContext(this, _runCts.Token));
-        else await RunFlow.StartAsync(new RunFlowContext(this, _runCts.Token));
-    }
-
-    private bool RequestStop()
-    {
-        if (_runCts is null) return false;
-        _runCts.Cancel();
-        UiText.Set(_statusLabel, Strings.Ui.Stopping);
-        RunButtonState.Stopping(_runButton);
-        return true;
-    }
-
-    internal void BeginRun() => Begin(Strings.Ui.ResolvingHost);
-
-    internal void BeginMonitor() => Begin(Strings.Ui.Monitoring);
-
-    private void Begin(string status)
-    {
-        _outputBuffer.Clear();
-        _outputTextBox.Clear();
-        _statistics.Clear();
-        _statsGrid.Render(Array.Empty<HopStatSnapshot>());
-        AppendOutputLine(TextFormatter.Fmt(Strings.App.ConsoleLogFileFormat, TextFormatter.Now(), _logger.LogFilePath));
-        UiText.Set(_statusLabel, status);
-        RunButtonState.Begin(_runButton);
-        ApplyInputsEnabled();
-    }
-
-    internal Task ExecuteServiceAsync(DiagnosticInput input, IProgress<string> text, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken token)
-    {
-        var service = new TraceDiagnosticsService(new IcmpProbeClient(), new DnsResolverService(),
-            _logger, new RipeOwnerService());
-        return service.RunAsync(input, text, stats, token);
-    }
-
-    internal Task ExecuteMonitorAsync(MonitoringInput input, IProgress<string> text, IProgress<HopStatSnapshot> stats, CancellationToken token)
-    {
-        var service = new MonitoringService(new IcmpProbeClient(), new DnsResolverService(),
-            _logger, new RipeOwnerService());
-        return service.RunAsync(input, text, stats, token);
-    }
-
-    internal void EndRun()
-    {
-        _runCts?.Dispose();
-        _runCts = null;
-        RunButtonState.End(_runButton);
-        ApplyInputsEnabled();
-    }
-
-    private void ApplyInputsEnabled() => _packetPolicy.Refresh();
-
-    internal void ApplyStats(IReadOnlyList<HopStatSnapshot> stats) => _statistics.Replace(stats);
-
-    internal void ApplyMonitorStat(HopStatSnapshot stat) => _statistics.Upsert(stat);
-
-    private void RenderStats(IReadOnlyList<HopStatSnapshot> stats) =>
-        UiInvoker.OnUiThread(_statsGridView, () => _statsGrid.Render(stats));
-
-    internal void AppendOutputLine(string line) =>
-        UiInvoker.OnUiThread(_outputTextBox, () => _outputBuffer.Append(_outputTextBox, line));
 }

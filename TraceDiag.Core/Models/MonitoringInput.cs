@@ -13,4 +13,7 @@ public sealed record MonitoringInput(
     bool RoutePrecheck = true,
     bool DeepRoutes = false,
     int ProbeTimeoutMs = 3000,
-    bool AlternativeDns = true);
+    bool AlternativeDns = true,
+    bool AsnLookup = true,
+    string? AdapterId = null,
+    string? DnsFilePath = null);

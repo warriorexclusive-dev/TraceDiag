@@ -12,10 +12,12 @@ public sealed class TraceDiagnosticsService : ITraceDiagnosticsService
     private readonly IRipeOwnerService? _ripeOwner;
 
     public TraceDiagnosticsService(IIcmpProbeClient probeClient, IDnsResolverService dnsResolver,
-        IDiagnosticLogger? logger = null, IRipeOwnerService? ripeOwner = null)
+        IDiagnosticLogger? logger = null, IRipeOwnerService? ripeOwner = null,
+        string? adapterId = null, string? dnsFilePath = null)
     {
         _context = new DiagnosticContext(probeClient, dnsResolver, logger,
-            DnsAnswers: new DnsAnswerService());
+            DnsAnswers: new DnsAnswerService(adapterId, dnsFilePath),
+            AdapterId: adapterId, DnsFilePath: dnsFilePath);
         _controller = CreateController();
         _routes = new RouteRunCoordinator(_controller, null!, new AlternateRouteDetector());
         _ripeOwner = ripeOwner;
@@ -25,10 +27,25 @@ public sealed class TraceDiagnosticsService : ITraceDiagnosticsService
     {
         Validate(input, progress, statsProgress);
         ReportStart(progress);
-        var context = _context with { RipeLookupEnabled = input.RipeLookup, RipeOwner = _ripeOwner };
+        var context = RunContext(input, progress);
         try { await _routes.RunFiniteAsync(context, input, progress, statsProgress, cancellationToken); }
         catch (OperationCanceledException) { _context.Logger.WarnFmt(Strings.Diag.RunCancelled); throw; }
         catch (Exception ex) { ReportFailure(progress, ex); throw; }
+    }
+
+    private DiagnosticContext RunContext(DiagnosticInput input, IProgress<string> progress)
+    {
+        var external = !NetworkAddressPolicy.IsPrivateTarget(input.RemoteAddress);
+        if (!external) DiagnosticReporter.Report(_context, progress, Strings.Diag.ExternalSourcesDisabled);
+        return _context with
+        {
+            RipeLookupEnabled = input.RipeLookup && external,
+            AsnLookupEnabled = input.AsnLookup && external,
+            ExternalSourcesEnabled = external,
+            AdapterId = input.AdapterId ?? _context.AdapterId,
+            DnsFilePath = input.DnsFilePath ?? _context.DnsFilePath,
+            RipeOwner = _ripeOwner
+        };
     }
 
     private static IFiniteCheckController CreateController()

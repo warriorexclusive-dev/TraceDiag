@@ -3,7 +3,7 @@ using TraceDiag.Services.Abstractions;
 
 namespace TraceDiag.Services;
 
-public sealed class DnsResolverService : IDnsResolverService
+public sealed class DnsResolverService(string? adapterId = null) : IDnsResolverService
 {
     public async Task<string?> ResolveHostNameAsync(IPAddress address, CancellationToken cancellationToken)
     {
@@ -21,7 +21,7 @@ public sealed class DnsResolverService : IDnsResolverService
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await AsnLookup.ResolveAsync(address, cancellationToken);
+            return await AsnLookup.ResolveAsync(address, cancellationToken, adapterId);
         }
         catch (OperationCanceledException) { throw; }
         catch (Exception ex) when (DnsLookup.IsExpectedFailure(ex)) { return null; }

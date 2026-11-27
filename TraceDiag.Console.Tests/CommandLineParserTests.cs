@@ -45,6 +45,32 @@ public sealed class CommandLineParserTests
         Assert.False(options.AlternativeDns);
     }
 
+    [Fact]
+    public void Parse_Run_AppliesNoAsn()
+    {
+        var options = CommandLineParser.Parse(["run", "--host", "example.com", "--no-asn"]);
+        Assert.False(options.AsnLookup);
+        Assert.True(CommandLineParser.Parse(["run", "--host", "example.com"]).AsnLookup);
+    }
+
+    [Fact]
+    public void Parse_Run_AppliesAdapterAndDnsFile()
+    {
+        var options = CommandLineParser.Parse(["run", "--host", "example.com",
+            "--adapter", "Ethernet", "--dns-file", "C:\\dns\\list.json"]);
+        Assert.Equal("Ethernet", options.AdapterId);
+        Assert.Equal("C:\\dns\\list.json", options.DnsFilePath);
+    }
+
+    [Fact]
+    public void Parse_MissingValueForNewOptions_Throws()
+    {
+        Assert.Throws<CommandLineException>(() =>
+            CommandLineParser.Parse(["run", "--host", "example.com", "--adapter"]));
+        Assert.Throws<CommandLineException>(() =>
+            CommandLineParser.Parse(["run", "--host", "example.com", "--dns-file"]));
+    }
+
     [Theory]
     [InlineData("--ipv4", IpFamily.IPv4)]
     [InlineData("--ipv6", IpFamily.IPv6)]

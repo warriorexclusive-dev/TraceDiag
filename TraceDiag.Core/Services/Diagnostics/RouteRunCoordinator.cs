@@ -18,7 +18,7 @@ internal sealed class RouteRunCoordinator(
         CancellationToken token)
     {
         var settings = RoutePrecheckSettings.Create(input.RoutePrecheck, input.DeepRoutes,
-            input.ProbeTimeoutMs, input.AlternativeDns);
+            input.ProbeTimeoutMs, input.AlternativeDns && context.ExternalSourcesEnabled);
         return RunAsync(context, input.RemoteAddress, Host(input.RemoteHostLabel), settings, text, stats, token,
             (route, progress) => finite.RunAsync(context,
                 WithRoute(input, route), progress, progress, token));
@@ -29,7 +29,7 @@ internal sealed class RouteRunCoordinator(
         CancellationToken token)
     {
         var settings = RoutePrecheckSettings.Create(input.RoutePrecheck, input.DeepRoutes,
-            input.ProbeTimeoutMs, input.AlternativeDns);
+            input.ProbeTimeoutMs, input.AlternativeDns && context.ExternalSourcesEnabled);
         return RunAsync(context, input.RemoteAddress, Host(input.RemoteHostLabel), settings, text,
             new BatchStatsAdapter(stats), token,
             (route, progress) => monitor.RunAsync(context,
@@ -72,7 +72,7 @@ internal sealed class RouteRunCoordinator(
         if (!settings.Enabled) return [fallback];
         try
         {
-            var service = context.DnsAnswers ?? new DnsAnswerService();
+            var service = context.DnsAnswers ?? new DnsAnswerService(context.AdapterId, context.DnsFilePath);
             var answers = await service.ResolveAsync(host, settings.AlternativeDns, token);
             return answers.Count == 0 ? [fallback] : answers;
         }

@@ -11,6 +11,7 @@ internal static class AsnResolverController
     internal static async Task ResolveAsync(DiagnosticContext context, IReadOnlyList<HopInfo> hops,
         IProgress<string> progress, CancellationToken cancellationToken)
     {
+        if (!context.AsnLookupEnabled || !context.ExternalSourcesEnabled) return;
         var targets = hops.Where(h => NetworkAddressPolicy.IsProbeTarget(h.Address)).ToArray();
         using var gate = new SemaphoreSlim(MaxParallel);
         var tasks = targets.Select(h => ResolveOneAsync(context, h, gate, progress, cancellationToken));

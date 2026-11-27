@@ -6,7 +6,7 @@ using TraceDiag.Services.Abstractions;
 namespace TraceDiag.Services;
 
 /// <summary>Collects A/AAAA answers from system DNS and optional alternative resolvers.</summary>
-public sealed class DnsAnswerService : IDnsAnswerService
+public sealed class DnsAnswerService(string? adapterId = null, string? dnsFilePath = null) : IDnsAnswerService
 {
     private const int DnsPort = 53;
     private const int TimeoutMs = 3000;
@@ -17,7 +17,7 @@ public sealed class DnsAnswerService : IDnsAnswerService
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (IPAddress.TryParse(host, out var address)) return Direct(address);
-        var servers = DnsResolverSelection.Get(alternativeDns);
+        var servers = DnsResolverSelection.Get(alternativeDns, adapterId, dnsFilePath);
         var tasks = servers.Select(server => QueryAllAsync(server, host, cancellationToken));
         return Merge(await Task.WhenAll(tasks));
     }
@@ -25,34 +25,36 @@ public sealed class DnsAnswerService : IDnsAnswerService
     private static IReadOnlyList<DnsAnswer> Direct(IPAddress address) =>
         [new DnsAnswer(address, address.ToString(), address.AddressFamily == AddressFamily.InterNetworkV6)];
 
-    private static async Task<IReadOnlyList<DnsAnswer>> QueryAllAsync(IPAddress server, string host, CancellationToken token)
+    private async Task<IReadOnlyList<DnsAnswer>> QueryAllAsync(IPAddress server, string host, CancellationToken token)
     {
         var queries = await Task.WhenAll(
-            QueryAsync(server, host, false, token),
-            QueryAsync(server, host, true, token));
+            QueryAsync(server, host, false, token), QueryAsync(server, host, true, token));
         return queries.SelectMany(items => items).ToArray();
     }
 
-    private static async Task<IReadOnlyList<DnsAnswer>> QueryAsync(IPAddress server, string host, bool ipv6, CancellationToken token)
+    private async Task<IReadOnlyList<DnsAnswer>> QueryAsync(IPAddress server, string host,
+        bool ipv6, CancellationToken token)
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
         cts.CancelAfter(TimeoutMs);
         try
         {
             var query = DnsAddressQuery.Create(host, ipv6);
-            using var udp = new UdpClient(server.AddressFamily);
+            using var udp = UdpSocketFactory.Create(server.AddressFamily,
+                NetworkAdapterCatalog.Source(adapterId));
             await udp.SendAsync(query, query.Length, new IPEndPoint(server, DnsPort));
             return await ReadAsync(udp, query, ipv6, cts.Token);
         }
-        catch (OperationCanceledException) when (!token.IsCancellationRequested) { return Array.Empty<DnsAnswer>(); }
-        catch (SocketException) { return Array.Empty<DnsAnswer>(); }
+        catch (OperationCanceledException) when (!token.IsCancellationRequested) { return []; }
+        catch (SocketException) { return []; }
     }
 
-    private static async Task<IReadOnlyList<DnsAnswer>> ReadAsync(UdpClient udp, byte[] query, bool ipv6, CancellationToken token)
+    private static async Task<IReadOnlyList<DnsAnswer>> ReadAsync(UdpClient udp, byte[] query,
+        bool ipv6, CancellationToken token)
     {
         var receive = udp.ReceiveAsync();
         var done = await Task.WhenAny(receive, Task.Delay(TimeoutMs, token));
-        if (done != receive) { token.ThrowIfCancellationRequested(); return Array.Empty<DnsAnswer>(); }
+        if (done != receive) { token.ThrowIfCancellationRequested(); return []; }
         var response = await receive;
         return DnsAddressAnswer.Parse(response.Buffer, query, ipv6)
             .Select(address => new DnsAnswer(address, response.RemoteEndPoint.Address.ToString(), ipv6))

@@ -8,7 +8,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>TraceDiag.Console</AssemblyName>
     <RootNamespace>TraceDiag.Console</RootNamespace>
-    <Version>1.9.8</Version>
+    <Version>1.9.9</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>

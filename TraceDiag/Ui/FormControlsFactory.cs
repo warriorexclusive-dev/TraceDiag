@@ -11,36 +11,33 @@ internal static class FormControlsFactory
         var attempts = CreateAttemptsInput();
         var lossDelay = CreateLossDelayInput();
         var font = CreateFontInput(fontSize);
-        var dynamicPacketSize = CreateDynamicPacketSizeCheckBox();
-        var dontFragment = CreateDontFragmentCheckBox();
-        var monitoringMode = CreateMonitoringModeCheckBox();
-        var ripeLookup = CreateRipeLookupCheckBox();
-        var routePrecheck = CreateRoutePrecheckCheckBox();
-        var deepRoutes = CreateDeepRoutesCheckBox();
-        var altDns = CreateAltDnsCheckBox();
-        var darkThemeCheckBox = CreateDarkThemeCheckBox(darkTheme);
+        var probeTimeout = CreateProbeTimeoutInput();
         var ipFamily = CreateIpFamilyInput();
         var language = CreateLanguageInput();
+        var adapter = CreateAdapterInput();
+        var iconSize = CreateIconSizeInput();
+        var dnsPath = CreateDnsPathInput();
+        var editDns = CreateButton(Strings.Ui.AltDnsEditorButton);
+        var adapterNote = CreateLabel(Strings.Ui.AdapterUnavailable);
+        var play = CreateIcon();
+        var stop = CreateIcon();
+        stop.Visible = false;
+        var settings = CreateIcon();
         var run = CreateRunButton();
         var (stats, output, status, splitter) = CreateFooter(fontSize);
-        var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize,
-            dontFragment, monitoringMode, ripeLookup, routePrecheck, deepRoutes, altDns,
-            darkThemeCheckBox, ipFamily, language, run);
-        return new MainControls(LayoutFactory.Create(input, splitter, status), splitter, host, packet,
-            attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode,
-            ripeLookup, routePrecheck, deepRoutes, altDns, darkThemeCheckBox, ipFamily, language,
-            stats, output, run, status);
+        var toolbar = ToolbarFactory.Create(host, play, stop, settings);
+        return new MainControls(LayoutFactory.Create(toolbar, splitter, status),
+            splitter, host, packet, attempts, lossDelay, font, probeTimeout,
+            CreateDynamicPacketSizeCheckBox(), CreateDontFragmentCheckBox(),
+            CreateMonitoringModeCheckBox(), CreateRipeLookupCheckBox(),
+            CreateRoutePrecheckCheckBox(), CreateDeepRoutesCheckBox(),
+            CreateAltDnsCheckBox(), CreateAsnLookupCheckBox(),
+            CreateDarkThemeCheckBox(darkTheme), ipFamily, language, adapter, iconSize,
+            dnsPath, editDns, adapterNote, play, stop, settings, run, stats, output, status);
     }
 
-    private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts,
-        NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment,
-        CheckBox monitoringMode, CheckBox ripeLookup, CheckBox routePrecheck, CheckBox deepRoutes,
-        CheckBox altDns, CheckBox darkTheme, ComboBox ipFamily, ComboBox language, Button run) =>
-        InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize,
-            dontFragment, monitoringMode, ripeLookup, routePrecheck, deepRoutes, altDns,
-            darkTheme, ipFamily, language, run);
-
-    private static (DataGridView Stats, TextBox Output, Label Status, SplitContainer Splitter) CreateFooter(float fontSize)
+    private static (DataGridView Stats, TextBox Output, Label Status, SplitContainer Splitter) CreateFooter(
+        float fontSize)
     {
         var stats = StatsGridFactory.Create();
         var output = CreateOutputTextBox(fontSize);
@@ -54,33 +51,14 @@ internal static class FormControlsFactory
         Anchor = AnchorStyles.Top | AnchorStyles.Left
     };
 
-    private static NumericUpDown CreatePacketInput() => new()
-    {
-        Dock = DockStyle.None,
-        Width = 140,
-        Minimum = UiDefaults.MinPacketSize,
-        Maximum = UiDefaults.MaxPacketSize,
-        Value = UiDefaults.DefaultMaxPacketSize
-    };
+    private static NumericUpDown CreatePacketInput() => CreateNumeric(UiDefaults.MinPacketSize,
+        UiDefaults.MaxPacketSize, UiDefaults.DefaultMaxPacketSize, 140);
 
-    private static NumericUpDown CreateAttemptsInput() => new()
-    {
-        Dock = DockStyle.None,
-        Width = 140,
-        Minimum = 1,
-        Maximum = 1000,
-        Value = UiDefaults.DefaultAttempts
-    };
+    private static NumericUpDown CreateAttemptsInput() => CreateNumeric(1, 1000,
+        UiDefaults.DefaultAttempts, 140);
 
-    private static NumericUpDown CreateLossDelayInput() => new()
-    {
-        Width = 80,
-        Minimum = 0,
-        Maximum = UiDefaults.MaxLossDelayMs,
-        Increment = 100,
-        Value = UiDefaults.DefaultLossDelayMs,
-        Anchor = AnchorStyles.Right
-    };
+    private static NumericUpDown CreateLossDelayInput() => CreateNumeric(0, UiDefaults.MaxLossDelayMs,
+        UiDefaults.DefaultLossDelayMs, 80);
 
     private static NumericUpDown CreateFontInput(float fontSize) => new()
     {
@@ -89,84 +67,100 @@ internal static class FormControlsFactory
         DecimalPlaces = 1,
         Increment = 0.5m,
         Value = UiDefaults.ClampFontSize(fontSize),
-        Width = 80,
-        Anchor = AnchorStyles.Right
+        Width = 80
+    };
+
+    private static NumericUpDown CreateProbeTimeoutInput() => CreateNumeric(100, 3000, 3000, 100);
+
+    private static NumericUpDown CreateNumeric(int min, int max, int value, int width) => new()
+    {
+        Minimum = min,
+        Maximum = max,
+        Value = value,
+        Width = width
     };
 
     private static CheckBox CreateDynamicPacketSizeCheckBox() =>
-        CreateCheck(Strings.Ui.DynamicPacketSizeLabel, true, new Padding(8, 6, 0, 0));
+        CreateCheck(Strings.Ui.DynamicPacketSizeLabel, true);
 
     private static CheckBox CreateDontFragmentCheckBox() =>
-        CreateCheck(Strings.Ui.DontFragmentLabel, false, Padding.Empty);
+        CreateCheck(Strings.Ui.DontFragmentLabel, false);
 
     private static CheckBox CreateMonitoringModeCheckBox() =>
-        CreateCheck(Strings.Ui.MonitoringModeLabel, false, Padding.Empty);
+        CreateCheck(Strings.Ui.MonitoringModeLabel, false);
 
-    private static CheckBox CreateRipeLookupCheckBox() =>
-        CreateCheck(Strings.Ui.RipeLookupLabel, true, Padding.Empty);
+    private static CheckBox CreateRipeLookupCheckBox() => CreateCheck(Strings.Ui.RipeLookupLabel, true);
 
-    private static CheckBox CreateRoutePrecheckCheckBox() =>
-        CreateCheck(Strings.Ui.RoutePrecheckLabel, true, Padding.Empty);
+    private static CheckBox CreateRoutePrecheckCheckBox() => CreateCheck(Strings.Ui.RoutePrecheckLabel, true);
 
-    private static CheckBox CreateDeepRoutesCheckBox() =>
-        CreateCheck(Strings.Ui.DeepRoutesLabel, false, Padding.Empty);
+    private static CheckBox CreateDeepRoutesCheckBox() => CreateCheck(Strings.Ui.DeepRoutesLabel, false);
 
-    private static CheckBox CreateAltDnsCheckBox() =>
-        CreateCheck(Strings.Ui.AltDnsLabel, true, Padding.Empty);
+    private static CheckBox CreateAltDnsCheckBox() => CreateCheck(Strings.Ui.AltDnsLabel, true);
+
+    private static CheckBox CreateAsnLookupCheckBox() => CreateCheck(Strings.Ui.AsnLookupLabel, true);
 
     private static CheckBox CreateDarkThemeCheckBox(bool darkTheme) =>
-        CreateCheck(Strings.Ui.DarkThemeLabel, darkTheme, new Padding(8, 6, 0, 0));
+        CreateCheck(Strings.Ui.DarkThemeLabel, darkTheme);
 
-    private static CheckBox CreateCheck(string canonical, bool checkedState, Padding margin)
+    private static CheckBox CreateCheck(string canonical, bool checkedState)
     {
-        var box = new CheckBox
-        {
-            AutoSize = true,
-            Checked = checkedState,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left,
-            Dock = DockStyle.None,
-            Margin = margin
-        };
+        var box = new CheckBox { AutoSize = true, Checked = checkedState };
         UiText.Set(box, canonical);
         return box;
     }
 
-    private static ComboBox CreateIpFamilyInput()
+    private static ComboBox CreateIpFamilyInput() => CreateCombo(["Auto", "IPv4", "IPv6"]);
+
+    private static ComboBox CreateLanguageInput() =>
+        CreateCombo(Strings.Ui.LanguageNames.Select(Strings.T).ToArray());
+
+    private static ComboBox CreateAdapterInput()
     {
-        var combo = new ComboBox
-        {
-            DropDownStyle = ComboBoxStyle.DropDownList,
-            Width = 120,
-            Anchor = AnchorStyles.Top | AnchorStyles.Right
-        };
-        combo.Items.AddRange(["Auto", "IPv4", "IPv6"]);
-        combo.SelectedIndex = 0;
+        var combo = CreateCombo([]);
+        AdapterList.Fill(combo);
         return combo;
     }
 
-    private static ComboBox CreateLanguageInput()
+    private static ComboBox CreateIconSizeInput() =>
+        CreateCombo(UiDefaults.IconSizes.Select(size => size.ToString()).ToArray(),
+            UiDefaults.DefaultIconSizePx.ToString());
+
+    private static ComboBox CreateCombo(string[] items, string? selected = null)
     {
-        var combo = new ComboBox
-        {
-            DropDownStyle = ComboBoxStyle.DropDownList,
-            Width = 120,
-            Anchor = AnchorStyles.Top | AnchorStyles.Right
-        };
-        combo.Items.AddRange(Strings.Ui.LanguageNames.Select(Strings.T).ToArray());
-        combo.SelectedIndex = (int)Translator.Current;
+        var combo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 200 };
+        combo.Items.AddRange(items);
+        if (selected is not null && combo.Items.Contains(selected)) combo.SelectedItem = selected;
+        else if (items.Length > 0) combo.SelectedIndex = 0;
         return combo;
+    }
+
+    private static TextBox CreateDnsPathInput() => new() { Width = 320, Text = string.Empty };
+
+    private static Button CreateButton(string canonical)
+    {
+        var button = new Button { AutoSize = true, MinimumSize = new Size(120, 32) };
+        UiText.Set(button, canonical);
+        return button;
+    }
+
+    private static PictureBox CreateIcon() => new()
+    {
+        SizeMode = PictureBoxSizeMode.Zoom,
+        Size = new Size(UiDefaults.DefaultIconSizePx, UiDefaults.DefaultIconSizePx),
+        Cursor = Cursors.Hand
+    };
+
+    private static Label CreateLabel(string canonical)
+    {
+        var label = new Label { AutoSize = true, ForeColor = Color.FromArgb(255, 120, 120) };
+        UiText.Set(label, canonical);
+        return label;
     }
 
     private static Button CreateRunButton()
     {
-        var run = new Button
-        {
-            Size = new Size(240, 64),
-            Font = new Font(Strings.Ui.GridFontFamily, 16f, FontStyle.Bold),
-            Anchor = AnchorStyles.Top | AnchorStyles.Right,
-            Margin = new Padding(0, 6, 0, 0)
-        };
-        UiText.Set(run, Strings.Ui.RunButton);
+        var run = CreateButton(Strings.Ui.RunButton);
+        run.Visible = false;
         return run;
     }
 
@@ -183,12 +177,7 @@ internal static class FormControlsFactory
 
     private static Label CreateStatusLabel()
     {
-        var status = new Label
-        {
-            Dock = DockStyle.Fill,
-            AutoSize = true,
-            Padding = new Padding(0, 6, 0, 0)
-        };
+        var status = new Label { Dock = DockStyle.Fill, AutoSize = true, Padding = new Padding(0, 6, 0, 0) };
         UiText.Set(status, Strings.Ui.Ready);
         return status;
     }

@@ -17,8 +17,11 @@ internal sealed class UiState
     public bool RoutePrecheck { get; set; } = true;
     public bool DeepRoutes { get; set; }
     public bool AlternativeDns { get; set; } = true;
+    public bool AsnLookup { get; set; } = true;
     public bool DarkTheme { get; set; } = true;
     public int IpFamily { get; set; }
+    public string AdapterId { get; set; } = string.Empty;
+    public int ProbeTimeoutMs { get; set; } = 3000;
     public int StatsHeightPercent { get; set; } = UiDefaults.DefaultStatsPercent;
     public string WindowState { get; set; } = UiDefaults.NormalWindowState;
     public UiWindowBounds Bounds { get; set; } = new();
