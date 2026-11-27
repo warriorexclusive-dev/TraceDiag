@@ -27,8 +27,10 @@ dotnet publish (Join-Path $repoRoot 'TraceDiag.Console\TraceDiag.Console.csproj'
 if ($LASTEXITCODE -ne 0) { throw 'Публикация консоли (linux-arm64) завершилась с ошибкой.' }
 
 $localizations = Join-Path $repoRoot 'localizations'
+$dnsConfig = Join-Path $repoRoot 'dns-servers.json'
 foreach ($dir in @($windowsDir, $linuxDir, $linuxArmDir)) {
     Copy-Item -LiteralPath $localizations -Destination $dir -Recurse -Force
+    Copy-Item -LiteralPath $dnsConfig -Destination $dir -Force
 }
 
 foreach ($dir in @($linuxDir, $linuxArmDir)) {

@@ -14,6 +14,7 @@ $wixDir = Join-Path $PSScriptRoot 'wix'
 $guiProject = Join-Path $repoRoot 'TraceDiag\TraceDiag.csproj'
 $consoleProject = Join-Path $repoRoot 'TraceDiag.Console\TraceDiag.Console.csproj'
 $localizations = Join-Path $repoRoot 'localizations'
+$dnsConfig = Join-Path $repoRoot 'dns-servers.json'
 
 if (-not $Version) {
     $projectText = Get-Content -LiteralPath $guiProject -Raw
@@ -30,6 +31,7 @@ function Publish-Windows {
     dotnet publish $consoleProject -c $Configuration -f net48 -p:Platform=$Platform -p:PlatformTarget=$Platform -o $Directory -v:q
     Assert-ExitCode
     Copy-Item -LiteralPath $localizations -Destination $Directory -Recurse -Force
+    Copy-Item -LiteralPath $dnsConfig -Destination $Directory -Force
 }
 
 function Publish-Linux {
@@ -38,6 +40,7 @@ function Publish-Linux {
         -p:PlatformTarget=AnyCPU -o $Directory -v:q
     Assert-ExitCode
     Copy-Item -LiteralPath $localizations -Destination $Directory -Recurse -Force
+    Copy-Item -LiteralPath $dnsConfig -Destination $Directory -Force
 }
 
 function New-StableGuid {
