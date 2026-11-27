@@ -5,6 +5,50 @@
 
 Änderungsverlauf von TraceDiag. Fertige Builds werden auf den Seiten [Releases](https://github.com/warriorexclusive-dev/TraceDiag/releases) veröffentlicht.
 
+## 1.9.11
+
+- Icons 16/32 px (Standard 32), Deep-Logs der Routenvorprüfung, Route und Ziel in der Statistiktabelle; ein interner Deadline wird nicht mehr als Benutzerabbruch gemeldet.
+
+## 1.9.10
+
+- Sprachauswahl in den Einstellungen, Ausrichtung des Remote-Host-Labels und Laden der mitgelieferten dns-servers.json korrigiert.
+
+## 1.9.9
+
+- Neues Hauptfenster: Host, Play/Stop/Einstellungen-Icons, Tabelle, Ausgabe und Status; alle anderen Einstellungen in einem separaten Fenster. Adapter über RAW-Socket, DNS-Editor, Optionen --adapter, --no-asn und --dns-file.
+
+## 1.9.8
+
+- System-DNS der Netzwerkkarte ist überall zwingend, auch für IPv6; alternative Resolver standardmäßig aktiv, abschaltbar mit --no-alt-dns oder im GUI. Fenstertitel folgt dem Theme.
+
+## 1.9.7
+
+- Konsole fragt ohne Argumente nach dem Host und meldet ungültige Eingaben; Kommandozeilen-Schlüssel in einem gemeinsamen Modul.
+
+## 1.9.6
+
+- Asynchrone Vorprüfung alternativer Routen: dns-servers.json, 3000 ms pro Abfrage, 150 s Gesamtlimit, 4 Flow-Signaturen (8 im Deep-Modus), Fallback bei Fehlern.
+
+## 1.9.5
+
+- ASN über Team-Cymru-DNS-TXT und eigene Spalte; Pool-Inhaber standardmäßig aus RIPEstat, abschaltbar mit --no-ripe. Externe Quellen werden für private Ziele deaktiviert.
+
+## 1.9.4
+
+- Erste ASN-Abfrage und eigene Spalte für das autonome System.
+
+## 1.9.3
+
+- Erweiterte automatische Diagnosen: MTU Black Hole, asymmetrische Route, ICMP-Blockierung durch Zwischenknoten, Port-/NAT-Filterung.
+
+## 1.9.2
+
+- Mehrere Diagnosen in einer Zeile: Paketkürzung, ICMP-Anti-Flood und ECMP-Balancing.
+
+## 1.9.1
+
+- Erkennung von Routenwechsel und ECMP anhand unterschiedlicher IP-Antwortquellen innerhalb eines Hops.
+
 ## 1.9.0
 
 - Die Oberflächensprachen `En`, `Cn`, `Fr`, `De`, `Ru`, `Jp` wurden hinzugefügt; Standard ist `En`. Die Auswahl wird in `settings.json` gespeichert, in der GUI ohne Neustart geändert und in der Konsole über die Option `--language <en|cn|fr|de|ru|jp>` festgelegt. Die Übersetzungen werden in `localizations/*.json` neben der ausführbaren Datei gespeichert und erfordern keinen Neubuild. Alle sichtbaren Zeichenfolgen der GUI und der Konsole sind lokalisiert, einschließlich des Prüfungsverlaufs und der Abschlusstabelle; das Dateilog bleibt durch die Trennung von kanonischem Text und angezeigtem Übersetzungstext englisch.

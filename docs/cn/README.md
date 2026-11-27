@@ -46,6 +46,7 @@ TraceDiag.Console monitor --host <ip|domain> [--packet-size <n>] [--loss-delay <
 TraceDiag.Console reset [--language en|cn|fr|de|ru|jp]
 ```
 
+其他选项：`--no-ripe`, `--no-asn`, `--no-route-precheck`, `--deep-routes`, `--probe-timeout <ms>`, `--no-alt-dns`, `--ipv4`, `--ipv6`, `--adapter <id|name>`, `--dns-file <path>`.
 - 默认值：数据包大小 `1024`，尝试次数 `100`，延迟 `1000` 毫秒。
 - `--format plain`——文本，`csv`——CSV 行，`json`——带 `kind` 字段的 JSON Lines。
 - `--language` 会本地化帮助、错误、状态、检查进度信息和最终表格。文件日志仍为英文：规范文本及其参数与显示的译文相互分离；选项名称和命令不作翻译。控制台以 UTF-8 输出文本（在较旧的 Windows 终端中可能需要 `chcp 65001`）。
@@ -78,14 +79,21 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**252 次测试运行**（174 次 WinForms + 在 `net48` 和 `net10.0` 上各 39 次控制台测试）覆盖数据包大小调度器、节点统计、ICMP 响应映射、配置、日志记录、界面状态保存、全部六种语言的本地化、控制台参数解析、输出格式、诊断模块，以及使用 ICMP、DNS 和日志器测试替身完成 `TraceDiagnosticsService` 的完整流程。
+**416 次测试运行**（`net48` 上 268 次 WinForms/核心测试，`net48` 与 `net10.0` 上各 74 次控制台测试）覆盖数据包大小调度器、节点统计、ICMP 响应映射、配置、日志记录、界面状态保存、全部六种语言的本地化、控制台参数解析、输出格式、诊断模块，以及使用 ICMP、DNS 和日志器测试替身完成 `TraceDiagnosticsService` 的完整流程。
 
 ## 现成构建版本
 
-最新版本：[Release 1.8.4 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.8.4)
+最新版本：[TraceDiag 1.9.11](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.9.11)（预发布，7 个安装包）。
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.4/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.4/TraceDiag-install.zip)
+- [TraceDiag-1.9.11-x86.msi](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-1.9.11-x86.msi)
+- [TraceDiag-1.9.11-x64.msi](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-1.9.11-x64.msi)
+- [tracediag_1.9.11_amd64.deb](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/tracediag_1.9.11_amd64.deb)
+- [tracediag_1.9.11_arm64.deb](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/tracediag_1.9.11_arm64.deb)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-install.zip)
+- [TraceDiag-console-linux-x64.tar.gz](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-console-linux-x64.tar.gz)
+- [TraceDiag-console-linux-arm64.tar.gz](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-console-linux-arm64.tar.gz)
+
+最近版本新增：备用路由预检查和深度日志、ASN/RIPE 查询、系统 DNS 与备用解析器、IPv6、带 16/32 px 图标的新主窗口、表格中的路由/目标列，以及不误报为用户取消的超时处理。
 
 变更历史：[ReleaseNotes.md](ReleaseNotes.md)；译文位于 `docs/<语言>/`。
 

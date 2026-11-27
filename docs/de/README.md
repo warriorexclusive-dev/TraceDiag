@@ -46,6 +46,7 @@ TraceDiag.Console monitor --host <ip|domain> [--packet-size <n>] [--loss-delay <
 TraceDiag.Console reset [--language en|cn|fr|de|ru|jp]
 ```
 
+Weitere Optionen: `--no-ripe`, `--no-asn`, `--no-route-precheck`, `--deep-routes`, `--probe-timeout <ms>`, `--no-alt-dns`, `--ipv4`, `--ipv6`, `--adapter <id|name>`, `--dns-file <path>`.
 - Standardwerte: Paketgröße `1024`, `100` Versuche, Verzögerung `1000` ms.
 - `--format plain` — Text, `csv` — CSV-Zeilen, `json` — JSON Lines mit dem Feld `kind`.
 - `--language` lokalisiert die Hilfe, Fehler, Statusmeldungen, Zeilen des Prüfungsverlaufs und die Abschlusstabelle. Das Dateilog bleibt englisch: Der kanonische Text und die Argumente sind vom angezeigten Übersetzungstext getrennt; Optionsnamen und Befehle werden nicht übersetzt. Die Konsole gibt Text in UTF-8 aus (in älteren Windows-Terminals kann `chcp 65001` erforderlich sein).
@@ -78,14 +79,21 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**252 Testläufe** (174 WinForms + 39 Konsolentests unter `net48` und `net10.0`) decken den Planer für Paketgrößen, die Knotenstatistik, die Zuordnung von ICMP-Antworten, die Konfiguration, das Logging, das Speichern des Oberflächenzustands, die Lokalisierung in allen sechs Sprachen, die Auswertung von Konsolenargumenten, Ausgabeformate, Diagnosemodule und den vollständigen Zyklus von `TraceDiagnosticsService` mit Test-Dummies für ICMP, DNS und Logger ab.
+**416 Testläufe** (268 WinForms/Core unter `net48` sowie je 74 Konsolentests unter `net48` und `net10.0`) decken den Planer für Paketgrößen, die Knotenstatistik, die Zuordnung von ICMP-Antworten, die Konfiguration, das Logging, das Speichern des Oberflächenzustands, die Lokalisierung in allen sechs Sprachen, die Auswertung von Konsolenargumenten, Ausgabeformate, Diagnosemodule und den vollständigen Zyklus von `TraceDiagnosticsService` mit Test-Dummies für ICMP, DNS und Logger ab.
 
 ## Vorgefertigte Builds
 
-Letzte Veröffentlichung: [Release 1.8.4 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.8.4)
+Letzte Veröffentlichung: [TraceDiag 1.9.11](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.9.11) (Pre-Release, 7 Pakete).
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.4/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.4/TraceDiag-install.zip)
+- [TraceDiag-1.9.11-x86.msi](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-1.9.11-x86.msi)
+- [TraceDiag-1.9.11-x64.msi](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-1.9.11-x64.msi)
+- [tracediag_1.9.11_amd64.deb](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/tracediag_1.9.11_amd64.deb)
+- [tracediag_1.9.11_arm64.deb](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/tracediag_1.9.11_arm64.deb)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-install.zip)
+- [TraceDiag-console-linux-x64.tar.gz](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-console-linux-x64.tar.gz)
+- [TraceDiag-console-linux-arm64.tar.gz](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-console-linux-arm64.tar.gz)
+
+Neueste Versionen: Vorabprüfung alternativer Routen mit Deep-Logs, ASN/RIPE, System- und alternative DNS, IPv6, neues Hauptfenster mit 16/32-px-Icons, Route/Ziel-Spalten und Deadline ohne falschen Abbruch.
 
 Änderungsverlauf: [ReleaseNotes.md](ReleaseNotes.md); Übersetzungen befinden sich in `docs/<Sprache>/`.
 

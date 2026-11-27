@@ -46,6 +46,7 @@ TraceDiag.Console monitor --host <ip|domain> [--packet-size <n>] [--loss-delay <
 TraceDiag.Console reset [--language en|cn|fr|de|ru|jp]
 ```
 
+追加オプション: `--no-ripe`, `--no-asn`, `--no-route-precheck`, `--deep-routes`, `--probe-timeout <ms>`, `--no-alt-dns`, `--ipv4`, `--ipv6`, `--adapter <id|name>`, `--dns-file <path>`.
 - 既定値: パケットサイズ `1024`、試行回数 `100`、遅延 `1000` ミリ秒。
 - `--format plain` はテキスト、`csv` は CSV 行、`json` は `kind` フィールドを持つ JSON Lines です。
 - `--language` はヘルプ、エラー、ステータス、検査の進行状況を示す文字列、および最終テーブルをローカライズします。ファイルログは英語のままです。カノニカルなテキストと引数は表示用の翻訳から分離されており、オプション名とコマンドは翻訳されません。コンソールは UTF-8 でテキストを出力します (古い Windows ターミナルでは `chcp 65001` が必要になる場合があります)。
@@ -78,14 +79,21 @@ dotnet build TraceDiag.slnx -c Release
 dotnet test TraceDiag.slnx -c Release
 ```
 
-**252 回のテスト実行** (174 WinForms + `net48` と `net10.0` で各 39 件のコンソール) は、パケットサイズのスケジューラー、ノード統計、ICMP 応答のマッピング、構成、ログ、インターフェイス状態の保存、6 言語すべてのローカライゼーション、コンソール引数の解析、出力形式、診断モジュール、および ICMP、DNS、ロガーのテスト用フェイクを用いた `TraceDiagnosticsService` の完全なライフサイクルをカバーしています。
+**416 回のテスト実行** (`net48` で 268 件の WinForms/コア、`net48` と `net10.0` で各 74 件のコンソール) は、パケットサイズのスケジューラー、ノード統計、ICMP 応答のマッピング、構成、ログ、インターフェイス状態の保存、6 言語すべてのローカライゼーション、コンソール引数の解析、出力形式、診断モジュール、および ICMP、DNS、ロガーのテスト用フェイクを用いた `TraceDiagnosticsService` の完全なライフサイクルをカバーしています。
 
 ## ビルド済みパッケージ
 
-最新リリース: [Release 1.8.4 version](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.8.4)
+最新リリース: [TraceDiag 1.9.11](https://github.com/warriorexclusive-dev/TraceDiag/releases/tag/v1.9.11)（プレリリース、7 パッケージ）。
 
-- [TraceDiag.exe](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.4/TraceDiag.exe)
-- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.8.4/TraceDiag-install.zip)
+- [TraceDiag-1.9.11-x86.msi](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-1.9.11-x86.msi)
+- [TraceDiag-1.9.11-x64.msi](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-1.9.11-x64.msi)
+- [tracediag_1.9.11_amd64.deb](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/tracediag_1.9.11_amd64.deb)
+- [tracediag_1.9.11_arm64.deb](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/tracediag_1.9.11_arm64.deb)
+- [TraceDiag-install.zip](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-install.zip)
+- [TraceDiag-console-linux-x64.tar.gz](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-console-linux-x64.tar.gz)
+- [TraceDiag-console-linux-arm64.tar.gz](https://github.com/warriorexclusive-dev/TraceDiag/releases/download/v1.9.11/TraceDiag-console-linux-arm64.tar.gz)
+
+最近のバージョン：代替ルートの事前チェックと詳細ログ、ASN/RIPE 検索、システム DNS と代替リゾルバー、IPv6、16/32 px アイコンの新しいメイン ウィンドウ、テーブルのルート/対象列、誤キャンセル判定のない期限処理。
 
 変更履歴: [ReleaseNotes.md](ReleaseNotes.md); 翻訳は `docs/<言語>/` にあります。
 

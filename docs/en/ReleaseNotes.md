@@ -6,6 +6,50 @@
 The TraceDiag changelog. Prebuilt builds are published on the
 [Releases](https://github.com/warriorexclusive-dev/TraceDiag/releases) page.
 
+## 1.9.11
+
+- Added 16/32 px icon sizes (32 px by default), deep precheck logs, route and target in the stats table; an internal deadline no longer looks like a user cancellation.
+
+## 1.9.10
+
+- Fixed settings language selection, remote-host label alignment and loading of the bundled dns-servers.json.
+
+## 1.9.9
+
+- New main window: host, play/stop/settings icons, table, output and status; all other settings in a separate window. Explicit adapter via RAW socket, DNS editor, --adapter, --no-asn and --dns-file options.
+
+## 1.9.8
+
+- System DNS from the network card is required everywhere, including IPv6; alternative resolvers enabled by default and disabled with --no-alt-dns or in the GUI. Window caption follows the theme.
+
+## 1.9.7
+
+- Console prompts for a host when started without arguments and reports invalid input; command-line keys moved into a shared module.
+
+## 1.9.6
+
+- Async alternative-route precheck: dns-servers.json, 3000 ms per query, 150 s run deadline, 4 flow signatures (8 in deep mode), fallback on failure.
+
+## 1.9.5
+
+- ASN via Team Cymru DNS TXT and a dedicated column; pool owner from RIPEstat by default, disabled with --no-ripe. External sources are disabled for private targets.
+
+## 1.9.4
+
+- Initial ASN lookup and a separate autonomous-system column.
+
+## 1.9.3
+
+- Extended automatic diagnoses: MTU black hole, asymmetric route, ICMP blocking by intermediate hops, port/NAT filtering.
+
+## 1.9.2
+
+- Multiple diagnoses in one row: packet truncation, ICMP anti-flood and ECMP balancing.
+
+## 1.9.1
+
+- Route change and ECMP detection by different IP response sources within one hop.
+
 ## 1.9.0
 
 - Added interface languages `En`, `Cn`, `Fr`, `De`, `Ru`, `Jp`; `En` by default. The choice is

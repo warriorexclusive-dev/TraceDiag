@@ -6,6 +6,50 @@
 Historique des modifications de TraceDiag. Les versions compilées sont publiées sur la page
 [Releases](https://github.com/warriorexclusive-dev/TraceDiag/releases).
 
+## 1.9.11
+
+- Ajout des tailles d'icônes 16/32 px (32 par défaut), des journaux détaillés du précontrôle, de la route et de la cible dans le tableau ; un délai interne n'est plus signalé comme une annulation utilisateur.
+
+## 1.9.10
+
+- Correction de la langue dans les paramètres, de l'alignement du libellé de l'hôte distant et du chargement du dns-servers.json fourni.
+
+## 1.9.9
+
+- Nouvelle fenêtre principale : hôte, icônes lecture/arrêt/paramètres, tableau, sortie et statut ; les autres réglages dans une fenêtre séparée. Adaptateur via socket RAW, éditeur DNS, options --adapter, --no-asn et --dns-file.
+
+## 1.9.8
+
+- Le DNS système de la carte réseau est obligatoire partout, y compris IPv6 ; les résolveurs alternatifs sont actifs par défaut et désactivables par --no-alt-dns ou l'interface. La barre de titre suit le thème.
+
+## 1.9.7
+
+- La console demande un hôte sans arguments et signale une saisie invalide ; les clés de ligne de commande sont regroupées dans un module commun.
+
+## 1.9.6
+
+- Précontrôle asynchrone des itinéraires alternatifs : dns-servers.json, 3000 ms par requête, délai global 150 s, 4 signatures de flux (8 en mode détaillé), repli en cas d'échec.
+
+## 1.9.5
+
+- ASN via TXT DNS Team Cymru et colonne dédiée ; propriétaire du bloc depuis RIPEstat par défaut, désactivable avec --no-ripe. Les sources externes sont désactivées pour les cibles privées.
+
+## 1.9.4
+
+- Première version de la recherche ASN et d'une colonne autonome.
+
+## 1.9.3
+
+- Diagnostics automatiques étendus : trou noir MTU, asymétrie de route, blocage ICMP par les routeurs intermédiaires, filtrage par port/NAT.
+
+## 1.9.2
+
+- Plusieurs diagnostics sur une même ligne : troncature de paquet, anti-inondation ICMP et équilibrage ECMP.
+
+## 1.9.1
+
+- Détection des changements de route et de l'équilibrage ECMP selon les différentes sources IP des réponses d'un même saut.
+
 ## 1.9.0
 
 - Ajout des langues d'interface `En`, `Cn`, `Fr`, `De`, `Ru`, `Jp` ; `En` par défaut.

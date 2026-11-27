@@ -33,10 +33,10 @@ powershell -ExecutionPolicy Bypass -File .\Build-TraceDiag-Packages.ps1
 - `TraceDiag-<версия>-x86.msi` и `TraceDiag-<версия>-x64.msi` — Windows, per-machine,
   GUI и консоль соответствующей разрядности, папка `localizations`, ярлыки в меню «Пуск».
   Перед установкой проверяется .NET Framework 4.8 (`Release >= 528040`); скачивание с
-  сайта Microsoft не выполняется. Установка: `msiexec /i TraceDiag-1.9.0-x64.msi /qn`.
+  сайта Microsoft не выполняется. Установка: `msiexec /i TraceDiag-1.9.11-x64.msi /qn`.
 - `tracediag_<версия>_amd64.deb` и `tracediag_<версия>_arm64.deb` — Linux, self-contained
   консоль `net10.0` в `/usr/share/tracediag` и символическая ссылка `/usr/bin/tracediag`.
-  Установка: `sudo dpkg -i tracediag_1.9.0_amd64.deb`. Для сборки deb нужна WSL с
+  Установка: `sudo dpkg -i tracediag_1.9.11_amd64.deb`. Для сборки deb нужна WSL с
   `dpkg-deb`; ключи `-SkipPublish` и `-SkipDeb` позволяют пересобрать только часть.
 
 ## 3. Установка на Windows из архива
