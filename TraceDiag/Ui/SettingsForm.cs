@@ -26,6 +26,9 @@ internal sealed class SettingsForm : Form
         var path = string.IsNullOrWhiteSpace(config.AltDnsFilePath)
             ? DnsPathPolicy.Default() : config.AltDnsFilePath;
         _controls.DnsFilePath.Text = path;
+        var language = (int)config.Language;
+        if (language >= 0 && language < _controls.Language.Items.Count)
+            _controls.Language.SelectedIndex = language;
         var size = config.IconSizePx.ToString();
         if (_controls.IconSize.Items.Contains(size)) _controls.IconSize.SelectedItem = size;
     }

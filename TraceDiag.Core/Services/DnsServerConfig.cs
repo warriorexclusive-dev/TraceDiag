@@ -8,12 +8,11 @@ internal static class DnsServerConfig
 {
     internal const string FileName = "dns-servers.json";
 
-    internal static string DefaultPath() =>
-        Path.Combine(AppFiles.GetAppDataDirectory(), FileName);
+    internal static string DefaultPath() => DnsPathPolicy.Default();
 
     internal static IReadOnlyList<IPAddress> Load(string? path = null)
     {
-        var file = string.IsNullOrWhiteSpace(path) ? FindFile() : path;
+        var file = ResolveFile(path);
         if (file is null || !File.Exists(file)) return DnsServers.Get();
         try
         {
@@ -25,12 +24,13 @@ internal static class DnsServerConfig
         catch (Exception) { return DnsServers.Get(); }
     }
 
-    internal static IReadOnlyList<IPAddress> Read(string path)
+    internal static IReadOnlyList<IPAddress> Read(string? path = null)
     {
-        if (!File.Exists(path)) return [];
+        var file = ResolveFile(path);
+        if (file is null || !File.Exists(file)) return [];
         try
         {
-            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            using var document = JsonDocument.Parse(File.ReadAllText(file));
             return document.RootElement.TryGetProperty("resolvers", out var list) ? Collect(list) : [];
         }
         catch (Exception) { return []; }
@@ -42,7 +42,24 @@ internal static class DnsServerConfig
         if (!string.IsNullOrWhiteSpace(directory)) Directory.CreateDirectory(directory);
         var items = servers.Select(server => $"\"{server}\"");
         File.WriteAllText(path, "{\n  \"resolvers\": [\n    " +
-            string.Join(",\n    ", items) + "\n  ]\n}\n");
+             string.Join(",\n    ", items) + "\n  ]\n}\n");
+    }
+
+    private static string? ResolveFile(string? path) =>
+        !string.IsNullOrWhiteSpace(path) && File.Exists(path) ? path : FindFile();
+
+    private static string? FindFile()
+    {
+        foreach (var path in Candidates())
+            if (File.Exists(path)) return path;
+        return null;
+    }
+
+    private static IEnumerable<string> Candidates()
+    {
+        yield return DefaultPath();
+        foreach (var directory in new[] { AppContext.BaseDirectory, Directory.GetCurrentDirectory() })
+            yield return Path.Combine(directory, FileName);
     }
 
     private static IReadOnlyList<IPAddress> Collect(JsonElement list)
@@ -55,13 +72,5 @@ internal static class DnsServerConfig
     private static void Add(List<IPAddress> result, string? text)
     {
         if (IPAddress.TryParse(text, out var address) && !result.Contains(address)) result.Add(address);
-    }
-
-    private static string? FindFile()
-    {
-        var candidates = new[] { AppContext.BaseDirectory, Directory.GetCurrentDirectory(), DefaultPath() };
-        foreach (var path in candidates)
-            if (File.Exists(path)) return path;
-        return null;
     }
 }

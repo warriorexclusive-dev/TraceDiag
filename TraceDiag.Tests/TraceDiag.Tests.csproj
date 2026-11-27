@@ -25,4 +25,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\dns-servers.json" Link="dns-servers.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>TraceDiag</RootNamespace>
-    <Version>1.9.9</Version>
+    <Version>1.9.10</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -9,6 +9,7 @@ internal static class LocalizationApplier
         ApplyControl(form);
         if (settings is not null) ApplyControl(settings);
         UiText.Refresh(controls.Run);
+        UiText.RefreshLanguage(controls.Language);
         foreach (DataGridViewColumn column in controls.Stats.Columns) UiText.Refresh(column);
         controls.Stats.Invalidate();
     }

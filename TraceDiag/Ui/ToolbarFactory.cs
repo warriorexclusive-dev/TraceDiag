@@ -24,7 +24,8 @@ internal static class ToolbarFactory
 
     private static void AddLabel(TableLayoutPanel layout)
     {
-        var label = new Label { AutoSize = true, Anchor = AnchorStyles.Left };
+        var label = new Label { AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Left,
+            Margin = new Padding(3, 7, 3, 3) };
         UiText.Set(label, Strings.Ui.RemoteHostLabel);
         layout.Controls.Add(label, 0, 0);
     }

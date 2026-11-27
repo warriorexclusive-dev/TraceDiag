@@ -30,4 +30,13 @@ internal static class UiText
     {
         if (column.Tag is string key) column.HeaderText = Strings.T(key);
     }
+
+    internal static void RefreshLanguage(ComboBox combo)
+    {
+        var selected = combo.SelectedIndex;
+        combo.SelectedIndex = -1;
+        combo.Items.Clear();
+        combo.Items.AddRange(Strings.Ui.LanguageNames.Select(Strings.T).ToArray());
+        if (selected >= 0 && selected < combo.Items.Count) combo.SelectedIndex = selected;
+    }
 }
