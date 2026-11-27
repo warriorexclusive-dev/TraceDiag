@@ -5,7 +5,7 @@ using TraceDiag.Services.Diagnostics;
 
 namespace TraceDiag.Console;
 
-/// <summary>Prints log lines as they happen; the statistics table comes last.</summary>
+/// <summary>Prints log lines as they happen; the route tree comes last.</summary>
 internal sealed class OutputWriter(string format, TextWriter output) : IProgress<string>
 {
     private readonly StatsCollector _collector = new();
@@ -42,16 +42,18 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
         output.WriteLine(Strings.T(Strings.Console.SummaryTitle));
         output.WriteLine(Strings.T(Strings.Console.StatsHeader));
         foreach (var hop in hops) output.WriteLine(TextFormatter.Fmt(Strings.Console.StatsRowFormat,
-            hop.Ttl, hop.Address, Asn(hop), Host(hop), Average(hop), Metric(hop, hop.JitterMs),
-            Metric(hop, hop.StdDevMs), Text(hop.MinPingMs), Text(hop.MaxPingMs),
-            Text(hop.LastPingMs), hop.Sent, hop.Received, Status(hop), Diagnosis(hop)));
+            hop.Ttl, Route(hop), RouteTarget(hop), Resolver(hop), hop.Address, Asn(hop), Host(hop),
+            Average(hop), Metric(hop, hop.JitterMs), Metric(hop, hop.StdDevMs),
+            Text(hop.MinPingMs), Text(hop.MaxPingMs), Text(hop.LastPingMs),
+            hop.Sent, hop.Received, Status(hop), Diagnosis(hop)));
     }
 
     private void CsvStats(IReadOnlyList<HopStatSnapshot> hops)
     {
         output.WriteLine(Strings.Console.CsvStatsHeader);
-        foreach (var hop in hops) output.WriteLine(Csv(Strings.Console.KindStats, hop.Ttl, hop.Address,
-            Asn(hop), Host(hop), Average(hop), Metric(hop, hop.JitterMs), Metric(hop, hop.StdDevMs),
+        foreach (var hop in hops) output.WriteLine(Csv(Strings.Console.KindStats, hop.Ttl,
+            Route(hop), RouteTarget(hop), Resolver(hop), hop.Address, Asn(hop), Host(hop),
+            Average(hop), Metric(hop, hop.JitterMs), Metric(hop, hop.StdDevMs),
             Text(hop.MinPingMs), Text(hop.MaxPingMs), Text(hop.LastPingMs),
             hop.Sent, hop.Received, Status(hop), Diagnosis(hop)));
     }
@@ -67,12 +69,33 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
         JsonSerializer.Serialize(new Dictionary<string, object?>
         {
             [Strings.Console.ColumnKind] = Strings.Console.KindStats,
-            [Strings.Console.ColumnHops] = hops.Select(HopFields).ToArray()
+            [Strings.Console.ColumnHops] = hops.Select(HopFields).ToArray(),
+            [Strings.Console.ColumnHosts] = HostTree(hops)
         });
+
+    private static object[] HostTree(IReadOnlyList<HopStatSnapshot> hops) =>
+        hops.GroupBy(hop => hop.RouteTarget).Select(HostNode).ToArray();
+
+    private static Dictionary<string, object?> HostNode(IGrouping<string, HopStatSnapshot> group) => new()
+    {
+        [Strings.Console.ColumnIp] = group.Key,
+        [Strings.Console.ColumnRouteResolver] = Resolver(group.First()),
+        [Strings.Console.ColumnRoutes] = group.GroupBy(hop => hop.RouteUid)
+            .OrderBy(routes => routes.Key).Select(RouteNode).ToArray()
+    };
+
+    private static Dictionary<string, object?> RouteNode(IGrouping<int, HopStatSnapshot> group) => new()
+    {
+        [Strings.Console.ColumnRouteUid] = group.Key,
+        [Strings.Console.ColumnHops] = group.OrderBy(hop => hop.Ttl).Select(HopFields).ToArray()
+    };
 
     private static Dictionary<string, object?> HopFields(HopStatSnapshot hop) => new()
     {
         [Strings.Console.ColumnTtl] = hop.Ttl,
+        [Strings.Console.ColumnRouteUid] = Route(hop),
+        [Strings.Console.ColumnRouteTarget] = RouteTarget(hop),
+        [Strings.Console.ColumnRouteResolver] = Resolver(hop),
         [Strings.Console.ColumnIp] = hop.Address.ToString(),
         [Strings.Console.ColumnAsn] = Asn(hop),
         [Strings.Console.ColumnHost] = Host(hop),
@@ -88,6 +111,9 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
         [Strings.Console.ColumnDiagnosis] = Diagnosis(hop)
     };
 
+    private static string Route(HopStatSnapshot hop) =>
+        hop.RouteUid <= 0 ? Strings.Ui.Dash : hop.RouteUid.ToString(CultureInfo.InvariantCulture);
+
     private static string Csv(params object?[] values) =>
         string.Join(",", values.Select(value => "\"" + (value?.ToString() ?? string.Empty).Replace("\"", "\"\"") + "\""));
 
@@ -96,6 +122,12 @@ internal sealed class OutputWriter(string format, TextWriter output) : IProgress
 
     private static string Host(HopStatSnapshot hop) =>
         string.IsNullOrWhiteSpace(hop.HostName) ? Strings.T(Strings.Ui.NoDns) : hop.HostName!;
+
+    private static string RouteTarget(HopStatSnapshot hop) =>
+        string.IsNullOrWhiteSpace(hop.RouteTarget) ? Strings.Ui.Dash : hop.RouteTarget;
+
+    private static string Resolver(HopStatSnapshot hop) =>
+        string.IsNullOrWhiteSpace(hop.RouteResolver) ? Strings.Ui.Dash : hop.RouteResolver;
 
     private static string Status(HopStatSnapshot hop) => Strings.T(hop.Status);
 

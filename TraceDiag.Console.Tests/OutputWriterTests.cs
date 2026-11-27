@@ -126,6 +126,28 @@ public sealed class OutputWriterTests
     }
 
     [Fact]
+    public void CsvAndJson_IncludeRouteTree()
+    {
+        var routed = Snapshot() with { RouteUid = 7, RouteTarget = "10.0.0.2", RouteResolver = "resolver" };
+        using var csvText = new StringWriter();
+        var csv = new OutputWriter(Strings.Console.FormatCsv, csvText);
+        csv.Stats([routed]);
+        csv.WriteSummary();
+        Assert.Contains("route,route_target,resolver", csvText.ToString());
+        Assert.Contains("\"7\",\"10.0.0.2\",\"resolver\"", csvText.ToString());
+
+        using var jsonText = new StringWriter();
+        var json = new OutputWriter(Strings.Console.FormatJson, jsonText);
+        json.Stats([routed]);
+        json.WriteSummary();
+        var value = jsonText.ToString();
+        Assert.Contains("\"hosts\":", value);
+        Assert.Contains("\"routes\":", value);
+        Assert.Contains("\"route_uid\":7", value);
+        Assert.Contains("\"10.0.0.2\"", value);
+    }
+
+    [Fact]
     public void WriteSummary_PrintsEveryDiagnosis()
     {
         using var text = new StringWriter();

@@ -10,4 +10,7 @@ public sealed record DiagnosticInput(
     int LossDelayMs,
     bool DynamicPacketSize,
     bool DontFragment = false,
-    bool RipeLookup = true);
+    bool RipeLookup = true,
+    bool RoutePrecheck = true,
+    bool DeepRoutes = false,
+    int ProbeTimeoutMs = 3000);

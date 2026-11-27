@@ -9,7 +9,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>TraceDiag</AssemblyName>
     <RootNamespace>TraceDiag</RootNamespace>
-    <Version>1.9.5</Version>
+    <Version>1.9.6</Version>
     <ApplicationIcon>Resources\cable_24dp.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <None Include="..\localizations\*.json" Link="localizations\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\dns-servers.json" Link="dns-servers.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

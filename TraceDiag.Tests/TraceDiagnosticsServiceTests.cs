@@ -33,7 +33,8 @@ public sealed class TraceDiagnosticsServiceTests
     public async Task RunAsync_ReportsConfiguredLossDelay()
     {
         var progress = TestFactories.TextProgress();
-        var input = new DiagnosticInput(TestFactories.Address(2), "target", 256, 1, 20, false);
+        var input = new DiagnosticInput(TestFactories.Address(2), "target", 256, 1, 20, false,
+            RoutePrecheck: false);
         await CreateService(new FakeProbeClient(Reply)).RunAsync(input, progress, TestFactories.StatsProgress(), CancellationToken.None);
         Assert.Contains(progress.Values, value => value.Contains("ICMP loss delay: 20 ms"));
     }
@@ -64,7 +65,8 @@ public sealed class TraceDiagnosticsServiceTests
     {
         var stats = TestFactories.StatsProgress();
         await CreateService(CreateLossOnceProbe()).RunAsync(
-            new DiagnosticInput(TestFactories.Address(2), "target", 256, 4, 0, false),
+            new DiagnosticInput(TestFactories.Address(2), "target", 256, 4, 0, false,
+                RoutePrecheck: false),
             TestFactories.TextProgress(), stats, CancellationToken.None);
         var target = stats.Values.Last().Single(s => s.Address.Equals(TestFactories.Address(2)));
         Assert.Equal(4, target.Sent);
@@ -76,7 +78,8 @@ public sealed class TraceDiagnosticsServiceTests
     {
         var probe = new FakeProbeClient(Reply);
         var progress = TestFactories.TextProgress();
-        var input = new DiagnosticInput(TestFactories.Address(2), "target", 2048, 1, 0, true, true);
+        var input = new DiagnosticInput(TestFactories.Address(2), "target", 2048, 1, 0, true, true,
+            RoutePrecheck: false);
         await CreateService(probe).RunAsync(input, progress, TestFactories.StatsProgress(), CancellationToken.None);
         Assert.Equal([1024], ProbingCalls(probe.Calls).Select(call => call.BufferSize).Distinct());
         Assert.All(DiscoveryCalls(probe.Calls).Concat(ProbingCalls(probe.Calls)), call => Assert.True(call.DontFragment));
@@ -98,7 +101,7 @@ public sealed class TraceDiagnosticsServiceTests
         new(probe, new FakeDnsResolver(address => "host-" + address), new FakeDiagnosticLogger());
 
     private static DiagnosticInput CreateInput(bool dynamic) =>
-        new(TestFactories.Address(2), "target", 256, 1, 0, dynamic);
+        new(TestFactories.Address(2), "target", 256, 1, 0, dynamic, RoutePrecheck: false);
 
     private static int PrecheckCount => 2 * ProbeLimits.PrecheckPacketSizes.Count;
 

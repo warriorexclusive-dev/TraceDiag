@@ -31,6 +31,8 @@ public sealed partial class MainForm : Form
     private CheckBox _dontFragmentInput = null!;
     private CheckBox _monitoringModeInput = null!;
     private CheckBox _ripeLookupInput = null!;
+    private CheckBox _routePrecheckInput = null!;
+    private CheckBox _deepRoutesInput = null!;
     private CheckBox _darkThemeInput = null!;
     private ComboBox _ipFamilyInput = null!;
     private DataGridView _statsGridView = null!;
@@ -95,6 +97,8 @@ public sealed partial class MainForm : Form
         _dontFragmentInput = controls.DontFragment;
         _monitoringModeInput = controls.MonitoringMode;
         _ripeLookupInput = controls.RipeLookup;
+        _routePrecheckInput = controls.RoutePrecheck;
+        _deepRoutesInput = controls.DeepRoutes;
         _darkThemeInput = controls.DarkTheme;
         _ipFamilyInput = controls.IpFamily;
     }

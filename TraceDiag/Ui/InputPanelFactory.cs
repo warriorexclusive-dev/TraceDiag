@@ -6,11 +6,12 @@ internal static class InputPanelFactory
 
     internal static TableLayoutPanel Create(TextBox host, NumericUpDown packet, NumericUpDown attempts,
         NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment,
-        CheckBox monitoringMode, CheckBox ripeLookup, CheckBox darkTheme, ComboBox ipFamily, ComboBox language, Button run)
+        CheckBox monitoringMode, CheckBox ripeLookup, CheckBox routePrecheck, CheckBox deepRoutes,
+        CheckBox darkTheme, ComboBox ipFamily, ComboBox language, Button run)
     {
         var layout = CreateLayout();
         layout.Controls.Add(CreateLeftFrame(host, packet, attempts, dynamicPacketSize, dontFragment,
-            monitoringMode, ripeLookup, darkTheme), 0, 0);
+            monitoringMode, ripeLookup, routePrecheck, deepRoutes, darkTheme), 0, 0);
         layout.Controls.Add(CreateRightFrame(lossDelay, font, ipFamily, language, run), 1, 0);
         return layout;
     }
@@ -31,7 +32,7 @@ internal static class InputPanelFactory
 
     private static TableLayoutPanel CreateLeftFrame(TextBox host, NumericUpDown packet, NumericUpDown attempts,
         CheckBox dynamicPacketSize, CheckBox dontFragment, CheckBox monitoringMode, CheckBox ripeLookup,
-        CheckBox darkTheme)
+        CheckBox routePrecheck, CheckBox deepRoutes, CheckBox darkTheme)
     {
         var frame = CreateFramePanel(4);
         frame.Padding = new Padding(0, 0, 12, 0);
@@ -41,7 +42,7 @@ internal static class InputPanelFactory
             UiDefaults.MinPacketSize, UiDefaults.MaxPacketSize), 0, 1);
         frame.Controls.Add(CreateLabelledRow(Strings.Ui.AttemptsLabel, attempts, 140, false), 0, 2);
         frame.Controls.Add(CreateCheckBoxRow(dynamicPacketSize, dontFragment, monitoringMode,
-            ripeLookup, darkTheme), 0, 3);
+            ripeLookup, routePrecheck, deepRoutes, darkTheme), 0, 3);
         return frame;
     }
 

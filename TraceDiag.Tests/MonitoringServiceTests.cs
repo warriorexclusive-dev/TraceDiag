@@ -16,7 +16,8 @@ public sealed class MonitoringServiceTests
         var probe = new FakeProbeClient(Reply);
         var progress = new CollectingProgress<string>();
         var service = new MonitoringService(probe, new FakeDnsResolver(_ => "host"), new FakeDiagnosticLogger());
-        var input = new MonitoringInput(TestFactories.Address(2), "target", 2048, 0, dontFragment);
+        var input = new MonitoringInput(TestFactories.Address(2), "target", 2048, 0, dontFragment,
+            RoutePrecheck: false);
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => service.RunAsync(
             input, new CancelOnMonitorProgress(progress, source),
             new CollectingProgress<HopStatSnapshot>(), source.Token));

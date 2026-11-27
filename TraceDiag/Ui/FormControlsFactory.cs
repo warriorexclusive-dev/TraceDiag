@@ -15,23 +15,29 @@ internal static class FormControlsFactory
         var dontFragment = CreateDontFragmentCheckBox();
         var monitoringMode = CreateMonitoringModeCheckBox();
         var ripeLookup = CreateRipeLookupCheckBox();
+        var routePrecheck = CreateRoutePrecheckCheckBox();
+        var deepRoutes = CreateDeepRoutesCheckBox();
         var darkThemeCheckBox = CreateDarkThemeCheckBox(darkTheme);
         var ipFamily = CreateIpFamilyInput();
         var language = CreateLanguageInput();
         var run = CreateRunButton();
         var (stats, output, status, splitter) = CreateFooter(fontSize);
         var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize,
-            dontFragment, monitoringMode, ripeLookup, darkThemeCheckBox, ipFamily, language, run);
+            dontFragment, monitoringMode, ripeLookup, routePrecheck, deepRoutes,
+            darkThemeCheckBox, ipFamily, language, run);
         return new MainControls(LayoutFactory.Create(input, splitter, status), splitter, host, packet,
             attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode,
-            ripeLookup, darkThemeCheckBox, ipFamily, language, stats, output, run, status);
+            ripeLookup, routePrecheck, deepRoutes, darkThemeCheckBox, ipFamily, language,
+            stats, output, run, status);
     }
 
     private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts,
         NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment,
-        CheckBox monitoringMode, CheckBox ripeLookup, CheckBox darkTheme, ComboBox ipFamily, ComboBox language, Button run) =>
+        CheckBox monitoringMode, CheckBox ripeLookup, CheckBox routePrecheck, CheckBox deepRoutes,
+        CheckBox darkTheme, ComboBox ipFamily, ComboBox language, Button run) =>
         InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize,
-            dontFragment, monitoringMode, ripeLookup, darkTheme, ipFamily, language, run);
+            dontFragment, monitoringMode, ripeLookup, routePrecheck, deepRoutes,
+            darkTheme, ipFamily, language, run);
 
     private static (DataGridView Stats, TextBox Output, Label Status, SplitContainer Splitter) CreateFooter(float fontSize)
     {
@@ -97,6 +103,12 @@ internal static class FormControlsFactory
 
     private static CheckBox CreateRipeLookupCheckBox() =>
         CreateCheck(Strings.Ui.RipeLookupLabel, true, Padding.Empty);
+
+    private static CheckBox CreateRoutePrecheckCheckBox() =>
+        CreateCheck(Strings.Ui.RoutePrecheckLabel, true, Padding.Empty);
+
+    private static CheckBox CreateDeepRoutesCheckBox() =>
+        CreateCheck(Strings.Ui.DeepRoutesLabel, false, Padding.Empty);
 
     private static CheckBox CreateDarkThemeCheckBox(bool darkTheme) =>
         CreateCheck(Strings.Ui.DarkThemeLabel, darkTheme, new Padding(8, 6, 0, 0));

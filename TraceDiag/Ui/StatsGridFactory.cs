@@ -27,6 +27,8 @@ internal static class StatsGridFactory
     private static void AddColumns(DataGridView grid)
     {
         AddColumn(grid, Strings.Ui.ColumnKeyHostName, Strings.Ui.ColumnHostName);
+        AddColumn(grid, Strings.Ui.ColumnKeyRouteUid, Strings.Ui.ColumnRouteUid);
+        AddColumn(grid, Strings.Ui.ColumnKeyRouteTarget, Strings.Ui.ColumnRouteTarget);
         AddColumn(grid, Strings.Ui.ColumnKeyIp, Strings.Ui.ColumnIp);
         AddColumn(grid, Strings.Ui.ColumnKeyAsn, Strings.Ui.ColumnAsn);
         AddColumn(grid, Strings.Ui.ColumnKeyAvgPing, Strings.Ui.ColumnAvgPing);
@@ -51,6 +53,8 @@ internal static class StatsGridFactory
     private static void SetWeights(DataGridView grid)
     {
         grid.Columns[Strings.Ui.ColumnKeyHostName]!.FillWeight = 150;
+        grid.Columns[Strings.Ui.ColumnKeyRouteUid]!.FillWeight = 60;
+        grid.Columns[Strings.Ui.ColumnKeyRouteTarget]!.FillWeight = 120;
         grid.Columns[Strings.Ui.ColumnKeyIp]!.FillWeight = 95;
         grid.Columns[Strings.Ui.ColumnKeyAsn]!.FillWeight = 70;
         grid.Columns[Strings.Ui.ColumnKeyAvgPing]!.FillWeight = 85;

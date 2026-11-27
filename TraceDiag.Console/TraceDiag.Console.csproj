@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>TraceDiag.Console</AssemblyName>
     <RootNamespace>TraceDiag.Console</RootNamespace>
-    <Version>1.9.5</Version>
+    <Version>1.9.6</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <None Include="..\localizations\*.json" Link="localizations\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\dns-servers.json" Link="dns-servers.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

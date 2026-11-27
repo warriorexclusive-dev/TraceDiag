@@ -7,4 +7,5 @@ internal sealed record DiagnosticContext(
     IDnsResolverService DnsResolver,
     IDiagnosticLogger? Logger,
     bool RipeLookupEnabled = true,
-    IRipeOwnerService? RipeOwner = null);
+    IRipeOwnerService? RipeOwner = null,
+    IDnsAnswerService? DnsAnswers = null);

@@ -15,6 +15,8 @@ internal static class StatsGridRows
     internal static object Value(HopStatSnapshot stat, string columnName) => columnName switch
     {
         Strings.Ui.ColumnKeyHostName => HostName(stat),
+        Strings.Ui.ColumnKeyRouteUid => stat.RouteUid <= 0 ? Strings.Ui.Dash : stat.RouteUid.ToString(),
+        Strings.Ui.ColumnKeyRouteTarget => string.IsNullOrWhiteSpace(stat.RouteTarget) ? Strings.Ui.Dash : stat.RouteTarget,
         Strings.Ui.ColumnKeyIp => stat.Address.ToString(),
         Strings.Ui.ColumnKeyAsn => string.IsNullOrWhiteSpace(stat.Asn) ? Strings.Ui.Dash : stat.Asn,
         Strings.Ui.ColumnKeyAvgPing => Average(stat),
@@ -46,6 +48,8 @@ internal static class StatsGridRows
     private static string[] Columns =>
     [
         Strings.Ui.ColumnKeyHostName,
+        Strings.Ui.ColumnKeyRouteUid,
+        Strings.Ui.ColumnKeyRouteTarget,
         Strings.Ui.ColumnKeyIp,
         Strings.Ui.ColumnKeyAsn,
         Strings.Ui.ColumnKeyAvgPing,

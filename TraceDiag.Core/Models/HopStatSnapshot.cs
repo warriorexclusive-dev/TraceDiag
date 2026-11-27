@@ -17,7 +17,10 @@ public sealed record HopStatSnapshot(
     string Diagnosis,
     double JitterMs = 0,
     double StdDevMs = 0,
-    string Asn = "")
+    string Asn = "",
+    int RouteUid = 0,
+    string RouteTarget = "",
+    string RouteResolver = "")
 {
     public int Lost => Math.Max(0, Sent - Received);
 }

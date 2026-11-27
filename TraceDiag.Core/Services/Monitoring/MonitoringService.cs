@@ -8,13 +8,16 @@ public sealed class MonitoringService : IMonitoringService
 {
     private readonly DiagnosticContext _context;
     private readonly IMonitorController _controller;
+    private readonly RouteRunCoordinator _routes;
     private readonly IRipeOwnerService? _ripeOwner;
 
     public MonitoringService(IIcmpProbeClient probeClient, IDnsResolverService dnsResolver,
         IDiagnosticLogger? logger = null, IRipeOwnerService? ripeOwner = null)
     {
-        _context = new DiagnosticContext(probeClient, dnsResolver, logger);
+        _context = new DiagnosticContext(probeClient, dnsResolver, logger,
+            DnsAnswers: new DnsAnswerService());
         _controller = CreateController();
+        _routes = new RouteRunCoordinator(null!, _controller, new AlternateRouteDetector());
         _ripeOwner = ripeOwner;
     }
 
@@ -24,7 +27,7 @@ public sealed class MonitoringService : IMonitoringService
         Validate(input, progress, stats);
         ReportStart(progress);
         var context = _context with { RipeLookupEnabled = input.RipeLookup, RipeOwner = _ripeOwner };
-        try { await _controller.RunAsync(context, input, progress, stats, cancellationToken); }
+        try { await _routes.RunMonitorAsync(context, input, progress, stats, cancellationToken); }
         catch (OperationCanceledException) { ReportCancelled(progress); throw; }
         catch (Exception ex) { ReportFailure(progress, ex); throw; }
     }

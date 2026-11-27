@@ -12,6 +12,8 @@ internal sealed record MainControls(
     CheckBox DontFragment,
     CheckBox MonitoringMode,
     CheckBox RipeLookup,
+    CheckBox RoutePrecheck,
+    CheckBox DeepRoutes,
     CheckBox DarkTheme,
     ComboBox IpFamily,
     ComboBox Language,

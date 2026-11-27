@@ -10,6 +10,9 @@ internal static class ConsoleOptions
     internal const string Dynamic = "--dynamic";
     internal const string DontFragment = "--df";
     internal const string NoRipe = "--no-ripe";
+    internal const string NoRoutePrecheck = "--no-route-precheck";
+    internal const string DeepRoutes = "--deep-routes";
+    internal const string ProbeTimeout = "--probe-timeout";
     internal const string Ipv4 = "--ipv4";
     internal const string Ipv6 = "--ipv6";
     internal const string Format = "--format";
@@ -18,7 +21,8 @@ internal static class ConsoleOptions
     internal const string Help = "--help";
 
     internal static readonly string[] Names =
-        [Host, PacketSize, Attempts, LossDelay, Dynamic, DontFragment, NoRipe, Ipv4, Ipv6, Format, Language, Reset, Help];
+        [Host, PacketSize, Attempts, LossDelay, Dynamic, DontFragment, NoRipe, NoRoutePrecheck, DeepRoutes,
+            ProbeTimeout, Ipv4, Ipv6, Format, Language, Reset, Help];
 
     internal static readonly string[] Usage =
     [
@@ -29,6 +33,9 @@ internal static class ConsoleOptions
         Strings.Console.HelpDynamic,
         Strings.Console.HelpDontFragment,
         Strings.Console.HelpNoRipe,
+        Strings.Console.HelpNoRoutePrecheck,
+        Strings.Console.HelpDeepRoutes,
+        Strings.Console.HelpProbeTimeout,
         Strings.Console.HelpIpv4,
         Strings.Console.HelpIpv6,
         Strings.Console.HelpFormat,

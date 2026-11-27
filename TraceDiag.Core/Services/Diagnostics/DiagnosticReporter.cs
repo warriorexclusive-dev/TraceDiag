@@ -43,6 +43,15 @@ internal static class DiagnosticReporter
         stats.Report(snapshot);
     }
 
+    internal static void ReportRouteMeta(DiagnosticContext context, IProgress<string> progress,
+        RouteDiscoveryResult tree, bool enabled, string host)
+    {
+        ReportFormat(context, progress, Strings.Diag.RunIdFormat, tree.RunId);
+        ReportFormat(context, progress, Strings.Diag.StartedAtFormat, tree.StartedAt);
+        Report(context, progress, enabled ? Strings.Diag.RoutePrecheckEnabled : Strings.Diag.RoutePrecheckDisabled);
+        if (tree.Partial) ReportFormatWarn(context, progress, Strings.Diag.RouteFallbackFormat, host, tree.RouteCount);
+    }
+
     private static void Structured(DiagnosticContext context, IProgress<string> progress, string canonical,
         object?[] args, bool isError, bool isWarn, Exception? ex) =>
         ReportCore(context, progress, TextFormatter.FmtDisplay(Strings.T(canonical), args),
@@ -80,5 +89,8 @@ internal static class DiagnosticReporter
         hop.Diagnosis,
         hop.JitterMs,
         hop.StdDevMs,
-        hop.Asn);
+        hop.Asn,
+        hop.RouteUid,
+        hop.RouteTarget,
+        hop.RouteResolver);
 }

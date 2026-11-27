@@ -22,9 +22,7 @@ internal static partial class Strings
         public const string ConsoleLogFileFormat = "[{0}] Log file: {1}";
         public const string ConsoleConfigFileFormat = "[{0}] Config: {1}";
         public const string ConsoleUiStateFileFormat = "[{0}] UI state: {1}";
-        public const string NetworkIconFile1 = "ncpa.cpl";
-        public const string NetworkIconFile2 = "netshell.dll";
-        public const string NetworkIconFile3 = "netcenter.dll";
+        public const string NetworkIconFile1 = "ncpa.cpl"; public const string NetworkIconFile2 = "netshell.dll"; public const string NetworkIconFile3 = "netcenter.dll";
         public const string IconResourceName = "TraceDiag.Resources.cable_24dp.ico";
     }
     public static class Console
@@ -35,16 +33,11 @@ internal static partial class Strings
         public const string HelpReset = "  reset   remove saved UI state";
         public const string OptionsTitle = "Options:";
         public const string OptionLineFormat = "  {0}";
-        public const string OptionHost = "--host <ip|domain>";
-        public const string OptionPacketSize = "--packet-size <n>";
-        public const string OptionAttempts = "--attempts <n>";
-        public const string OptionLossDelay = "--loss-delay <ms>";
-        public const string OptionDynamic = "--dynamic";
-        public const string OptionDontFragment = "--df";
+        public const string OptionHost = "--host <ip|domain>"; public const string OptionPacketSize = "--packet-size <n>"; public const string OptionAttempts = "--attempts <n>";
+        public const string OptionLossDelay = "--loss-delay <ms>"; public const string OptionDynamic = "--dynamic"; public const string OptionDontFragment = "--df";
         public const string OptionFormat = "--format <plain|csv|json>";
         public const string OptionLanguage = "  --language <en|cn|fr|de|ru|jp> - interface language";
-        public const string OptionReset = "--reset";
-        public const string OptionHelp = "--help";
+        public const string OptionReset = "--reset"; public const string OptionHelp = "--help";
         public const string HelpShort = "-?";
         public const string HelpHost = "  --host <ip|domain> - remote host IP or domain";
         public const string HelpPacketSize = "  --packet-size <n> - maximum packet size";
@@ -53,6 +46,8 @@ internal static partial class Strings
         public const string HelpDynamic = "  --dynamic - scan increasing packet sizes";
         public const string HelpDontFragment = "  --df - do not fragment packets";
         public const string HelpNoRipe = "  --no-ripe - disable RIPE owner fallback";
+        public const string HelpNoRoutePrecheck = "  --no-route-precheck - use the original single-route tracing";
+        public const string HelpDeepRoutes = "  --deep-routes - use 8 flow signatures instead of 4"; public const string HelpProbeTimeout = "  --probe-timeout <ms> - per-query timeout, capped at 3000 ms";
         public const string HelpIpv4 = "  --ipv4 - resolve and probe IPv4 only";
         public const string HelpIpv6 = "  --ipv6 - resolve and probe IPv6 only";
         public const string HelpFormat = "  --format <plain|csv|json> - output format";
@@ -81,6 +76,9 @@ internal static partial class Strings
         public const string ColumnKind = "kind";
         public const string ColumnText = "text";
         public const string ColumnHops = "hops";
+        public const string ColumnRoute = "route"; public const string ColumnRouteUid = "route_uid"; public const string ColumnRouteResolver = "resolver";
+        public const string ColumnRouteTarget = "route_target"; public const string ColumnHosts = "hosts";
+        public const string ColumnRunId = "run_id"; public const string ColumnStartedAt = "started_at"; public const string ColumnRoutes = "routes";
         public const string UnknownOptionFormat = "Unknown option: {0}";
         public const string MissingValueFormat = "Missing value for option: {0}";
         public const string InvalidNumberFormat = "Invalid number for option {0}: {1}";
@@ -95,9 +93,9 @@ internal static partial class Strings
         public const string ErrorPrefix = "Error: {0}";
         public const string Cancelled = "Cancelled.";
         public const string SummaryTitle = "Summary:";
-        public const string StatsHeader = "ttl  ip  asn  host  avg  jitter  stddev  min  max  last  sent  recv  status  diagnosis";
-        public const string StatsRowFormat = "{0,-3} {1,-39} {2,-10} {3,-20} {4,-8} {5,-8} {6,-8} {7,-8} {8,-8} {9,-8} {10,-5} {11,-5} {12,-12} {13}";
-        public const string CsvStatsHeader = "kind,ttl,ip,asn,host,avg,jitter,stddev,min,max,last,sent,recv,status,diagnosis";
+        public const string StatsHeader = "ttl  route  route_target  resolver  ip  asn  host  avg  jitter  stddev  min  max  last  sent  recv  status  diagnosis";
+        public const string StatsRowFormat = "{0,-3} {1,-5} {2,-39} {3,-16} {4,-39} {5,-10} {6,-20} {7,-8} {8,-8} {9,-8} {10,-8} {11,-8} {12,-8} {13,-5} {14,-5} {15,-12} {16}";
+        public const string CsvStatsHeader = "kind,ttl,route,route_target,resolver,ip,asn,host,avg,jitter,stddev,min,max,last,sent,recv,status,diagnosis";
     }
     public static class Ui
     {
@@ -113,6 +111,9 @@ internal static partial class Strings
         public const string DarkThemeLabel = "Dark theme";
         public const string MonitoringModeLabel = "Continuous monitoring mode";
         public const string RipeLookupLabel = "RIPE owner";
+        public const string RoutePrecheckLabel = "DNS route precheck"; public const string DeepRoutesLabel = "Deep routes";
+        public const string ColumnKeyRouteUid = "RouteUid"; public const string ColumnKeyRouteTarget = "RouteTarget";
+        public const string ColumnRouteUid = "Route"; public const string ColumnRouteTarget = "Target IP";
         public const string RunButton = "Run";
         public const string StopButton = "Stop";
         public const string Stopping = "Stopping...";
@@ -134,19 +135,11 @@ internal static partial class Strings
         public const string Dash = "-";
         public const string HostLabelFormat = "{0} [{1}]";
         public const string AvgPingFormat = "F1";
-        public const string ColumnKeyHostName = "HostName";
-        public const string ColumnKeyIp = "Ip";
-        public const string ColumnKeyAsn = "Asn";
-        public const string ColumnKeyAvgPing = "AvgPing";
-        public const string ColumnKeyJitter = "Jitter";
-        public const string ColumnKeyStdDev = "StdDev";
-        public const string ColumnKeyMinPing = "MinPing";
-        public const string ColumnKeyMaxPing = "MaxPing";
-        public const string ColumnKeyLastPing = "LastPing";
-        public const string ColumnKeySent = "Sent";
-        public const string ColumnKeyReceived = "Received";
-        public const string ColumnKeyStatus = "Status";
-        public const string ColumnKeyDiagnosis = "Diagnosis";
+        public const string ColumnKeyHostName = "HostName"; public const string ColumnKeyIp = "Ip"; public const string ColumnKeyAsn = "Asn";
+        public const string ColumnKeyAvgPing = "AvgPing"; public const string ColumnKeyJitter = "Jitter"; public const string ColumnKeyStdDev = "StdDev";
+        public const string ColumnKeyMinPing = "MinPing"; public const string ColumnKeyMaxPing = "MaxPing"; public const string ColumnKeyLastPing = "LastPing";
+        public const string ColumnKeySent = "Sent"; public const string ColumnKeyReceived = "Received";
+        public const string ColumnKeyStatus = "Status"; public const string ColumnKeyDiagnosis = "Diagnosis";
         public const string ColumnHostName = "Host name";
         public const string ColumnIp = "IP";
         public const string ColumnAsn = "ASN";
@@ -179,21 +172,16 @@ internal static partial class Strings
     }
     public static class Status
     {
-        public const string Pending = "pending";
-        public const string NoAnswer = "no answer";
-        public const string Normal = "normal";
-        public const string Target = "target";
-        public const string Responds = "responds";
+        public const string Pending = "pending"; public const string NoAnswer = "no answer"; public const string Normal = "normal";
+        public const string Target = "target"; public const string Responds = "responds";
         public const string PacketLossFormat = "packet loss ({0:F0}%)";
     }
-
     public static class LogLevel
     {
         public const string Info = "INFO";
         public const string Warn = "WARN";
         public const string Error = "ERROR";
     }
-
     public static class Log
     {
         public const string ApplicationStarted = "Application started.";
@@ -220,7 +208,6 @@ internal static partial class Strings
         public const string ConsoleErrorFormat = "[{0}] Error: {1}: {2}";
         public const string ConsoleFailedResolveFormat = "[{0}] {1}";
     }
-
     public static class Diag
     {
         public const int SeparatorLength = 72;
@@ -274,6 +261,12 @@ internal static partial class Strings
         public const string DnsErrorFormat = "  hop {0,2} {1} -> DNS error: {2}";
         public const string SlowDnsFormat = "Slow DNS resolve for {0}: {1} ms";
         public const string RipeLookupFailedFormat = "RIPE owner lookup failed for {0}: {1}";
+        public const string RouteHopFormat = "host={0} route={1} hop={2}: {3}";
+        public const string RouteMiss = "*"; public const string RouteSeparator = "|";
+        public const string RunIdFormat = "run_id: {0}"; public const string StartedAtFormat = "started_at: {0:o}";
+        public const string RoutePrecheckEnabled = "Route precheck: enabled"; public const string RoutePrecheckDisabled = "Route precheck: disabled (original algorithm)";
+        public const string RouteFallbackFormat = "Route precheck incomplete for {0}: {1}"; public const string RouteDeviationFormat = "host={0} route={1} hop={2}: deviation {3}";
+        public const string RouteSignatureFormat = "host={0} route={1} hop={2}";
         public const string NoPtrName = "(no PTR/DNS name)";
         public const string HopDnsFormat = "  hop {0,2} {1} -> {2}";
         public const string ProbingFormat = "  hop {0,2} {1}{2}: probing size={3}, attempts={4}...";

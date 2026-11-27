@@ -26,6 +26,8 @@ internal static class UiStateCapture
         DontFragment = controls.DontFragment.Checked,
         MonitoringMode = controls.MonitoringMode.Checked,
         RipeLookup = controls.RipeLookup.Checked,
+        RoutePrecheck = controls.RoutePrecheck.Checked,
+        DeepRoutes = controls.DeepRoutes.Checked,
         DarkTheme = controls.DarkTheme.Checked,
         IpFamily = controls.IpFamily.SelectedIndex
     };

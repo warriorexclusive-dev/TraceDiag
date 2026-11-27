@@ -56,6 +56,8 @@ internal static class CommandLineParser
             case ConsoleOptions.Dynamic: bag.Dynamic = true; return;
             case ConsoleOptions.DontFragment: bag.DontFragment = true; return;
             case ConsoleOptions.NoRipe: bag.RipeLookup = false; return;
+            case ConsoleOptions.NoRoutePrecheck: bag.RoutePrecheck = false; return;
+            case ConsoleOptions.DeepRoutes: bag.DeepRoutes = true; return;
             case ConsoleOptions.Ipv4: bag.Family = IpFamily.IPv4; return;
             case ConsoleOptions.Ipv6: bag.Family = IpFamily.IPv6; return;
             case ConsoleOptions.Reset: bag.Reset = true; return;
@@ -72,6 +74,7 @@ internal static class CommandLineParser
             case ConsoleOptions.PacketSize: bag.PacketSize = Number(option, Next(args, ref index, option)); return;
             case ConsoleOptions.Attempts: bag.Attempts = Number(option, Next(args, ref index, option)); return;
             case ConsoleOptions.LossDelay: bag.LossDelayMs = Number(option, Next(args, ref index, option)); return;
+            case ConsoleOptions.ProbeTimeout: bag.ProbeTimeoutMs = Number(option, Next(args, ref index, option)); return;
             case ConsoleOptions.Format: bag.Format = Next(args, ref index, option); return;
             case ConsoleOptions.Language: bag.Language = ParseLanguage(Next(args, ref index, option)); return;
             default: throw Unknown(option);
@@ -111,6 +114,7 @@ internal static class CommandLineParser
         Range(ConsoleOptions.PacketSize, bag.PacketSize, ProbeLimits.MinPacketSize, ProbeLimits.MaxPacketSize);
         Range(ConsoleOptions.Attempts, bag.Attempts, 1, 1000);
         Range(ConsoleOptions.LossDelay, bag.LossDelayMs, 0, 60000);
+        Range(ConsoleOptions.ProbeTimeout, bag.ProbeTimeoutMs, 100, 3000);
     }
 
     private static void Range(string name, int value, int min, int max)
@@ -121,5 +125,6 @@ internal static class CommandLineParser
 
     private static Invocation Build(string command, OptionsBag bag) =>
         new(command, bag.Host, bag.PacketSize, bag.Attempts, bag.LossDelayMs,
-            bag.Dynamic, bag.DontFragment, bag.Family, bag.Format, bag.Language, bag.Reset, false, bag.RipeLookup);
+            bag.Dynamic, bag.DontFragment, bag.Family, bag.Format, bag.Language, bag.Reset, false,
+            bag.RipeLookup, bag.RoutePrecheck, bag.DeepRoutes, bag.ProbeTimeoutMs);
 }

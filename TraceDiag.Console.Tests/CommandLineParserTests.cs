@@ -15,6 +15,9 @@ public sealed class CommandLineParserTests
         Assert.False(options.Dynamic);
         Assert.Equal(IpFamily.Auto, options.Family);
         Assert.True(options.RipeLookup);
+        Assert.True(options.RoutePrecheck);
+        Assert.False(options.DeepRoutes);
+        Assert.Equal(3000, options.ProbeTimeoutMs);
     }
 
     [Fact]
@@ -22,6 +25,16 @@ public sealed class CommandLineParserTests
     {
         var options = CommandLineParser.Parse(["run", "--host", "example.com", "--no-ripe"]);
         Assert.False(options.RipeLookup);
+    }
+
+    [Fact]
+    public void Parse_Run_AppliesRoutePrecheckOptions()
+    {
+        var options = CommandLineParser.Parse(["run", "--host", "example.com",
+            "--no-route-precheck", "--deep-routes", "--probe-timeout", "1200"]);
+        Assert.False(options.RoutePrecheck);
+        Assert.True(options.DeepRoutes);
+        Assert.Equal(1200, options.ProbeTimeoutMs);
     }
 
     [Theory]
@@ -58,6 +71,7 @@ public sealed class CommandLineParserTests
     [InlineData("--packet-size", "63")]
     [InlineData("--attempts", "1001")]
     [InlineData("--loss-delay", "60001")]
+    [InlineData("--probe-timeout", "3001")]
     public void Parse_OutOfRange_Throws(string option, string value) =>
         Assert.Throws<CommandLineException>(() =>
             CommandLineParser.Parse(["run", "--host", "example.com", option, value]));

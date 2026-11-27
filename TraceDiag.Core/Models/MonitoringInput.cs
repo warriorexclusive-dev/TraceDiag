@@ -9,4 +9,7 @@ public sealed record MonitoringInput(
     int PacketSize,
     int LossDelayMs,
     bool DontFragment = false,
-    bool RipeLookup = true);
+    bool RipeLookup = true,
+    bool RoutePrecheck = true,
+    bool DeepRoutes = false,
+    int ProbeTimeoutMs = 3000);

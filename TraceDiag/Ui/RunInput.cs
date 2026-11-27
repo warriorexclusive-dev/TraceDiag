@@ -10,4 +10,6 @@ internal sealed record RunInput(
     bool DynamicPacketSize,
     bool DontFragment = false,
     IpFamily Family = IpFamily.Auto,
-    bool RipeLookup = true);
+    bool RipeLookup = true,
+    bool RoutePrecheck = true,
+    bool DeepRoutes = false);

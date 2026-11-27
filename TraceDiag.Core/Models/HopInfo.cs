@@ -20,6 +20,9 @@ public sealed class HopInfo
     public required IPAddress Address { get; init; }
     public string? HostName { get; set; }
     public string Asn { get; set; } = string.Empty;
+    public int RouteUid { get; set; }
+    public string RouteTarget { get; set; } = string.Empty;
+    public string RouteResolver { get; set; } = string.Empty;
 
     public int Sent { get; private set; }
     public int Received { get; private set; }

@@ -4,13 +4,12 @@ using System.Net.Sockets;
 
 namespace TraceDiag.Services;
 
-/// <summary>Returns system DNS servers with a public fallback.</summary>
+/// <summary>Returns the system DNS servers, best-effort.</summary>
 internal static class DnsServers
 {
     internal static IReadOnlyList<IPAddress> Get()
     {
-        var servers = Collect();
-        return servers.Count == 0 ? [IPAddress.Parse("8.8.8.8")] : servers;
+        return Collect();
     }
 
     private static List<IPAddress> Collect()
