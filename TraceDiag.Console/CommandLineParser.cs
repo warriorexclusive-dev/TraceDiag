@@ -25,7 +25,7 @@ internal static class CommandLineParser
     private static Language ReadLanguage(string[] args)
     {
         for (var index = 0; index < args.Length - 1; index++)
-            if (args[index] == ConsoleOptions.Language) return ParseLanguage(args[index + 1]);
+            if (args[index] == CommandLineSettingsArg.Language) return ParseLanguage(args[index + 1]);
         return ConsoleDefaults.Language;
     }
 
@@ -34,11 +34,12 @@ internal static class CommandLineParser
             ? language
             : throw new CommandLineException(TextFormatter.Fmt(Strings.T(Strings.Console.InvalidLanguageFormat), value));
 
-    private static bool NeedsHost(string command) => command is "run" or "monitor";
+    private static bool NeedsHost(string command) =>
+        command is CommandLineSettingsArg.Run or CommandLineSettingsArg.Monitor;
 
     private static void RequireCommand(string command)
     {
-        if (command is "run" or "monitor" or "reset") return;
+        if (CommandLineSettingsArg.IsCommand(command)) return;
         throw new CommandLineException(TextFormatter.Fmt(Strings.T(Strings.Console.InvalidCommandFormat), command));
     }
 
@@ -53,14 +54,14 @@ internal static class CommandLineParser
     {
         switch (args[index])
         {
-            case ConsoleOptions.Dynamic: bag.Dynamic = true; return;
-            case ConsoleOptions.DontFragment: bag.DontFragment = true; return;
-            case ConsoleOptions.NoRipe: bag.RipeLookup = false; return;
-            case ConsoleOptions.NoRoutePrecheck: bag.RoutePrecheck = false; return;
-            case ConsoleOptions.DeepRoutes: bag.DeepRoutes = true; return;
-            case ConsoleOptions.Ipv4: bag.Family = IpFamily.IPv4; return;
-            case ConsoleOptions.Ipv6: bag.Family = IpFamily.IPv6; return;
-            case ConsoleOptions.Reset: bag.Reset = true; return;
+            case CommandLineSettingsArg.Dynamic: bag.Dynamic = true; return;
+            case CommandLineSettingsArg.DontFragment: bag.DontFragment = true; return;
+            case CommandLineSettingsArg.NoRipe: bag.RipeLookup = false; return;
+            case CommandLineSettingsArg.NoRoutePrecheck: bag.RoutePrecheck = false; return;
+            case CommandLineSettingsArg.DeepRoutes: bag.DeepRoutes = true; return;
+            case CommandLineSettingsArg.Ipv4: bag.Family = IpFamily.IPv4; return;
+            case CommandLineSettingsArg.Ipv6: bag.Family = IpFamily.IPv6; return;
+            case CommandLineSettingsArg.Reset: bag.Reset = true; return;
             default: ApplyValue(args, ref index, bag); return;
         }
     }
@@ -70,13 +71,13 @@ internal static class CommandLineParser
         var option = args[index];
         switch (option)
         {
-            case ConsoleOptions.Host: bag.Host = Next(args, ref index, option); return;
-            case ConsoleOptions.PacketSize: bag.PacketSize = Number(option, Next(args, ref index, option)); return;
-            case ConsoleOptions.Attempts: bag.Attempts = Number(option, Next(args, ref index, option)); return;
-            case ConsoleOptions.LossDelay: bag.LossDelayMs = Number(option, Next(args, ref index, option)); return;
-            case ConsoleOptions.ProbeTimeout: bag.ProbeTimeoutMs = Number(option, Next(args, ref index, option)); return;
-            case ConsoleOptions.Format: bag.Format = Next(args, ref index, option); return;
-            case ConsoleOptions.Language: bag.Language = ParseLanguage(Next(args, ref index, option)); return;
+            case CommandLineSettingsArg.Host: bag.Host = Next(args, ref index, option); return;
+            case CommandLineSettingsArg.PacketSize: bag.PacketSize = Number(option, Next(args, ref index, option)); return;
+            case CommandLineSettingsArg.Attempts: bag.Attempts = Number(option, Next(args, ref index, option)); return;
+            case CommandLineSettingsArg.LossDelay: bag.LossDelayMs = Number(option, Next(args, ref index, option)); return;
+            case CommandLineSettingsArg.ProbeTimeout: bag.ProbeTimeoutMs = Number(option, Next(args, ref index, option)); return;
+            case CommandLineSettingsArg.Format: bag.Format = Next(args, ref index, option); return;
+            case CommandLineSettingsArg.Language: bag.Language = ParseLanguage(Next(args, ref index, option)); return;
             default: throw Unknown(option);
         }
     }
@@ -98,7 +99,7 @@ internal static class CommandLineParser
             : throw new CommandLineException(TextFormatter.Fmt(Strings.T(Strings.Console.InvalidNumberFormat), option, value));
 
     private static bool IsHelp(string argument) =>
-        argument is ConsoleOptions.Help or Strings.Console.HelpShort;
+        argument is CommandLineSettingsArg.Help or Strings.Console.HelpShort;
 
     private static void Validate(string command, OptionsBag bag)
     {
@@ -111,10 +112,10 @@ internal static class CommandLineParser
 
     private static void ValidateRanges(OptionsBag bag)
     {
-        Range(ConsoleOptions.PacketSize, bag.PacketSize, ProbeLimits.MinPacketSize, ProbeLimits.MaxPacketSize);
-        Range(ConsoleOptions.Attempts, bag.Attempts, 1, 1000);
-        Range(ConsoleOptions.LossDelay, bag.LossDelayMs, 0, 60000);
-        Range(ConsoleOptions.ProbeTimeout, bag.ProbeTimeoutMs, 100, 3000);
+        Range(CommandLineSettingsArg.PacketSize, bag.PacketSize, ProbeLimits.MinPacketSize, ProbeLimits.MaxPacketSize);
+        Range(CommandLineSettingsArg.Attempts, bag.Attempts, 1, 1000);
+        Range(CommandLineSettingsArg.LossDelay, bag.LossDelayMs, 0, 60000);
+        Range(CommandLineSettingsArg.ProbeTimeout, bag.ProbeTimeoutMs, 100, 3000);
     }
 
     private static void Range(string name, int value, int min, int max)

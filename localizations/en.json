@@ -94,6 +94,9 @@
                     "  --no-ripe - disable RIPE owner fallback":  "  --no-ripe - disable RIPE owner fallback",
 
                     "  --no-route-precheck - use the original single-route tracing":  "  --no-route-precheck - use the original single-route tracing",
+                    "Enter remote host (IP or domain): ":  "Enter remote host (IP or domain): ",
+                    "Invalid host. Enter an IP address or a domain name.":  "Invalid host. Enter an IP address or a domain name.",
+                    "No input available. Exiting.":  "No input available. Exiting.",
                     "  --deep-routes - use 8 flow signatures instead of 4":  "  --deep-routes - use 8 flow signatures instead of 4",
                     "  --probe-timeout <ms> - per-query timeout, capped at 3000 ms":  "  --probe-timeout <ms> - per-query timeout, capped at 3000 ms",
                     "run_id: {0}":  "run_id: {0}",

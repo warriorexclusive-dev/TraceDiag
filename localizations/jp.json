@@ -94,6 +94,9 @@
                     "  --no-ripe - disable RIPE owner fallback":  "  --no-ripe - RIPE 所有者のフォールバックを無効化",
 
                     "  --no-route-precheck - use the original single-route tracing":  "  --no-route-precheck - 元の単一ルート検査を使用",
+                    "Enter remote host (IP or domain): ":  "リモートホスト（IP またはドメイン）を入力: ",
+                    "Invalid host. Enter an IP address or a domain name.":  "無効なホストです。IP アドレスまたはドメイン名を入力してください。",
+                    "No input available. Exiting.":  "入力がありません。終了します。",
                     "  --deep-routes - use 8 flow signatures instead of 4":  "  --deep-routes - 4 ではなく 8 つのフロー署名を使用",
                     "  --probe-timeout <ms> - per-query timeout, capped at 3000 ms":  "  --probe-timeout <ms> - クエリごとのタイムアウト、上限 3000 ミリ秒",
                     "run_id: {0}":  "run_id: {0}",

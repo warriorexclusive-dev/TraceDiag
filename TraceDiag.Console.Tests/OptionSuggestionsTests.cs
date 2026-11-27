@@ -4,11 +4,11 @@ public sealed class OptionSuggestionsTests
 {
     [Fact]
     public void Closest_SingleDashOption_ReturnsCanonical() =>
-        Assert.Equal(ConsoleOptions.Attempts, OptionSuggestions.Closest("-attempts"));
+        Assert.Equal(CommandLineSettingsArg.Attempts, OptionSuggestions.Closest("-attempts"));
 
     [Fact]
     public void Closest_Typo_ReturnsCanonical() =>
-        Assert.Equal(ConsoleOptions.Format, OptionSuggestions.Closest("--formt"));
+        Assert.Equal(CommandLineSettingsArg.Format, OptionSuggestions.Closest("--formt"));
 
     [Fact]
     public void Closest_UnrelatedOption_ReturnsNull() =>
@@ -17,9 +17,9 @@ public sealed class OptionSuggestionsTests
     [Fact]
     public void List_ContainsSuggestionAndAllOptions()
     {
-        var text = OptionSuggestions.List(ConsoleOptions.Attempts);
-        Assert.Contains(TextFormatter.Fmt(Strings.Console.DidYouMeanFormat, ConsoleOptions.Attempts), text);
+        var text = OptionSuggestions.List(CommandLineSettingsArg.Attempts);
+        Assert.Contains(TextFormatter.Fmt(Strings.Console.DidYouMeanFormat, CommandLineSettingsArg.Attempts), text);
         Assert.Contains(Strings.Console.OptionsTitle, text);
-        foreach (var usage in ConsoleOptions.Usage) Assert.Contains(usage, text);
+        foreach (var usage in OptionSuggestions.Usage) Assert.Contains(usage, text);
     }
 }

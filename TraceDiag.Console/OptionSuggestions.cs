@@ -3,11 +3,31 @@ namespace TraceDiag.Console;
 /// <summary>Finds the closest canonical option and renders a compact option list.</summary>
 internal static class OptionSuggestions
 {
+    internal static readonly string[] Usage =
+    [
+        Strings.Console.HelpHost,
+        Strings.Console.HelpPacketSize,
+        Strings.Console.HelpAttempts,
+        Strings.Console.HelpLossDelay,
+        Strings.Console.HelpDynamic,
+        Strings.Console.HelpDontFragment,
+        Strings.Console.HelpNoRipe,
+        Strings.Console.HelpNoRoutePrecheck,
+        Strings.Console.HelpDeepRoutes,
+        Strings.Console.HelpProbeTimeout,
+        Strings.Console.HelpIpv4,
+        Strings.Console.HelpIpv6,
+        Strings.Console.HelpFormat,
+        Strings.Console.OptionLanguage,
+        Strings.Console.OptionResetHelp,
+        Strings.Console.HelpHelp
+    ];
+
     internal static string? Closest(string option)
     {
         var normalized = Normalize(option);
         if (normalized.Length == 0) return null;
-        return ConsoleOptions.Names
+        return CommandLineSettingsArg.Names
             .Select(name => (Name: name, Distance: Distance(normalized, Normalize(name))))
             .Where(item => item.Distance <= Threshold(normalized.Length))
             .OrderBy(item => item.Distance)
@@ -25,7 +45,7 @@ internal static class OptionSuggestions
         if (suggestion is not null)
             lines.Add(TextFormatter.Fmt(Strings.T(Strings.Console.DidYouMeanFormat), suggestion));
         lines.Add(Strings.T(Strings.Console.OptionsTitle));
-        lines.AddRange(ConsoleOptions.Usage.Select(usage =>
+        lines.AddRange(Usage.Select(usage =>
             TextFormatter.Fmt(Strings.Console.OptionLineFormat, Strings.T(usage))));
         return string.Join(Environment.NewLine, lines);
     }

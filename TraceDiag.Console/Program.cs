@@ -8,7 +8,9 @@ internal static class Program
     private static int Main(string[] args)
     {
         System.Console.OutputEncoding = new UTF8Encoding(false);
-        if (!TryParse(args, out var options, out var code)) return code;
+        var prepared = InteractiveLauncher.Prepare(args, System.Console.In, System.Console.Out);
+        if (prepared is null) return 2;
+        if (!TryParse(prepared, out var options, out var code)) return code;
         if (options!.Help) { Help(); return 0; }
         using var cancellation = new CancellationTokenSource();
         System.Console.CancelKeyPress += (_, eventArgs) => Cancel(eventArgs, cancellation);

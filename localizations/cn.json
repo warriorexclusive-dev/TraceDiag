@@ -94,6 +94,9 @@
                     "  --no-ripe - disable RIPE owner fallback":  "  --no-ripe - 禁用 RIPE 所有者回退",
 
                     "  --no-route-precheck - use the original single-route tracing":  "  --no-route-precheck - 使用原始单路由检测",
+                    "Enter remote host (IP or domain): ":  "请输入远程主机（IP 或域名）: ",
+                    "Invalid host. Enter an IP address or a domain name.":  "主机无效。请输入 IP 地址或域名。",
+                    "No input available. Exiting.":  "无可用输入。退出。",
                     "  --deep-routes - use 8 flow signatures instead of 4":  "  --deep-routes - 使用 8 个流签名而不是 4 个",
                     "  --probe-timeout <ms> - per-query timeout, capped at 3000 ms":  "  --probe-timeout <ms> - 单次查询超时，上限 3000 毫秒",
                     "run_id: {0}":  "run_id: {0}",

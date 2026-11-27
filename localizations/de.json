@@ -94,6 +94,9 @@
                     "  --no-ripe - disable RIPE owner fallback":  "  --no-ripe - RIPE-Inhaber deaktivieren",
 
                     "  --no-route-precheck - use the original single-route tracing":  "  --no-route-precheck - ursprüngliche Ein-Ruten-Prüfung verwenden",
+                    "Enter remote host (IP or domain): ":  "Remote-Host eingeben (IP oder Domain): ",
+                    "Invalid host. Enter an IP address or a domain name.":  "Ungültiger Host. IP-Adresse oder Domänenname eingeben.",
+                    "No input available. Exiting.":  "Keine Eingabe verfügbar. Beenden.",
                     "  --deep-routes - use 8 flow signatures instead of 4":  "  --deep-routes - 8 Flusssignaturen statt 4 verwenden",
                     "  --probe-timeout <ms> - per-query timeout, capped at 3000 ms":  "  --probe-timeout <ms> - Timeout pro Abfrage, maximal 3000 ms",
                     "run_id: {0}":  "run_id: {0}",

@@ -84,6 +84,7 @@ internal static partial class Strings
         public const string InvalidNumberFormat = "Invalid number for option {0}: {1}";
         public const string RangeFormat = "Option {0} must be between {1} and {2}.";
         public const string HostRequired = "--host is required for run and monitor.";
+        public const string EnterHost = "Enter remote host (IP or domain): "; public const string InvalidHost = "Invalid host. Enter an IP address or a domain name."; public const string InputClosed = "No input available. Exiting.";
         public const string InvalidCommandFormat = "Unknown command: {0}";
         public const string InvalidFormat = "--format must be plain, csv or json.";
         public const string InvalidLanguageFormat = "Unknown language: {0}";

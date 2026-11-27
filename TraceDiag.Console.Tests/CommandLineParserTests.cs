@@ -91,7 +91,7 @@ public sealed class CommandLineParserTests
         var error = Assert.Throws<CommandLineException>(() =>
             CommandLineParser.Parse(["run", "--host", "example.com", "-attempts", "5"]));
         Assert.Equal(TextFormatter.Fmt(Strings.Console.UnknownOptionFormat, "-attempts"), error.Message);
-        Assert.Contains(ConsoleOptions.Attempts, error.Details!);
+        Assert.Contains(CommandLineSettingsArg.Attempts, error.Details!);
         Assert.Contains(Strings.Console.OptionsTitle, error.Details!);
     }
 }
