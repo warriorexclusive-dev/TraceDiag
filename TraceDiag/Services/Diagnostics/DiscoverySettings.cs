@@ -7,10 +7,10 @@ internal sealed record DiscoverySettings(
     bool DontFragment,
     int LossDelayMs)
 {
-    internal static DiscoverySettings CreateDefault(int lossDelayMs) =>
+    internal static DiscoverySettings CreateDefault(int lossDelayMs, bool dontFragment = true) =>
         new(DiagnosticConstants.DiscoveryPacketSize,
             DiagnosticConstants.DiscoveryTimeoutMs,
             DiagnosticConstants.DiscoveryRoundLimit,
-            true,
+            dontFragment,
             Math.Max(0, lossDelayMs));
 }

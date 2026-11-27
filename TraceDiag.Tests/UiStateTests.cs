@@ -29,6 +29,7 @@ public sealed class UiStateTests
         Assert.NotNull(result.State);
         Assert.Equal(state.RemoteHost, result.State!.RemoteHost);
         Assert.Equal(state.MonitoringMode, result.State.MonitoringMode);
+        Assert.Equal(state.DontFragment, result.State.DontFragment);
         Assert.Equal(state.ColumnWidths[Strings.Ui.ColumnKeyIp], result.State.ColumnWidths[Strings.Ui.ColumnKeyIp]);
     }
 
@@ -105,6 +106,21 @@ public sealed class UiStateTests
     }
 
     [Fact]
+    public void Restore_WithDontFragment_ClampsSavedSizeAndDynamic()
+    {
+        using var form = new Form();
+        var controls = FormControlsFactory.Create(12f);
+        using var root = controls.Root;
+        var state = CreateState();
+        state.MaxPacketSize = 2048;
+        state.DynamicPacketSize = true;
+        UiStateRestorer.Apply(form, controls, state, new AppConfig());
+        Assert.Equal(1024, (int)controls.MaxPacketSize.Value);
+        Assert.Equal(1024, (int)controls.MaxPacketSize.Maximum);
+        Assert.False(controls.DynamicPacketSize.Checked);
+    }
+
+    [Fact]
     public void Restore_WithMaximizedWindowState_SetsMaximized()
     {
         using var form = new Form();
@@ -125,6 +141,7 @@ public sealed class UiStateTests
         LossDelayMs = 500,
         OutputFontSize = 11.5f,
         DynamicPacketSize = false,
+        DontFragment = true,
         MonitoringMode = true,
         DarkTheme = false,
         WindowState = nameof(FormWindowState.Normal),
@@ -146,6 +163,7 @@ public sealed class UiStateTests
         controls.LossDelay.Value = 300;
         controls.FontSize.Value = 13.5m;
         controls.DynamicPacketSize.Checked = false;
+        controls.DontFragment.Checked = true;
         controls.MonitoringMode.Checked = true;
         controls.DarkTheme.Checked = false;
     }
@@ -161,6 +179,7 @@ public sealed class UiStateTests
         Assert.Equal(300, state.LossDelayMs);
         Assert.Equal(13.5f, state.OutputFontSize);
         Assert.False(state.DynamicPacketSize);
+        Assert.True(state.DontFragment);
         Assert.True(state.MonitoringMode);
         Assert.False(state.DarkTheme);
         Assert.Equal(nameof(FormWindowState.Normal), state.WindowState);
@@ -182,6 +201,7 @@ public sealed class UiStateTests
         Assert.Equal(500m, controls.LossDelay.Value);
         Assert.Equal(11.5m, controls.FontSize.Value);
         Assert.False(controls.DynamicPacketSize.Checked);
+        Assert.True(controls.DontFragment.Checked);
         Assert.True(controls.MonitoringMode.Checked);
         Assert.False(controls.DarkTheme.Checked);
     }

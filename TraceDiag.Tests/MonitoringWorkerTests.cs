@@ -23,6 +23,19 @@ public sealed class MonitoringWorkerTests
     }
 
     [Fact]
+    public async Task MonitorHopWorker_WithDfTrigger_PassesFlagToProbe()
+    {
+        using var source = new CancellationTokenSource();
+        var probe = new FakeProbeClient(call => TestFactories.Success(call));
+        var hop = TestFactories.Hop(1, 1);
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => MonitorHopWorker.RunAsync(
+            TestFactories.Context(probe), hop, 512, new DontFragmentProbeTrigger(),
+            TestFactories.TextProgress(), new CancelOnStat(source), source.Token));
+        Assert.True(probe.Calls[0].DontFragment);
+        Assert.Equal(512, probe.Calls[0].BufferSize);
+    }
+
+    [Fact]
     public void MonitorEligibility_ExcludesOnlyIcmpDisabledNodes()
     {
         var hop = TestFactories.Hop(1, 1);

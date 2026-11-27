@@ -24,8 +24,29 @@ public sealed class FormControlsFactoryTests
     {
         var controls = FormControlsFactory.Create(12f);
         Assert.Equal(typeof(CheckBox), controls.DynamicPacketSize.GetType());
+        Assert.Equal(typeof(CheckBox), controls.DontFragment.GetType());
         Assert.Equal(typeof(CheckBox), controls.MonitoringMode.GetType());
         Assert.Equal(typeof(CheckBox), controls.DarkTheme.GetType());
+    }
+
+    [Fact]
+    public void Create_StartsWithDontFragmentDisabled()
+    {
+        var controls = FormControlsFactory.Create(12f);
+        Assert.False(controls.DontFragment.Checked);
+        Assert.Equal(Strings.Ui.DontFragmentLabel, controls.DontFragment.Text);
+    }
+
+    [Fact]
+    public void Create_UsesSafePacketSizeBoundsAndFormattedLabel()
+    {
+        var controls = FormControlsFactory.Create(12f);
+        using var root = controls.Root;
+        var label = FindLabel(root, TextFormatter.Fmt(Strings.Ui.PacketSizeLabelFormat,
+            UiDefaults.MinPacketSize, UiDefaults.MaxPacketSize));
+        Assert.Equal(UiDefaults.MinPacketSize, (int)controls.MaxPacketSize.Minimum);
+        Assert.Equal(UiDefaults.MaxPacketSize, (int)controls.MaxPacketSize.Maximum);
+        Assert.NotNull(label);
     }
 
     [Fact]
@@ -64,6 +85,7 @@ public sealed class FormControlsFactoryTests
         form.Hide();
         var runX = controls.Run.PointToScreen(Point.Empty).X;
         AssertLeftOfRun(controls.DynamicPacketSize, runX);
+        AssertLeftOfRun(controls.DontFragment, runX);
         AssertLeftOfRun(controls.MonitoringMode, runX);
         AssertLeftOfRun(controls.DarkTheme, runX);
     }

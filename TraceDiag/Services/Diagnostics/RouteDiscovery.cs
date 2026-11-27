@@ -1,5 +1,6 @@
 using System.Net;
 using TraceDiag.Models;
+using TraceDiag.Services.Abstractions;
 
 namespace TraceDiag.Services.Diagnostics;
 
@@ -10,12 +11,15 @@ internal static class RouteDiscovery
         DiagnosticContext context,
         IPAddress target,
         int lossDelayMs,
+        bool dontFragment,
+        IProbeJobFactory factory,
+        IProbeJobRunner runner,
         IProgress<string> progress,
         IProgress<IReadOnlyList<HopStatSnapshot>> stats,
         CancellationToken cancellationToken)
     {
-        var settings = DiscoverySettings.CreateDefault(lossDelayMs);
-        var result = await HostDiscovery.DiscoverAsync(context, target, settings, progress, stats, cancellationToken);
+        var settings = DiscoverySettings.CreateDefault(lossDelayMs, dontFragment);
+        var result = await HostDiscovery.DiscoverAsync(context, target, settings, factory, runner, progress, stats, cancellationToken);
         if (result.Hops.Count == 0) return ReportNoRoute(context, progress, result);
         await HopNameResolver.ResolveAsync(context, result.Hops, progress, stats, cancellationToken);
         DiagnosticReporter.ReportStats(stats, result.Hops);

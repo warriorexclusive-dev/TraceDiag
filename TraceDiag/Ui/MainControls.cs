@@ -8,6 +8,7 @@ internal sealed record MainControls(
     NumericUpDown LossDelay,
     NumericUpDown FontSize,
     CheckBox DynamicPacketSize,
+    CheckBox DontFragment,
     CheckBox MonitoringMode,
     CheckBox DarkTheme,
     DataGridView Stats,

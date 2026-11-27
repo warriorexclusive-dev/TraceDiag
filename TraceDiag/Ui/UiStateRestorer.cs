@@ -15,14 +15,18 @@ internal static class UiStateRestorer
 
     private static void ApplyInputs(MainControls controls, UiState state)
     {
+        var policy = new PacketSizePolicyController(controls, () => true);
+        controls.DontFragment.Checked = state.DontFragment;
+        policy.ApplyDontFragment();
         controls.RemoteHost.Text = state.RemoteHost ?? string.Empty;
         controls.MaxPacketSize.Value = Clamp(state.MaxPacketSize, controls.MaxPacketSize);
         controls.Attempts.Value = Clamp(state.Attempts, controls.Attempts);
         controls.LossDelay.Value = Clamp(state.LossDelayMs, controls.LossDelay);
         controls.FontSize.Value = Clamp((decimal)state.OutputFontSize, controls.FontSize);
-        controls.DynamicPacketSize.Checked = state.DynamicPacketSize;
+        controls.DynamicPacketSize.Checked = state.DynamicPacketSize && !state.DontFragment;
         controls.MonitoringMode.Checked = state.MonitoringMode;
         controls.DarkTheme.Checked = state.DarkTheme;
+        policy.ApplyDontFragment();
     }
 
     private static decimal Clamp(decimal value, NumericUpDown input) =>

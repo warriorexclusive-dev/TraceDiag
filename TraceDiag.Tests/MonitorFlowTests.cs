@@ -24,6 +24,18 @@ public sealed class MonitorFlowTests
     }
 
     [Fact]
+    public async Task StartAsync_PassesDontFragmentToMonitoringContract()
+    {
+        using var directory = new TempDirectory();
+        using var status = new Label();
+        using var logger = new FileDiagnosticLogger(directory.File("monitor-df.log"));
+        MonitoringInput? captured = null;
+        var context = CreateContext(logger, status, true, (input, _, _, _) => { captured = input; return Task.CompletedTask; });
+        await MonitorFlow.StartAsync(context);
+        Assert.True(captured?.DontFragment);
+    }
+
+    [Fact]
     public async Task StartAsync_WhenStopped_SetsCancelledStatus()
     {
         using var directory = new TempDirectory();
@@ -36,8 +48,13 @@ public sealed class MonitorFlowTests
 
     private static MonitorFlowContext CreateContext(FileDiagnosticLogger logger, Label status,
         Func<MonitoringInput, IProgress<string>, IProgress<HopStatSnapshot>, CancellationToken, Task> execute) =>
+        CreateContext(logger, status, false, execute);
+
+    private static MonitorFlowContext CreateContext(FileDiagnosticLogger logger, Label status, bool dontFragment,
+        Func<MonitoringInput, IProgress<string>, IProgress<HopStatSnapshot>, CancellationToken, Task> execute) =>
         new(CancellationToken.None, logger, status,
-            () => new MonitorInput("10.0.0.1", 512, 250), () => { }, _ => { }, _ => { }, Resolve, execute, () => { });
+            () => new MonitorInput("10.0.0.1", 512, 250, dontFragment),
+            () => { }, _ => { }, _ => { }, Resolve, execute, () => { });
 
     private static Task<IPAddress?> Resolve(string host, CancellationToken token) =>
         Task.FromResult<IPAddress?>(IPAddress.Parse(host));

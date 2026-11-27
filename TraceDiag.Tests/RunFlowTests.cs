@@ -37,6 +37,22 @@ public sealed class RunFlowTests
     }
 
     [Fact]
+    public async Task StartAsync_PassesDontFragmentToDiagnosticInput()
+    {
+        using var directory = new TempDirectory();
+        using var status = new Label();
+        using var logger = new FileDiagnosticLogger(directory.File("run-df.log"));
+        DiagnosticInput? captured = null;
+        var input = new RunInput("10.0.0.1", 1024, 1, 250, false, true);
+        var context = new RunFlowContext(
+            CancellationToken.None, logger, status,
+            () => input, () => { }, _ => { }, _ => { }, ResolveLocalhost,
+            (diagnostic, _, _, _) => { captured = diagnostic; return Task.CompletedTask; }, () => { });
+        await RunFlow.StartAsync(context);
+        Assert.True(captured?.DontFragment);
+    }
+
+    [Fact]
     public async Task StartAsync_WhenStopped_SetsCancelledStatus()
     {
         using var directory = new TempDirectory();

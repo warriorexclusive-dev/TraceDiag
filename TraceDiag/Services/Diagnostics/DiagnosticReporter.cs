@@ -21,6 +21,7 @@ internal static class DiagnosticReporter
         Report(context, progress, TextFormatter.Fmt(Strings.Diag.AttemptsFormat, input.Attempts));
         Report(context, progress, TextFormatter.Fmt(Strings.Diag.LossDelayFormat, input.LossDelayMs));
         Report(context, progress, input.DynamicPacketSize ? Strings.Diag.DynamicEnabled : Strings.Diag.DynamicDisabled);
+        if (input.DontFragment) Report(context, progress, Strings.Diag.DontFragmentEnabled);
         var sizesFormat = input.DynamicPacketSize ? Strings.Diag.PacketSizesFormat : Strings.Diag.PacketSizeFixedFormat;
         Report(context, progress, TextFormatter.Fmt(sizesFormat, string.Join(Strings.Diag.PacketSizeListSeparator, sizes)));
         Separator(context, progress);

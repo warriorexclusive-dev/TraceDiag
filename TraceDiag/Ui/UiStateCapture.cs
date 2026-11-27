@@ -22,6 +22,7 @@ internal static class UiStateCapture
         LossDelayMs = (int)controls.LossDelay.Value,
         OutputFontSize = (float)controls.FontSize.Value,
         DynamicPacketSize = controls.DynamicPacketSize.Checked,
+        DontFragment = controls.DontFragment.Checked,
         MonitoringMode = controls.MonitoringMode.Checked,
         DarkTheme = controls.DarkTheme.Checked
     };

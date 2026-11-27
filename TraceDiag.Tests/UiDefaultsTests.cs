@@ -15,4 +15,12 @@ public sealed class UiDefaultsTests
     {
         Assert.Equal(1000, UiDefaults.DefaultLossDelayMs);
     }
+
+    [Fact]
+    public void PacketBounds_UseSafeIcmpPayloadMaximum()
+    {
+        Assert.Equal(64, UiDefaults.MinPacketSize);
+        Assert.Equal(65500, UiDefaults.MaxPacketSize);
+        Assert.Equal(1024, UiDefaults.DefaultMaxPacketSize);
+    }
 }

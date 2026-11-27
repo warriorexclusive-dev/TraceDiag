@@ -29,11 +29,12 @@ internal static class Strings
     public static class Ui
     {
         public const string RemoteHostLabel = "Remote host (IP or domain):";
-        public const string PacketSizeLabel = "Packet max size (64-65534):";
+        public const string PacketSizeLabelFormat = "Packet max size ({0}-{1}):";
         public const string AttemptsLabel = "Количество попыток (1-1000):";
         public const string LossDelayLabel = "Задержка при потере, мс:";
         public const string FontSizeLabel = "Размер шрифта:";
         public const string DynamicPacketSizeLabel = "Динамический размер пакета";
+        public const string DontFragmentLabel = "Не фрагментировать (DF)";
         public const string DarkThemeLabel = "Тёмная тема";
         public const string MonitoringModeLabel = "Режим постоянного мониторинга";
         public const string RunButton = "Run";
@@ -116,8 +117,8 @@ internal static class Strings
         public const string UiStateCorruptedReset = "UI state file was invalid and has been removed.";
         public const string UiStateSaved = "UI state saved.";
         public const string UiStateSaveFailed = "UI state could not be saved.";
-        public const string RunRequestedFormat = "Run requested: host='{0}', maxPacketSize={1}, attempts={2}, dynamic={3}, lossDelayMs={4}";
-        public const string MonitorRequestedFormat = "Monitoring requested: host='{0}', packetSize={1}, lossDelayMs={2}";
+        public const string RunRequestedFormat = "Run requested: host='{0}', maxPacketSize={1}, attempts={2}, dynamic={3}, lossDelayMs={4}, dontFragment={5}";
+        public const string MonitorRequestedFormat = "Monitoring requested: host='{0}', packetSize={1}, lossDelayMs={2}, dontFragment={3}";
         public const string RunCompleted = "Run completed.";
         public const string MonitorCompleted = "Monitoring completed.";
         public const string LogRotated = "Log file rotated.";
@@ -154,6 +155,11 @@ internal static class Strings
         public const string DynamicDisabled = "Dynamic packet size: disabled (fixed max size)";
         public const string PacketSizesFormat = "Packet sizes (x2): {0}";
         public const string PacketSizeFixedFormat = "Packet size (fixed): {0} bytes";
+        public const string DontFragmentEnabled = "Don't Fragment (DF): enabled";
+        public const string PrecheckHeaderFormat = "DF precheck before the main test: {0} bytes";
+        public const string PrecheckContextFormat = "df-precheck hop={0} addr={1} size={2}";
+        public const string PrecheckSuccessFormat = "  df-precheck hop {0,2} {1}: size={2}, rtt={3}";
+        public const string PrecheckFailureFormat = "  df-precheck hop {0,2} {1}: size={2}, {3}";
         public const string NoRouteHops = "Status: not response (no route hops discovered)";
         public const string PacketSizeHeaderFormat = "[Packet size {0} bytes]";
         public const string SkipHopFormat = "  hop {0,2} {1}: пропуск (100% потерь, ICMP запрещён или ограничение размера).";

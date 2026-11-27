@@ -12,7 +12,7 @@ internal static class UiStateValidator
         IsValidColumns(state.ColumnWidths);
 
     private static bool IsValidInputs(UiState state) =>
-        state.MaxPacketSize >= 64 && state.MaxPacketSize <= 65534 &&
+        state.MaxPacketSize >= UiDefaults.MinPacketSize && state.MaxPacketSize <= UiDefaults.MaxPacketSize &&
         state.Attempts >= 1 && state.Attempts <= 1000 &&
         state.LossDelayMs >= 0 && state.LossDelayMs <= UiDefaults.MaxLossDelayMs &&
         state.OutputFontSize >= UiDefaults.MinFontSize && state.OutputFontSize <= UiDefaults.MaxFontSize;

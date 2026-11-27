@@ -14,7 +14,7 @@ public sealed class TraceDiagnosticsServiceTests
         var progress = TestFactories.TextProgress();
         var stats = TestFactories.StatsProgress();
         await CreateService(probe).RunAsync(CreateInput(true), progress, stats, CancellationToken.None);
-        Assert.Equal([64, 128, 256], probe.Calls.Where(IsProbing).Select(c => c.BufferSize).Distinct());
+        Assert.Equal([64, 128, 256], ProbingCalls(probe.Calls).Select(c => c.BufferSize).Distinct());
         Assert.Contains(progress.Values, value => value.Contains("Packet sizes (x2): 64, 128, 256"));
         Assert.NotEmpty(stats.Values);
     }
@@ -25,7 +25,7 @@ public sealed class TraceDiagnosticsServiceTests
         var probe = new FakeProbeClient(Reply);
         var progress = TestFactories.TextProgress();
         await CreateService(probe).RunAsync(CreateInput(false), progress, TestFactories.StatsProgress(), CancellationToken.None);
-        Assert.All(probe.Calls.Where(IsProbing), call => Assert.Equal(256, call.BufferSize));
+        Assert.All(ProbingCalls(probe.Calls), call => Assert.Equal(256, call.BufferSize));
         Assert.Contains(progress.Values, value => value.Contains("Packet size (fixed): 256 bytes"));
     }
 
@@ -71,24 +71,61 @@ public sealed class TraceDiagnosticsServiceTests
         Assert.Equal(3, target.Received);
     }
 
+    [Fact]
+    public async Task RunAsync_WithDontFragment_CapsPacketSizeAndUsesDfForChecks()
+    {
+        var probe = new FakeProbeClient(Reply);
+        var progress = TestFactories.TextProgress();
+        var input = new DiagnosticInput(TestFactories.Address(2), "target", 2048, 1, 0, true, true);
+        await CreateService(probe).RunAsync(input, progress, TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.Equal([1024], ProbingCalls(probe.Calls).Select(call => call.BufferSize).Distinct());
+        Assert.All(DiscoveryCalls(probe.Calls).Concat(ProbingCalls(probe.Calls)), call => Assert.True(call.DontFragment));
+        Assert.Contains(progress.Values, value => value.Contains("Packet size (fixed): 1024 bytes"));
+        Assert.Contains(progress.Values, value => value.Contains("Don't Fragment (DF): enabled"));
+    }
+
+    [Fact]
+    public async Task RunAsync_WithoutDontFragment_StillPrechecksWithDf()
+    {
+        var probe = new FakeProbeClient(Reply);
+        await CreateService(probe).RunAsync(CreateInput(false), TestFactories.TextProgress(),
+            TestFactories.StatsProgress(), CancellationToken.None);
+        Assert.All(PrecheckCalls(probe.Calls), call => Assert.True(call.DontFragment));
+        Assert.All(DiscoveryCalls(probe.Calls).Concat(ProbingCalls(probe.Calls)), call => Assert.False(call.DontFragment));
+    }
+
     private static TraceDiagnosticsService CreateService(FakeProbeClient probe) =>
         new(probe, new FakeDnsResolver(address => "host-" + address), new FakeDiagnosticLogger());
 
     private static DiagnosticInput CreateInput(bool dynamic) =>
         new(TestFactories.Address(2), "target", 256, 1, 0, dynamic);
 
-    private static bool IsProbing(ProbeCall call) => call.Ttl == 64;
+    private static int PrecheckCount => 2 * ProbeLimits.PrecheckPacketSizes.Count;
+
+    private static IReadOnlyList<ProbeCall> DirectCalls(List<ProbeCall> calls) =>
+        calls.Where(call => call.Ttl == DiagnosticConstants.DirectProbeTtl).ToList();
+
+    private static IReadOnlyList<ProbeCall> PrecheckCalls(List<ProbeCall> calls) =>
+        DirectCalls(calls).Take(PrecheckCount).ToList();
+
+    private static IReadOnlyList<ProbeCall> ProbingCalls(List<ProbeCall> calls) =>
+        DirectCalls(calls).Skip(PrecheckCount).ToList();
+
+    private static IReadOnlyList<ProbeCall> DiscoveryCalls(List<ProbeCall> calls) =>
+        calls.Where(call => call.Ttl != DiagnosticConstants.DirectProbeTtl).ToList();
 
     private static FakeProbeClient CreateLossOnceProbe()
     {
-        var lost = false;
+        var targetCalls = 0;
         return new FakeProbeClient(call =>
         {
-            if (call.Ttl != DiagnosticConstants.DirectProbeTtl || lost ||
+            if (call.Ttl != DiagnosticConstants.DirectProbeTtl ||
                 !call.Address.Equals(TestFactories.Address(2)))
                 return TestFactories.Success(call, 9);
-            lost = true;
-            return TestFactories.Timeout(call);
+            targetCalls++;
+            return targetCalls == ProbeLimits.PrecheckPacketSizes.Count + 1
+                ? TestFactories.Timeout(call)
+                : TestFactories.Success(call, 9);
         });
     }
 

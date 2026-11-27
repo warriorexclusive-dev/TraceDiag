@@ -40,6 +40,15 @@ public sealed class HostDiscoveryTests
     }
 
     [Fact]
+    public async Task DiscoverAsync_WithDefaultTrigger_DoesNotSetDontFragment()
+    {
+        var probe = new FakeProbeClient(call => TestFactories.Success(call));
+        await DiscoverAsync(probe, TestFactories.Discovery(roundLimit: 1, dontFragment: false));
+        Assert.NotEmpty(probe.Calls);
+        Assert.All(probe.Calls, call => Assert.False(call.DontFragment));
+    }
+
+    [Fact]
     public async Task DiscoverAsync_RetriesUnresolvedTtlAcrossRounds()
     {
         var ttl2Calls = 0;
@@ -98,5 +107,6 @@ public sealed class HostDiscoveryTests
 
     private static Task<HostDiscoveryResult> DiscoverAsync(FakeProbeClient probe, DiscoverySettings settings, CollectingProgress<string>? progress = null) =>
         HostDiscovery.DiscoverAsync(TestFactories.Context(probe), TestFactories.Address(2), settings,
+            new ProbeJobFactory(), new ProbeJobRunner(),
             progress ?? TestFactories.TextProgress(), TestFactories.StatsProgress(), CancellationToken.None);
 }

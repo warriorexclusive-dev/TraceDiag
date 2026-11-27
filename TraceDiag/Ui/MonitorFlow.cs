@@ -40,7 +40,8 @@ internal static class MonitorFlow
     }
 
     private static void LogRequest(MonitorFlowContext context, MonitorInput input) =>
-        context.Logger.Info(TextFormatter.Fmt(Strings.Log.MonitorRequestedFormat, input.Host, input.PacketSize, input.LossDelayMs));
+        context.Logger.Info(TextFormatter.Fmt(Strings.Log.MonitorRequestedFormat, input.Host,
+            input.PacketSize, input.LossDelayMs, input.DontFragment));
 
     private static void ReportUnresolved(MonitorFlowContext context, MonitorInput input)
     {
@@ -55,6 +56,6 @@ internal static class MonitorFlow
         var label = input.Host.Equals(address.ToString(), StringComparison.OrdinalIgnoreCase)
             ? input.Host
             : TextFormatter.Fmt(Strings.Ui.HostLabelFormat, input.Host, address);
-        return new MonitoringInput(address, label, input.PacketSize, input.LossDelayMs);
+        return new MonitoringInput(address, label, input.PacketSize, input.LossDelayMs, input.DontFragment);
     }
 }

@@ -8,4 +8,5 @@ public sealed record DiagnosticInput(
     int MaxPacketSize,
     int Attempts,
     int LossDelayMs,
-    bool DynamicPacketSize);
+    bool DynamicPacketSize,
+    bool DontFragment = false);

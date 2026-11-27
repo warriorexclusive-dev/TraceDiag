@@ -1,49 +1,64 @@
 using System.Net;
 using TraceDiag.Models;
+using TraceDiag.Services.Abstractions;
 
 namespace TraceDiag.Services.Diagnostics;
 
 internal static class HostDiscovery
 {
-    internal static async Task<HostDiscoveryResult> DiscoverAsync(DiagnosticContext context, IPAddress target, DiscoverySettings settings, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    internal static async Task<HostDiscoveryResult> DiscoverAsync(DiagnosticContext context, IPAddress target,
+        DiscoverySettings settings, IProbeJobFactory factory, IProbeJobRunner runner,
+        IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats,
+        CancellationToken cancellationToken)
     {
         DiagnosticReporter.Report(context, progress, Strings.Diag.TracingRoute);
+        var trigger = ProbeTriggers.Create(settings.DontFragment);
         var state = new DiscoveryState();
-        await RunRoundsAsync(context, state, target, settings, progress, stats, cancellationToken);
+        await RunRoundsAsync(context, state, target, settings, trigger, factory, runner, progress, stats, cancellationToken);
         ReportLimit(context, state, settings, progress);
         return new HostDiscoveryResult(state.Hops, state.Skipped, state.Reached);
     }
 
-    private static async Task RunRoundsAsync(DiagnosticContext context, DiscoveryState state, IPAddress target, DiscoverySettings settings, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    private static async Task RunRoundsAsync(DiagnosticContext context, DiscoveryState state,
+        IPAddress target, DiscoverySettings settings, IProbeTrigger trigger,
+        IProbeJobFactory factory, IProbeJobRunner runner, IProgress<string> progress,
+        IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
     {
         var round = 0;
         while (!state.Reached && !IsLimitReached(state, settings, round))
         {
             cancellationToken.ThrowIfCancellationRequested();
             round++;
-            await SweepAsync(context, state, target, settings, round, progress, stats, cancellationToken);
+            await SweepAsync(context, state, target, settings, trigger, factory, runner, round, progress, stats, cancellationToken);
             if (state.Reached || IsLimitReached(state, settings, round)) break;
         }
     }
 
-    private static async Task SweepAsync(DiagnosticContext context, DiscoveryState state, IPAddress target, DiscoverySettings settings, int round, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    private static async Task SweepAsync(DiagnosticContext context, DiscoveryState state,
+        IPAddress target, DiscoverySettings settings, IProbeTrigger trigger,
+        IProbeJobFactory factory, IProbeJobRunner runner, int round,
+        IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats,
+        CancellationToken cancellationToken)
     {
         DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.DiscoveryRoundFormat, round));
         for (var ttl = 1; ttl <= DiagnosticConstants.MaxHops && !state.Reached; ttl++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (!state.ShouldProbe(ttl)) continue;
-            await ProbeTtlAsync(context, state, target, settings, ttl, round, progress, stats, cancellationToken);
+            await ProbeTtlAsync(context, state, target, settings, trigger, factory, runner, ttl, round, progress, stats, cancellationToken);
         }
     }
 
     private static bool IsLimitReached(DiscoveryState state, DiscoverySettings settings, int round) =>
         !state.Reached && settings.RoundLimit > 0 && round >= settings.RoundLimit;
 
-    private static async Task ProbeTtlAsync(DiagnosticContext context, DiscoveryState state, IPAddress target, DiscoverySettings settings, int ttl, int round, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats, CancellationToken cancellationToken)
+    private static async Task ProbeTtlAsync(DiagnosticContext context, DiscoveryState state, IPAddress target,
+        DiscoverySettings settings, IProbeTrigger trigger, IProbeJobFactory factory, IProbeJobRunner runner,
+        int ttl, int round, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats,
+        CancellationToken cancellationToken)
     {
-        var request = CreateRequest(target, ttl, round, settings);
-        var result = await ProbeExecutor.SendAsync(context, request, progress, cancellationToken);
+        var job = CreateJob(target, ttl, round, settings, trigger, factory);
+        var result = await runner.RunAsync(context, job, progress, cancellationToken);
         if (!IsHopReply(result.Outcome))
         {
             ReportNoResponse(context, state, ttl, progress, stats);
@@ -53,21 +68,24 @@ internal static class HostDiscovery
         ApplyResolved(context, state, target, result, ttl, progress, stats);
     }
 
-    private static ProbeRequest CreateRequest(IPAddress target, int ttl, int round, DiscoverySettings settings) =>
-        new(target, ttl, settings.PacketSize, settings.TimeoutMs,
-            TextFormatter.Fmt(Strings.Diag.TraceRoundContextFormat, ttl, round), settings.DontFragment);
+    private static ProbeJob CreateJob(IPAddress target, int ttl, int round, DiscoverySettings settings,
+        IProbeTrigger trigger, IProbeJobFactory factory) =>
+        factory.Create(trigger, target, ttl, settings.PacketSize, settings.TimeoutMs,
+            TextFormatter.Fmt(Strings.Diag.TraceRoundContextFormat, ttl, round));
 
     private static bool IsHopReply(ProbeOutcome outcome) =>
         outcome is ProbeOutcome.Success or ProbeOutcome.TtlExpired;
 
-    private static void ReportNoResponse(DiagnosticContext context, DiscoveryState state, int ttl, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats)
+    private static void ReportNoResponse(DiagnosticContext context, DiscoveryState state, int ttl,
+        IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats)
     {
         var added = state.MarkNoResponse(ttl);
         DiagnosticReporter.ReportStats(stats, state.Hops);
         if (added) DiagnosticReporter.Report(context, progress, TextFormatter.Fmt(Strings.Diag.NoResponseHopFormat, ttl));
     }
 
-    private static void ApplyResolved(DiagnosticContext context, DiscoveryState state, IPAddress target, ProbeResult result, int ttl, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats)
+    private static void ApplyResolved(DiagnosticContext context, DiscoveryState state, IPAddress target,
+        ProbeResult result, int ttl, IProgress<string> progress, IProgress<IReadOnlyList<HopStatSnapshot>> stats)
     {
         var hop = CreateHop(ttl, result.Address!, target);
         if (state.MarkResolved(ttl, hop)) ReportDiscovered(context, target, hop, progress);

@@ -5,11 +5,11 @@ internal static class InputPanelFactory
     private const int RightColumnWidth = 250;
 
     internal static TableLayoutPanel Create(TextBox host, NumericUpDown packet, NumericUpDown attempts,
-        NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox monitoringMode,
-        CheckBox darkTheme, Button run)
+        NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment,
+        CheckBox monitoringMode, CheckBox darkTheme, Button run)
     {
         var layout = CreateLayout();
-        layout.Controls.Add(CreateLeftFrame(host, packet, attempts, dynamicPacketSize, monitoringMode, darkTheme), 0, 0);
+        layout.Controls.Add(CreateLeftFrame(host, packet, attempts, dynamicPacketSize, dontFragment, monitoringMode, darkTheme), 0, 0);
         layout.Controls.Add(CreateRightFrame(lossDelay, font, run), 1, 0);
         return layout;
     }
@@ -29,17 +29,20 @@ internal static class InputPanelFactory
     }
 
     private static TableLayoutPanel CreateLeftFrame(TextBox host, NumericUpDown packet, NumericUpDown attempts,
-        CheckBox dynamicPacketSize, CheckBox monitoringMode, CheckBox darkTheme)
+        CheckBox dynamicPacketSize, CheckBox dontFragment, CheckBox monitoringMode, CheckBox darkTheme)
     {
         var frame = CreateFramePanel(4);
         frame.Padding = new Padding(0, 0, 12, 0);
         frame.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         frame.Controls.Add(CreateLabelledRow(Strings.Ui.RemoteHostLabel, host, 276, false), 0, 0);
-        frame.Controls.Add(CreateLabelledRow(Strings.Ui.PacketSizeLabel, packet, 140, false), 0, 1);
+        frame.Controls.Add(CreateLabelledRow(PacketSizeLabel(), packet, 140, false), 0, 1);
         frame.Controls.Add(CreateLabelledRow(Strings.Ui.AttemptsLabel, attempts, 140, false), 0, 2);
-        frame.Controls.Add(CreateLeftAnchored(CreateCheckBoxRow(dynamicPacketSize, monitoringMode, darkTheme)), 0, 3);
+        frame.Controls.Add(CreateCheckBoxRow(dynamicPacketSize, dontFragment, monitoringMode, darkTheme), 0, 3);
         return frame;
     }
+
+    private static string PacketSizeLabel() =>
+        TextFormatter.Fmt(Strings.Ui.PacketSizeLabelFormat, UiDefaults.MinPacketSize, UiDefaults.MaxPacketSize);
 
     private static TableLayoutPanel CreateRightFrame(NumericUpDown lossDelay, NumericUpDown font, Button run)
     {
@@ -68,18 +71,17 @@ internal static class InputPanelFactory
 
     private static FlowLayoutPanel CreateCheckBoxRow(params CheckBox[] boxes)
     {
-        var row = CreateFlowRow();
+        var row = new FlowLayoutPanel
+        {
+            AutoSize = true,
+            Dock = DockStyle.Fill,
+            FlowDirection = FlowDirection.LeftToRight,
+            WrapContents = true,
+            Margin = new Padding(0, 4, 0, 0)
+        };
         foreach (var box in boxes) row.Controls.Add(PrepareCheckBox(box));
         return row;
     }
-
-    private static FlowLayoutPanel CreateFlowRow() => new()
-    {
-        AutoSize = true,
-        Dock = DockStyle.None,
-        FlowDirection = FlowDirection.LeftToRight,
-        WrapContents = false
-    };
 
     private static CheckBox PrepareCheckBox(CheckBox box)
     {
@@ -131,14 +133,6 @@ internal static class InputPanelFactory
     {
         control.Dock = DockStyle.None;
         control.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        control.Margin = new Padding(0, 4, 0, 0);
-        return control;
-    }
-
-    private static Control CreateLeftAnchored(Control control)
-    {
-        control.Dock = DockStyle.None;
-        control.Anchor = AnchorStyles.Top | AnchorStyles.Left;
         control.Margin = new Padding(0, 4, 0, 0);
         return control;
     }

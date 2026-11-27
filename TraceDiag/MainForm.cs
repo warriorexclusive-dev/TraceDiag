@@ -15,6 +15,7 @@ public sealed class MainForm : Form
     private readonly FileDiagnosticLogger _logger;
     private readonly UiStateStore _uiStateStore;
     private readonly StatisticsController _statistics;
+    private readonly IPacketSizePolicy _packetPolicy;
     private readonly OutputBufferController _outputBuffer = new();
     private readonly bool _resetRequested;
     private MainControls _controls = null!;
@@ -26,6 +27,7 @@ public sealed class MainForm : Form
     private NumericUpDown _lossDelayInput = null!;
     private NumericUpDown _fontSizeInput = null!;
     private CheckBox _dynamicPacketSizeInput = null!;
+    private CheckBox _dontFragmentInput = null!;
     private CheckBox _monitoringModeInput = null!;
     private CheckBox _darkThemeInput = null!;
     private DataGridView _statsGridView = null!;
@@ -51,6 +53,7 @@ public sealed class MainForm : Form
         var darkTheme = state?.DarkTheme ?? _appConfig.Theme == AppTheme.Dark;
         var controls = FormControlsFactory.Create(_outputFontSize, darkTheme);
         AssignControls(controls);
+        _packetPolicy = new PacketSizePolicyController(controls, () => _runCts is null);
         ConfigureWindow();
         ApplyLoadedState(loadResult);
         FinishInitialization(controls, loadResult);
@@ -68,14 +71,7 @@ public sealed class MainForm : Form
     private void AssignControls(MainControls controls)
     {
         _controls = controls;
-        _remoteHostTextBox = controls.RemoteHost;
-        _maxPacketSizeInput = controls.MaxPacketSize;
-        _attemptsInput = controls.Attempts;
-        _lossDelayInput = controls.LossDelay;
-        _fontSizeInput = controls.FontSize;
-        _dynamicPacketSizeInput = controls.DynamicPacketSize;
-        _monitoringModeInput = controls.MonitoringMode;
-        _darkThemeInput = controls.DarkTheme;
+        AssignInputs(controls);
         _statsGridView = controls.Stats;
         _statsGrid = new StatsGridController(_statsGridView);
         _outputTextBox = controls.Output;
@@ -83,9 +79,23 @@ public sealed class MainForm : Form
         _statusLabel = controls.Status;
     }
 
+    private void AssignInputs(MainControls controls)
+    {
+        _remoteHostTextBox = controls.RemoteHost;
+        _maxPacketSizeInput = controls.MaxPacketSize;
+        _attemptsInput = controls.Attempts;
+        _lossDelayInput = controls.LossDelay;
+        _fontSizeInput = controls.FontSize;
+        _dynamicPacketSizeInput = controls.DynamicPacketSize;
+        _dontFragmentInput = controls.DontFragment;
+        _monitoringModeInput = controls.MonitoringMode;
+        _darkThemeInput = controls.DarkTheme;
+    }
+
     private void FinishInitialization(MainControls controls, UiStateLoadResult loadResult)
     {
         SubscribeEvents();
+        _packetPolicy.Refresh();
         Controls.Add(controls.Root);
         ApplyTheme();
         LogStartup(loadResult);
@@ -123,6 +133,7 @@ public sealed class MainForm : Form
         _fontSizeInput.ValueChanged += FontSizeInputOnValueChanged;
         _darkThemeInput.CheckedChanged += DarkThemeInputOnCheckedChanged;
         _monitoringModeInput.CheckedChanged += MonitoringModeOnCheckedChanged;
+        _dontFragmentInput.CheckedChanged += DontFragmentOnCheckedChanged;
         _runButton.Click += RunButtonOnClick;
         KeyDown += MainFormOnKeyDown;
     }
@@ -171,6 +182,8 @@ public sealed class MainForm : Form
 
     private void MonitoringModeOnCheckedChanged(object? sender, EventArgs e) => ApplyInputsEnabled();
 
+    private void DontFragmentOnCheckedChanged(object? sender, EventArgs e) => ApplyInputsEnabled();
+
     private void MainFormOnKeyDown(object? sender, KeyEventArgs e)
     {
         if (FullScreenController.HandleKey(this, e, _fullScreen)) e.Handled = true;
@@ -209,14 +222,15 @@ public sealed class MainForm : Form
         var host = ReadHost();
         if (host is null) return null;
         return new RunInput(host, (int)_maxPacketSizeInput.Value, (int)_attemptsInput.Value,
-            (int)_lossDelayInput.Value, _dynamicPacketSizeInput.Checked);
+            (int)_lossDelayInput.Value, _dynamicPacketSizeInput.Checked, _dontFragmentInput.Checked);
     }
 
     internal MonitorInput? ReadMonitorInput()
     {
         var host = ReadHost();
         if (host is null) return null;
-        return new MonitorInput(host, (int)_maxPacketSizeInput.Value, (int)_lossDelayInput.Value);
+        return new MonitorInput(host, (int)_maxPacketSizeInput.Value, (int)_lossDelayInput.Value,
+            _dontFragmentInput.Checked);
     }
 
     private string? ReadHost()
@@ -265,18 +279,7 @@ public sealed class MainForm : Form
         ApplyInputsEnabled();
     }
 
-    private void ApplyInputsEnabled()
-    {
-        var active = _runCts is null;
-        var fixedSize = _monitoringModeInput.Checked;
-        _remoteHostTextBox.Enabled = active;
-        _maxPacketSizeInput.Enabled = active;
-        _attemptsInput.Enabled = active && !fixedSize;
-        _lossDelayInput.Enabled = active;
-        _dynamicPacketSizeInput.Enabled = active && !fixedSize;
-        _monitoringModeInput.Enabled = active;
-        _darkThemeInput.Enabled = active;
-    }
+    private void ApplyInputsEnabled() => _packetPolicy.Refresh();
 
     internal void ApplyStats(IReadOnlyList<HopStatSnapshot> stats) => _statistics.Replace(stats);
 

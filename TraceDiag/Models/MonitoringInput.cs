@@ -7,4 +7,5 @@ public sealed record MonitoringInput(
     IPAddress RemoteAddress,
     string RemoteHostLabel,
     int PacketSize,
-    int LossDelayMs);
+    int LossDelayMs,
+    bool DontFragment = false);

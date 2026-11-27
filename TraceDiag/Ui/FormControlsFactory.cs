@@ -10,16 +10,17 @@ internal static class FormControlsFactory
         var lossDelay = CreateLossDelayInput();
         var font = CreateFontInput(fontSize);
         var dynamicPacketSize = CreateDynamicPacketSizeCheckBox();
+        var dontFragment = CreateDontFragmentCheckBox();
         var monitoringMode = CreateMonitoringModeCheckBox();
         var darkThemeCheckBox = CreateDarkThemeCheckBox(darkTheme);
         var run = CreateRunButton();
         var (stats, output, status) = CreateFooter(fontSize);
-        var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize, monitoringMode, darkThemeCheckBox, run);
-        return new MainControls(LayoutFactory.Create(input, stats, output, status), host, packet, attempts, lossDelay, font, dynamicPacketSize, monitoringMode, darkThemeCheckBox, stats, output, run, status);
+        var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode, darkThemeCheckBox, run);
+        return new MainControls(LayoutFactory.Create(input, stats, output, status), host, packet, attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode, darkThemeCheckBox, stats, output, run, status);
     }
 
-    private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox monitoringMode, CheckBox darkTheme, Button run) =>
-        InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize, monitoringMode, darkTheme, run);
+    private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts, NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment, CheckBox monitoringMode, CheckBox darkTheme, Button run) =>
+        InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode, darkTheme, run);
 
     private static (DataGridView Stats, TextBox Output, Label Status) CreateFooter(float fontSize) =>
         (StatsGridFactory.Create(), CreateOutputTextBox(fontSize), CreateStatusLabel());
@@ -35,8 +36,8 @@ internal static class FormControlsFactory
     {
         Dock = DockStyle.None,
         Width = 140,
-        Minimum = 64,
-        Maximum = 65534,
+        Minimum = UiDefaults.MinPacketSize,
+        Maximum = UiDefaults.MaxPacketSize,
         Value = UiDefaults.DefaultMaxPacketSize
     };
 
@@ -78,6 +79,15 @@ internal static class FormControlsFactory
         Anchor = AnchorStyles.Top | AnchorStyles.Left,
         Dock = DockStyle.None,
         Margin = new Padding(8, 6, 0, 0)
+    };
+
+    private static CheckBox CreateDontFragmentCheckBox() => new()
+    {
+        Text = Strings.Ui.DontFragmentLabel,
+        AutoSize = true,
+        Checked = false,
+        Dock = DockStyle.None,
+        Anchor = AnchorStyles.Top | AnchorStyles.Left
     };
 
     private static CheckBox CreateMonitoringModeCheckBox() => new()
