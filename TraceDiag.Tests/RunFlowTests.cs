@@ -68,13 +68,13 @@ public sealed class RunFlowTests
         Assert.Equal(Strings.Ui.Cancelled, status.Text);
     }
 
-    private static Task<IPAddress?> ResolveNothing(string host, CancellationToken token) =>
+    private static Task<IPAddress?> ResolveNothing(string host, IpFamily family, CancellationToken token) =>
         Task.FromResult<IPAddress?>(null);
 
-    private static Task<IPAddress?> CancelResolve(string host, CancellationToken token) =>
+    private static Task<IPAddress?> CancelResolve(string host, IpFamily family, CancellationToken token) =>
         throw new OperationCanceledException();
 
-    private static Task<IPAddress?> ResolveLocalhost(string host, CancellationToken token) =>
+    private static Task<IPAddress?> ResolveLocalhost(string host, IpFamily family, CancellationToken token) =>
         Task.FromResult<IPAddress?>(IPAddress.Parse(host));
 
     private static Task ExecuteNothing(

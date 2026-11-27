@@ -27,6 +27,7 @@ internal static class UiStateRestorer
         controls.DynamicPacketSize.Checked = state.DynamicPacketSize && !state.DontFragment;
         controls.MonitoringMode.Checked = state.MonitoringMode;
         controls.DarkTheme.Checked = state.DarkTheme;
+        controls.IpFamily.SelectedIndex = Compat.Clamp(state.IpFamily, 0, 2);
         policy.ApplyDontFragment();
     }
 

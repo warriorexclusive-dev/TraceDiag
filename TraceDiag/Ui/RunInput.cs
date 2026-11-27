@@ -1,3 +1,5 @@
+using TraceDiag.Models;
+
 namespace TraceDiag.Ui;
 
 internal sealed record RunInput(
@@ -6,4 +8,5 @@ internal sealed record RunInput(
     int Attempts,
     int LossDelayMs,
     bool DynamicPacketSize,
-    bool DontFragment = false);
+    bool DontFragment = false,
+    IpFamily Family = IpFamily.Auto);

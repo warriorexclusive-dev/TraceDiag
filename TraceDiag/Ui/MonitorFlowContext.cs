@@ -12,7 +12,7 @@ internal sealed class MonitorFlowContext(
     Action beginMonitor,
     Action<string> appendLine,
     Action<HopStatSnapshot> appendStat,
-    Func<string, CancellationToken, Task<IPAddress?>> resolveHost,
+    Func<string, IpFamily, CancellationToken, Task<IPAddress?>> resolveHost,
     Func<MonitoringInput, IProgress<string>, IProgress<HopStatSnapshot>, CancellationToken, Task> executeMonitor,
     Action endRun)
 {
@@ -31,7 +31,7 @@ internal sealed class MonitorFlowContext(
     internal Action BeginMonitor { get; } = beginMonitor;
     internal Action<string> AppendLine { get; } = appendLine;
     internal Action<HopStatSnapshot> AppendStat { get; } = appendStat;
-    internal Func<string, CancellationToken, Task<IPAddress?>> ResolveHost { get; } = resolveHost;
+    internal Func<string, IpFamily, CancellationToken, Task<IPAddress?>> ResolveHost { get; } = resolveHost;
     internal Func<MonitoringInput, IProgress<string>, IProgress<HopStatSnapshot>, CancellationToken, Task> ExecuteMonitor { get; } = executeMonitor;
     internal Action EndRun { get; } = endRun;
 }

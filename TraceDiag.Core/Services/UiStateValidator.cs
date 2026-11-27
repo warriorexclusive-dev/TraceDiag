@@ -14,7 +14,8 @@ internal static class UiStateValidator
         state.MaxPacketSize >= UiDefaults.MinPacketSize && state.MaxPacketSize <= UiDefaults.MaxPacketSize &&
         state.Attempts >= 1 && state.Attempts <= 1000 &&
         state.LossDelayMs >= 0 && state.LossDelayMs <= UiDefaults.MaxLossDelayMs &&
-        state.OutputFontSize >= UiDefaults.MinFontSize && state.OutputFontSize <= UiDefaults.MaxFontSize;
+        state.OutputFontSize >= UiDefaults.MinFontSize && state.OutputFontSize <= UiDefaults.MaxFontSize &&
+        state.IpFamily >= 0 && state.IpFamily <= 2;
 
     private static bool IsValidWindow(string windowState, UiWindowBounds? bounds) =>
         windowState is UiDefaults.NormalWindowState or UiDefaults.MaximizedWindowState &&

@@ -8,29 +8,6 @@ internal static partial class Strings
     /// <summary>Translates canonical text into the selected interface language.</summary>
     internal static string T(string english) => Translator.Text(english);
 
-    public static class App
-    {
-        public const string Title = "TraceDiag - Traceroute Diagnostic";
-        public const string DataFolder = "TraceDiag";
-        public const string ConfigFile = "settings.json";
-        public const string UiStateFile = "ui-state.json";
-        public const string ResetArgument = "reset";
-        public const string LogsFolder = "logs";
-        public const string LogFileNameFormat = "tracediag-{0:yyyyMMdd}.log";
-        public const string RotatedLogFileNameFormat = "{0}-{1}{2}";
-        public const string ConsoleTimestampFormat = "HH:mm:ss";
-        public const string LogTimestampFormat = "yyyy-MM-dd HH:mm:ss.fff";
-        public const string LogLinePrefixFormat = "[{0}] [{1}] ";
-        public const string TimestampedMessageFormat = "[{0}] {1}";
-        public const string ConsoleLogFileFormat = "[{0}] Log file: {1}";
-        public const string ConsoleConfigFileFormat = "[{0}] Config: {1}";
-        public const string ConsoleUiStateFileFormat = "[{0}] UI state: {1}";
-        public const string NetworkIconFile1 = "ncpa.cpl";
-        public const string NetworkIconFile2 = "netshell.dll";
-        public const string NetworkIconFile3 = "netcenter.dll";
-        public const string IconResourceName = "TraceDiag.Resources.cable_24dp.ico";
-    }
-
     public static class Console
     {
         public const string Usage = "Usage: TraceDiag.Console <run|monitor|reset> [options]";
@@ -56,6 +33,8 @@ internal static partial class Strings
         public const string HelpLossDelay = "  --loss-delay <ms> - delay after packet loss";
         public const string HelpDynamic = "  --dynamic - scan increasing packet sizes";
         public const string HelpDontFragment = "  --df - do not fragment packets";
+        public const string HelpIpv4 = "  --ipv4 - resolve and probe IPv4 only";
+        public const string HelpIpv6 = "  --ipv6 - resolve and probe IPv6 only";
         public const string HelpFormat = "  --format <plain|csv|json> - output format";
         public const string OptionResetHelp = "  --reset - remove saved UI state";
         public const string HelpHelp = "  --help - show this help";
@@ -96,7 +75,7 @@ internal static partial class Strings
         public const string Cancelled = "Cancelled.";
         public const string SummaryTitle = "Summary:";
         public const string StatsHeader = "ttl  ip  host  avg  jitter  stddev  min  max  last  sent  recv  status  diagnosis";
-        public const string StatsRowFormat = "{0,-3} {1,-15} {2,-20} {3,-8} {4,-8} {5,-8} {6,-8} {7,-8} {8,-8} {9,-5} {10,-5} {11,-12} {12}";
+        public const string StatsRowFormat = "{0,-3} {1,-39} {2,-20} {3,-8} {4,-8} {5,-8} {6,-8} {7,-8} {8,-8} {9,-5} {10,-5} {11,-12} {12}";
         public const string CsvStatsHeader = "kind,ttl,ip,host,avg,jitter,stddev,min,max,last,sent,recv,status,diagnosis";
     }
 
@@ -107,6 +86,7 @@ internal static partial class Strings
         public const string AttemptsLabel = "Attempts (1-1000):";
         public const string LossDelayLabel = "Loss delay, ms:";
         public const string FontSizeLabel = "Font size:";
+        public const string IpFamilyLabel = "IP version:";
         public const string LanguageLabel = "Language:";
         public const string DynamicPacketSizeLabel = "Dynamic packet size";
         public const string DontFragmentLabel = "Don't fragment (DF)";

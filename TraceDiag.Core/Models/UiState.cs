@@ -14,6 +14,7 @@ internal sealed class UiState
     public bool DontFragment { get; set; }
     public bool MonitoringMode { get; set; }
     public bool DarkTheme { get; set; } = true;
+    public int IpFamily { get; set; }
     public int StatsHeightPercent { get; set; } = UiDefaults.DefaultStatsPercent;
     public string WindowState { get; set; } = UiDefaults.NormalWindowState;
     public UiWindowBounds Bounds { get; set; } = new();

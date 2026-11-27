@@ -22,7 +22,7 @@ internal static class MonitorFlow
         try
         {
             LogRequest(context, input);
-            var address = await context.ResolveHost(input.Host, context.Token);
+            var address = await context.ResolveHost(input.Host, input.Family, context.Token);
             if (address is null) { ReportUnresolved(context, input); return; }
             await ExecuteAsync(context, input, address);
         }

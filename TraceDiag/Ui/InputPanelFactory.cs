@@ -6,11 +6,11 @@ internal static class InputPanelFactory
 
     internal static TableLayoutPanel Create(TextBox host, NumericUpDown packet, NumericUpDown attempts,
         NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment,
-        CheckBox monitoringMode, CheckBox darkTheme, ComboBox language, Button run)
+        CheckBox monitoringMode, CheckBox darkTheme, ComboBox ipFamily, ComboBox language, Button run)
     {
         var layout = CreateLayout();
         layout.Controls.Add(CreateLeftFrame(host, packet, attempts, dynamicPacketSize, dontFragment, monitoringMode, darkTheme), 0, 0);
-        layout.Controls.Add(CreateRightFrame(lossDelay, font, language, run), 1, 0);
+        layout.Controls.Add(CreateRightFrame(lossDelay, font, ipFamily, language, run), 1, 0);
         return layout;
     }
 
@@ -43,14 +43,15 @@ internal static class InputPanelFactory
     }
 
     private static TableLayoutPanel CreateRightFrame(NumericUpDown lossDelay, NumericUpDown font,
-        ComboBox language, Button run)
+        ComboBox ipFamily, ComboBox language, Button run)
     {
-        var frame = CreateFramePanel(4);
+        var frame = CreateFramePanel(5);
         frame.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         frame.Controls.Add(CreateLabelledRow(Strings.Ui.FontSizeLabel, font, 80, true), 0, 0);
         frame.Controls.Add(CreateLabelledRow(Strings.Ui.LossDelayLabel, lossDelay, 80, true), 0, 1);
-        frame.Controls.Add(CreateLabelledRow(Strings.Ui.LanguageLabel, language, 120, true), 0, 2);
-        frame.Controls.Add(CreateAnchored(run), 0, 3);
+        frame.Controls.Add(CreateLabelledRow(Strings.Ui.IpFamilyLabel, ipFamily, 120, true), 0, 2);
+        frame.Controls.Add(CreateLabelledRow(Strings.Ui.LanguageLabel, language, 120, true), 0, 3);
+        frame.Controls.Add(CreateAnchored(run), 0, 4);
         return frame;
     }
 

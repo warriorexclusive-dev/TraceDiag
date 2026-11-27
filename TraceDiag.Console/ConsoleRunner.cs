@@ -12,7 +12,7 @@ internal sealed class ConsoleRunner(Invocation options, OutputWriter writer, Con
     {
         try
         {
-            var address = await HostResolver.ResolveAsync(options.Host, token);
+            var address = await HostResolver.ResolveAsync(options.Host, options.Family, token);
             if (address is null) return ReportUnresolved();
             return options.Command == "monitor"
                 ? await MonitorAsync(address, token)

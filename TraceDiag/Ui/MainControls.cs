@@ -12,6 +12,7 @@ internal sealed record MainControls(
     CheckBox DontFragment,
     CheckBox MonitoringMode,
     CheckBox DarkTheme,
+    ComboBox IpFamily,
     ComboBox Language,
     DataGridView Stats,
     TextBox Output,

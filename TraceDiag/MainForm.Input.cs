@@ -1,3 +1,4 @@
+using TraceDiag.Models;
 using TraceDiag.Ui;
 
 namespace TraceDiag;
@@ -9,7 +10,8 @@ public sealed partial class MainForm
         var host = ReadHost();
         if (host is null) return null;
         return new RunInput(host, (int)_maxPacketSizeInput.Value, (int)_attemptsInput.Value,
-            (int)_lossDelayInput.Value, _dynamicPacketSizeInput.Checked, _dontFragmentInput.Checked);
+            (int)_lossDelayInput.Value, _dynamicPacketSizeInput.Checked, _dontFragmentInput.Checked,
+            ReadIpFamily());
     }
 
     internal MonitorInput? ReadMonitorInput()
@@ -17,8 +19,16 @@ public sealed partial class MainForm
         var host = ReadHost();
         if (host is null) return null;
         return new MonitorInput(host, (int)_maxPacketSizeInput.Value, (int)_lossDelayInput.Value,
-            _dontFragmentInput.Checked);
+            _dontFragmentInput.Checked, ReadIpFamily());
     }
+
+    private IpFamily ReadIpFamily() =>
+        _ipFamilyInput.SelectedIndex switch
+        {
+            1 => IpFamily.IPv4,
+            2 => IpFamily.IPv6,
+            _ => IpFamily.Auto
+        };
 
     private string? ReadHost()
     {

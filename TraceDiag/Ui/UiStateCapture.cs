@@ -25,7 +25,8 @@ internal static class UiStateCapture
         DynamicPacketSize = controls.DynamicPacketSize.Checked,
         DontFragment = controls.DontFragment.Checked,
         MonitoringMode = controls.MonitoringMode.Checked,
-        DarkTheme = controls.DarkTheme.Checked
+        DarkTheme = controls.DarkTheme.Checked,
+        IpFamily = controls.IpFamily.SelectedIndex
     };
 
     private static (string State, UiWindowBounds Bounds) CaptureWindow(Form form, FullScreenState fullScreen)

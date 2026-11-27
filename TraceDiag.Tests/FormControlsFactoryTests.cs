@@ -30,6 +30,14 @@ public sealed class FormControlsFactoryTests
     }
 
     [Fact]
+    public void Create_StartsWithAutoIpFamily()
+    {
+        var controls = FormControlsFactory.Create(12f);
+        Assert.Equal(["Auto", "IPv4", "IPv6"], controls.IpFamily.Items.Cast<string>().ToArray());
+        Assert.Equal(0, controls.IpFamily.SelectedIndex);
+    }
+
+    [Fact]
     public void Create_StartsWithDontFragmentDisabled()
     {
         var controls = FormControlsFactory.Create(12f);

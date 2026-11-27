@@ -31,6 +31,7 @@ public sealed partial class MainForm : Form
     private CheckBox _dontFragmentInput = null!;
     private CheckBox _monitoringModeInput = null!;
     private CheckBox _darkThemeInput = null!;
+    private ComboBox _ipFamilyInput = null!;
     private DataGridView _statsGridView = null!;
     private TextBox _outputTextBox = null!;
     private Button _runButton = null!;
@@ -93,6 +94,7 @@ public sealed partial class MainForm : Form
         _dontFragmentInput = controls.DontFragment;
         _monitoringModeInput = controls.MonitoringMode;
         _darkThemeInput = controls.DarkTheme;
+        _ipFamilyInput = controls.IpFamily;
     }
 
     private void FinishInitialization(MainControls controls, UiStateLoadResult loadResult)

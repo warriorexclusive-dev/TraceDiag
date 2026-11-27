@@ -12,7 +12,7 @@ internal sealed class RunFlowContext(
     Action beginRun,
     Action<string> appendLine,
     Action<IReadOnlyList<HopStatSnapshot>> applyStats,
-    Func<string, CancellationToken, Task<IPAddress?>> resolveHost,
+    Func<string, IpFamily, CancellationToken, Task<IPAddress?>> resolveHost,
     Func<DiagnosticInput, IProgress<string>, IProgress<IReadOnlyList<HopStatSnapshot>>, CancellationToken, Task> executeService,
     Action endRun)
 {
@@ -31,7 +31,7 @@ internal sealed class RunFlowContext(
     internal Action BeginRun { get; } = beginRun;
     internal Action<string> AppendLine { get; } = appendLine;
     internal Action<IReadOnlyList<HopStatSnapshot>> ApplyStats { get; } = applyStats;
-    internal Func<string, CancellationToken, Task<IPAddress?>> ResolveHost { get; } = resolveHost;
+    internal Func<string, IpFamily, CancellationToken, Task<IPAddress?>> ResolveHost { get; } = resolveHost;
     internal Func<DiagnosticInput, IProgress<string>, IProgress<IReadOnlyList<HopStatSnapshot>>, CancellationToken, Task> ExecuteService { get; } = executeService;
     internal Action EndRun { get; } = endRun;
 }

@@ -15,21 +15,22 @@ internal static class FormControlsFactory
         var dontFragment = CreateDontFragmentCheckBox();
         var monitoringMode = CreateMonitoringModeCheckBox();
         var darkThemeCheckBox = CreateDarkThemeCheckBox(darkTheme);
+        var ipFamily = CreateIpFamilyInput();
         var language = CreateLanguageInput();
         var run = CreateRunButton();
         var (stats, output, status, splitter) = CreateFooter(fontSize);
         var input = CreateInput(host, packet, attempts, lossDelay, font, dynamicPacketSize,
-            dontFragment, monitoringMode, darkThemeCheckBox, language, run);
+            dontFragment, monitoringMode, darkThemeCheckBox, ipFamily, language, run);
         return new MainControls(LayoutFactory.Create(input, splitter, status), splitter, host, packet,
             attempts, lossDelay, font, dynamicPacketSize, dontFragment, monitoringMode,
-            darkThemeCheckBox, language, stats, output, run, status);
+            darkThemeCheckBox, ipFamily, language, stats, output, run, status);
     }
 
     private static TableLayoutPanel CreateInput(TextBox host, NumericUpDown packet, NumericUpDown attempts,
         NumericUpDown lossDelay, NumericUpDown font, CheckBox dynamicPacketSize, CheckBox dontFragment,
-        CheckBox monitoringMode, CheckBox darkTheme, ComboBox language, Button run) =>
+        CheckBox monitoringMode, CheckBox darkTheme, ComboBox ipFamily, ComboBox language, Button run) =>
         InputPanelFactory.Create(host, packet, attempts, lossDelay, font, dynamicPacketSize,
-            dontFragment, monitoringMode, darkTheme, language, run);
+            dontFragment, monitoringMode, darkTheme, ipFamily, language, run);
 
     private static (DataGridView Stats, TextBox Output, Label Status, SplitContainer Splitter) CreateFooter(float fontSize)
     {
@@ -108,6 +109,19 @@ internal static class FormControlsFactory
         };
         UiText.Set(box, canonical);
         return box;
+    }
+
+    private static ComboBox CreateIpFamilyInput()
+    {
+        var combo = new ComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            Width = 120,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
+        };
+        combo.Items.AddRange(["Auto", "IPv4", "IPv6"]);
+        combo.SelectedIndex = 0;
+        return combo;
     }
 
     private static ComboBox CreateLanguageInput()

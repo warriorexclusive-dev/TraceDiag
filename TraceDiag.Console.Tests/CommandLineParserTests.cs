@@ -1,3 +1,5 @@
+using TraceDiag.Models;
+
 namespace TraceDiag.Console.Tests;
 
 public sealed class CommandLineParserTests
@@ -11,6 +13,16 @@ public sealed class CommandLineParserTests
         Assert.Equal(ConsoleDefaults.PacketSize, options.PacketSize);
         Assert.Equal(ConsoleDefaults.Attempts, options.Attempts);
         Assert.False(options.Dynamic);
+        Assert.Equal(IpFamily.Auto, options.Family);
+    }
+
+    [Theory]
+    [InlineData("--ipv4", IpFamily.IPv4)]
+    [InlineData("--ipv6", IpFamily.IPv6)]
+    public void Parse_Run_AppliesIpFamily(string option, IpFamily expected)
+    {
+        var options = CommandLineParser.Parse(["run", "--host", "example.com", option]);
+        Assert.Equal(expected, options.Family);
     }
 
     [Fact]

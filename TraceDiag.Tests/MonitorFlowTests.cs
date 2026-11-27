@@ -56,7 +56,7 @@ public sealed class MonitorFlowTests
             () => new MonitorInput("10.0.0.1", 512, 250, dontFragment),
             () => { }, _ => { }, _ => { }, Resolve, execute, () => { });
 
-    private static Task<IPAddress?> Resolve(string host, CancellationToken token) =>
+    private static Task<IPAddress?> Resolve(string host, IpFamily family, CancellationToken token) =>
         Task.FromResult<IPAddress?>(IPAddress.Parse(host));
 
     private static Task CancelExecute(MonitoringInput input, IProgress<string> text,

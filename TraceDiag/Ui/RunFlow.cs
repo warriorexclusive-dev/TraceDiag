@@ -31,7 +31,7 @@ internal static class RunFlow
     private static async Task ExecuteAsync(RunFlowContext context, RunInput input, CancellationToken token)
     {
         LogRequest(context, input);
-        var address = await context.ResolveHost(input.Host, token);
+        var address = await context.ResolveHost(input.Host, input.Family, token);
         if (address is null) { ReportUnresolved(context, input); return; }
         await RunServiceAsync(context, input, address, token);
     }

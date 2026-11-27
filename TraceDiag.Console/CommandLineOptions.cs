@@ -11,6 +11,7 @@ internal sealed record Invocation(
     int LossDelayMs,
     bool Dynamic,
     bool DontFragment,
+    IpFamily Family,
     string Format,
     Language Language,
     bool Reset,
@@ -38,6 +39,7 @@ internal sealed class OptionsBag
     internal int LossDelayMs { get; set; } = ConsoleDefaults.LossDelayMs;
     internal bool Dynamic { get; set; }
     internal bool DontFragment { get; set; }
+    internal IpFamily Family { get; set; } = IpFamily.Auto;
     internal string Format { get; set; } = ConsoleDefaults.Format;
     internal Language Language { get; set; } = ConsoleDefaults.Language;
     internal bool Reset { get; set; }
